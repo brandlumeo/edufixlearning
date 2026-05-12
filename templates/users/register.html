@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}Join the Academy - Edufix{% endblock %}
+
+{% block content %}
+<section style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 100px 0; background: radial-gradient(circle at top right, rgba(138, 43, 226, 0.2), transparent);">
+    <div class="container" style="max-width: 500px;">
+        <div class="glass" style="padding: 3rem; border-radius: 32px; border: 1px solid var(--glass-border);">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h2 style="font-size: 2.5rem; margin-bottom: 0.5rem;" class="animate-up">Join <span class="text-yellow">Edufix</span></h2>
+                <p class="text-gray animate-up" style="animation-delay: 0.1s;">Master the art of creative storytelling.</p>
+            </div>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}" style="padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem; background: rgba(255,255,255,0.1); border-left: 4px solid var(--accent-pink);">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger" style="padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem; background: rgba(255,45,85,0.1); border-left: 4px solid var(--accent-pink); color: white;">
+                    {% for error in form.non_field_errors %}
+                        <p style="margin: 0; font-size: 0.9rem;">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <form method="post" class="animate-up" style="animation-delay: 0.2s;">
+                {% csrf_token %}
+                
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Full Name</label>
+                    <input type="text" name="full_name" value="{{ form.full_name.value|default:'' }}" class="form-control glass" placeholder="Enter your full name" required style="width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid var(--glass-border); color: white; background: rgba(255,255,255,0.05);">
+                    {% if form.full_name.errors %}
+                        <small class="text-pink" style="font-size: 0.8rem;">{{ form.full_name.errors.0 }}</small>
+                    {% endif %}
+                </div>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Email Address</label>
+                    <input type="email" name="email" value="{{ form.email.value|default:'' }}" class="form-control glass" placeholder="name@example.com" required style="width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid var(--glass-border); color: white; background: rgba(255,255,255,0.05);">
+                    {% if form.email.errors %}
+                        <small class="text-pink" style="font-size: 0.8rem;">{{ form.email.errors.0 }}</small>
+                    {% endif %}
+                </div>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Phone Number</label>
+                    <input type="text" name="phone_number" value="{{ form.phone_number.value|default:'' }}" class="form-control glass" placeholder="10-digit phone number" required style="width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid var(--glass-border); color: white; background: rgba(255,255,255,0.05);">
+                    {% if form.phone_number.errors %}
+                        <small class="text-pink" style="font-size: 0.8rem;">{{ form.phone_number.errors.0 }}</small>
+                    {% endif %}
+                </div>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Password</label>
+                    <input type="password" name="password" class="form-control glass" placeholder="Min. 8 chars, 1 upper, 1 number" required style="width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid var(--glass-border); color: white; background: rgba(255,255,255,0.05);">
+                    {% if form.password.errors %}
+                        <small class="text-pink" style="font-size: 0.8rem;">{{ form.password.errors.0 }}</small>
+                    {% endif %}
+                </div>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Confirm Password</label>
+                    <input type="password" name="confirm_password" class="form-control glass" placeholder="Must match password" required style="width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid var(--glass-border); color: white; background: rgba(255,255,255,0.05);">
+                    {% if form.confirm_password.errors %}
+                        <small class="text-pink" style="font-size: 0.8rem;">{{ form.confirm_password.errors.0 }}</small>
+                    {% endif %}
+                </div>
+
+                <div style="margin-bottom: 2rem; display: flex; align-items: start; gap: 10px;">
+                    <input type="checkbox" name="agree_terms" {% if form.agree_terms.value %}checked{% endif %} required style="margin-top: 4px;">
+                    <span class="text-gray" style="font-size: 0.9rem;">I agree to the <a href="#" class="text-yellow">Terms of Service</a> and <a href="#" class="text-yellow">Privacy Policy</a>.</span>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem; border-radius: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 10px 20px rgba(0,0,0,0.2);">
+                    Create Account
+                </button>
+            </form>
+
+            <div style="text-align: center; margin-top: 2rem;" class="animate-up" style="animation-delay: 0.3s;">
+                <p class="text-gray">Already have an account? <a href="{% url 'login' %}" class="text-yellow" style="font-weight: 600;">Log In</a></p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

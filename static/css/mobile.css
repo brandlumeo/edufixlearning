@@ -1,0 +1,910 @@
+/* ================================================================
+   EDUFIX ACADEMY — COMPLETE MOBILE RESPONSIVE STYLESHEET
+   Breakpoints: 1024px · 900px · 768px · 600px · 480px · 360px
+   ================================================================ */
+
+/* ── Global: prevent ANY horizontal scroll ── */
+html, body { overflow-x: hidden; max-width: 100%; }
+
+/* ── Desktop-only elements hidden by default ── */
+.nav-mobile-auth { display: none; }
+.nav-hamburger   { display: none; }
+.mobile-menu-btn { display: none; }
+
+
+/* ================================================================
+   ≤ 1024px  — Tablet tweaks
+   ================================================================ */
+@media (max-width: 1024px) {
+    .container { padding: 0 1.5rem; }
+
+    /* Reduce oversized section padding */
+    #why-choose-us { padding: 70px 0 !important; }
+    #stories        { padding: 70px 0 !important; }
+    #instructors    { padding: 70px 0 !important; }
+}
+
+
+/* ================================================================
+   ≤ 900px  — Student Dashboard sidebar
+   ================================================================ */
+@media (max-width: 900px) {
+
+    /* ── Student sidebar → slide-in drawer ── */
+    .sidebar {
+        position: fixed !important;
+        top: 0; left: 0;
+        height: 100vh;
+        width: 280px !important;
+        transform: translateX(-100%);
+        transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        z-index: 5000 !important;
+    }
+    .sidebar.sidebar-open { transform: translateX(0) !important; }
+
+    .sidebar-overlay {
+        display: none;
+        position: fixed; inset: 0;
+        background: rgba(0,0,0,0.55);
+        z-index: 4999;
+        backdrop-filter: blur(4px);
+    }
+    .sidebar-overlay.active { display: block; }
+
+    /* ── Main content: full width ── */
+    .main-content {
+        margin-left: 0 !important;
+        width: 100% !important;
+        padding: 1.25rem !important;
+    }
+
+    /* ── Mobile hamburger button (student dashboard) ── */
+    .mobile-menu-btn {
+        display: flex !important;
+        width: 40px; height: 40px;
+        align-items: center; justify-content: center;
+        background: #2D0B4E; border: none;
+        border-radius: 10px; cursor: pointer;
+        color: #fbbf24; font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    /* ── Dashboard top header ── */
+    .top-header {
+        flex-direction: column !important;
+        gap: 0.75rem !important;
+        padding: 1rem !important;
+        align-items: flex-start !important;
+    }
+    .top-header .search-box {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+    }
+    .header-left-prog {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 8px !important;
+        width: 100%;
+    }
+    .global-progress { width: 100% !important; }
+    .header-actions { align-self: flex-end; }
+
+    /* ── Dashboard grids ── */
+    .hub-container  { grid-template-columns: 1fr !important; }
+    .grid-stats     { grid-template-columns: repeat(2, 1fr) !important; }
+    .chart-row      { grid-template-columns: 1fr !important; }
+}
+
+
+/* ================================================================
+   ≤ 768px  — Mobile (main breakpoint)
+   ================================================================ */
+@media (max-width: 768px) {
+
+    /* ── Global ── */
+    .container { padding: 0 1rem; }
+    h1 { font-size: 2rem   !important; }
+    h2 { font-size: 1.75rem !important; }
+    h3 { font-size: 1.25rem !important; }
+
+
+    /* ════ NAVBAR ════ */
+    nav { padding: 0.9rem 0 !important; }
+
+    /* Hide desktop action buttons */
+    .nav-actions { display: none !important; }
+
+    /* Show hamburger */
+    .nav-hamburger {
+        display: flex !important;
+        width: 42px; height: 42px;
+        align-items: center; justify-content: center;
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.15);
+        border-radius: 10px;
+        cursor: pointer; color: white;
+        font-size: 1.2rem; flex-shrink: 0;
+    }
+
+    /* Fullscreen mobile nav overlay */
+    .nav-links {
+        display: none !important;
+        flex-direction: column;
+        position: fixed; top: 0; left: 0;
+        width: 100vw; height: 100vh;
+        background: rgba(26, 4, 34, 0.98);
+        backdrop-filter: blur(20px);
+        z-index: 9999;
+        align-items: center; justify-content: center;
+        gap: 2rem; padding: 2rem;
+        list-style: none;
+    }
+    .nav-links.open { display: flex !important; }
+    .nav-links li   { list-style: none; width: 100%; text-align: center; }
+    .nav-links a    { font-size: 1.2rem !important; }
+
+    .nav-mobile-close {
+        position: absolute; top: 1.5rem; right: 1.5rem;
+        font-size: 1.8rem; color: white;
+        cursor: pointer; background: none; border: none;
+    }
+    .nav-mobile-auth {
+        display: block;
+        width: 100%; margin-top: 1rem;
+        padding-top: 1.25rem;
+        border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+
+    /* ════ FOOTER ════ */
+    footer {
+        padding: 50px 0 30px !important;
+        margin-top: 50px !important;
+    }
+    footer > .container:first-child {
+        grid-template-columns: 1fr !important;
+        gap: 2rem !important;
+        padding: 0 1rem !important;
+    }
+
+
+    /* ════ CHATBOT ════ */
+    .chat-window {
+        width: calc(100vw - 16px) !important;
+        right: 8px !important;
+        bottom: 80px !important;
+        height: 400px !important;
+    }
+    .floating-actions { bottom: 12px !important; right: 12px !important; }
+
+
+    /* ════════════════════════════════════════
+       HOME PAGE  (index.html)
+       ════════════════════════════════════════ */
+
+    /* Hero section padding */
+    section[style*="padding: 160px"] {
+        padding: 110px 0 40px !important;
+    }
+
+    /* Carousel offer card → single column */
+    .offer-card {
+        grid-template-columns: 1fr !important;
+        padding: 24px 16px !important;
+        gap: 14px !important;
+    }
+    /* Hide decorative right-column icon div */
+    .offer-card > div:last-child { display: none !important; }
+    .offer-card h2 { font-size: 2rem !important; }
+    .offer-card h4 { font-size: 1rem !important; }
+
+    /* Stats strip: 4-col → 2-col */
+    section[style*="padding: 60px 0"] .container > div[style*="repeat(4, 1fr)"] {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px !important;
+    }
+    section[style*="padding: 60px 0"] .container > div > div {
+        padding: 25px 15px !important;
+    }
+
+    /* Services cards: 2-col → 1-col */
+    section.container > div[style*="1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+        gap: 1.5rem !important;
+    }
+    /* Service card image height — slightly shorter */
+    section.container .glass div[style*="height: 200px"] {
+        height: 160px !important;
+    }
+
+    /* Why Choose Us: 4-col → 2-col */
+    #why-choose-us div[style*="repeat(4, 1fr)"] {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 1rem !important;
+    }
+
+    /* Success stories: 3-col → 1-col */
+    #stories div[style*="repeat(3, 1fr)"] {
+        grid-template-columns: 1fr !important;
+        gap: 1.5rem !important;
+    }
+
+    /* Founder: 2-col → 1-col */
+    #instructors div[style*="1fr 1.2fr"] {
+        grid-template-columns: 1fr !important;
+        gap: 2rem !important;
+    }
+    #instructors h2 { font-size: 2.2rem !important; }
+    #instructors a.btn { margin-top: 2rem !important; }
+
+    /* Bottom stats banner: 4-col → 2-col */
+    section[style*="background: var(--surface-black)"] > .container {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 1.5rem !important;
+        padding: 1.5rem 1rem !important;
+    }
+
+    /* FAQ accordion padding */
+    #faq .container { padding: 0 1rem; }
+    #faq details summary { font-size: 0.95rem !important; }
+
+    /* Ready-to-Start CTA glass card */
+    .glass[style*="padding: 4rem"] {
+        padding: 1.75rem 1.25rem !important;
+        border-radius: 24px !important;
+    }
+    /* CTA email form → stacked */
+    form[action*="register"] {
+        flex-direction: column !important;
+        border-radius: 16px !important;
+        padding: 12px !important;
+        gap: 10px !important;
+    }
+    form[action*="register"] input {
+        padding: 0.85rem 1rem !important;
+        border-radius: 10px !important;
+        background: rgba(255,255,255,0.07) !important;
+        border: 1px solid rgba(255,255,255,0.12) !important;
+    }
+
+
+    /* ════════════════════════════════════════
+       ABOUT PAGE  (about.html)
+       ════════════════════════════════════════ */
+
+    /* About hero section padding */
+    section[style*="padding: 180px 0 100px"] {
+        padding: 110px 0 50px !important;
+    }
+
+    /* About hero: 2-col → 1-col */
+    section[style*="padding: 180px"] .container > div[style*="grid-template-columns: 1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+        gap: 2rem !important;
+    }
+    section[style*="padding: 180px"] h1 {
+        font-size: 2.2rem !important;
+        line-height: 1.2 !important;
+    }
+    section[style*="padding: 180px"] div[style*="display: flex; gap: 25px"] {
+        flex-direction: column !important;
+        gap: 1rem !important;
+        align-items: flex-start !important;
+    }
+    /* Hide the floating "ENROLL NOW" badge that overflows */
+    div[style*="position: absolute"][style*="right: -15px"] {
+        display: none !important;
+    }
+    /* Right visual widget — full width */
+    section[style*="padding: 180px"] div[style*="max-width: 500px"] {
+        max-width: 100% !important;
+    }
+
+    /* About section 2 — Vision/Mission: 2-col → 1-col */
+    section[style*="background: #5A0F5F"] .container > div[style*="grid-template-columns: 1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+        gap: 2rem !important;
+        margin-bottom: 4rem !important;
+    }
+    /* Shorten the tall glass decorative box */
+    section[style*="background: #5A0F5F"] .glass[style*="height: 550px"] {
+        height: 200px !important;
+    }
+
+    /* Why choose 3-col → 1-col */
+    section[style*="background: #5A0F5F"] > .container > div[style*="repeat(3, 1fr)"] {
+        grid-template-columns: 1fr !important;
+        gap: 1.25rem !important;
+        margin-bottom: 4rem !important;
+    }
+    /* Reduce giant card padding */
+    div[style*="padding: 3.5rem"][style*="border-radius: 36px"] {
+        padding: 1.75rem 1.25rem !important;
+    }
+    div[style*="padding: 3rem"][style*="border-radius: 30px"] {
+        padding: 1.75rem 1.25rem !important;
+    }
+
+    /* About CTA */
+    section[style*="padding: 120px 0"][style*="background: linear-gradient(135deg"] {
+        padding: 60px 0 !important;
+    }
+    section[style*="padding: 120px 0"] form {
+        flex-direction: column !important;
+        border-radius: 16px !important;
+        padding: 12px !important;
+        gap: 10px !important;
+    }
+    section[style*="padding: 120px 0"] form input {
+        padding: 0.85rem 1rem !important;
+        border-radius: 10px !important;
+        background: rgba(255,255,255,0.07) !important;
+    }
+    section[style*="padding: 120px 0"] p[style*="margin-bottom: 4rem"] {
+        margin-bottom: 1.5rem !important;
+    }
+
+
+    /* ════════════════════════════════════════
+       CONTACT PAGE  (contact.html)
+       ════════════════════════════════════════ */
+
+    section[style*="padding: 150px"] {
+        padding: 110px 0 50px !important;
+    }
+    section[style*="padding: 150px"] > .container > div[style*="text-align: center"] {
+        margin-bottom: 3rem !important;
+    }
+
+    /* Contact main grid: 1fr 1.5fr → 1-col */
+    div[style*="grid-template-columns: 1fr 1.5fr"] {
+        grid-template-columns: 1fr !important;
+        gap: 2rem !important;
+    }
+
+    /* Contact form name + email side-by-side → stacked */
+    div[style*="grid-template-columns: 1fr 1fr"][style*="gap: 1.5rem"] {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+    }
+
+    /* Glass contact cards padding */
+    .glass[style*="padding: 3rem; border-radius: 32px"] {
+        padding: 1.5rem 1.25rem !important;
+        border-radius: 20px !important;
+    }
+
+
+    /* ════════════════════════════════════════
+       COURSE LIST  (course_list.html)
+       ════════════════════════════════════════ */
+
+    section[style*="padding: 180px 0 60px"] {
+        padding: 110px 0 30px !important;
+    }
+    section[style*="padding: 180px 0 60px"] h1 {
+        font-size: 2rem !important;
+    }
+
+    /* Course grid: 3-col → 1-col */
+    section.container > div[style*="repeat(3, 1fr)"][style*="gap: 2.5rem"] {
+        grid-template-columns: 1fr !important;
+        gap: 1.5rem !important;
+    }
+
+    /* Filter bar: side-by-side → stacked, buttons scrollable */
+    .glass[style*="padding: 1.5rem"][style*="margin-bottom: 3rem"] {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 0.75rem !important;
+        padding: 1rem !important;
+    }
+    .glass[style*="padding: 1.5rem"][style*="margin-bottom: 3rem"] > div:first-child {
+        display: flex !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        scrollbar-width: none !important;
+        white-space: nowrap !important;
+        padding-bottom: 4px !important;
+        width: 100% !important;
+        gap: 0.6rem !important;
+    }
+    .glass[style*="padding: 1.5rem"][style*="margin-bottom: 3rem"] > div:first-child::-webkit-scrollbar {
+        display: none;
+    }
+
+
+    /* ════════════════════════════════════════
+       LESSON VIEW  (lesson_view.html)
+       ════════════════════════════════════════ */
+
+    /* Stack the 2-panel layout vertically */
+    div[style*="grid-template-columns: 1fr 400px"] {
+        grid-template-columns: 1fr !important;
+        height: auto !important;
+        min-height: unset !important;
+    }
+
+    /* Player panel: normal scroll */
+    div[style*="grid-template-columns: 1fr 400px"] > div:first-child {
+        overflow-y: visible !important;
+        padding: 1.25rem !important;
+    }
+
+    /* Sidebar panel: fixed height, scrollable */
+    div[style*="grid-template-columns: 1fr 400px"] > div:last-child {
+        border-left: none !important;
+        border-top: 1px solid var(--glass-border) !important;
+        height: 320px !important;
+        overflow-y: auto !important;
+    }
+
+    /* Inner lesson info: 1fr 300px → 1-col */
+    div[style*="grid-template-columns: 1fr 300px"] {
+        grid-template-columns: 1fr !important;
+        gap: 1.5rem !important;
+    }
+
+    /* Lesson title header block */
+    div[style*="justify-content: space-between; align-items: start; margin-bottom: 2rem"] {
+        flex-direction: column !important;
+        gap: 1rem !important;
+    }
+    div[style*="background: var(--accent-pink)"][style*="border-radius: 12px"] h1 {
+        font-size: 1.35rem !important;
+    }
+
+
+    /* ════════════════════════════════════════
+       LOGIN / REGISTER  (login.html, register.html)
+       ════════════════════════════════════════ */
+
+    section[style*="min-height: 100vh"] > .container {
+        max-width: 100% !important;
+        padding: 0 1rem !important;
+    }
+    .glass[style*="padding: 3rem; border-radius: 32px"] {
+        padding: 1.75rem 1.25rem !important;
+        border-radius: 20px !important;
+    }
+
+
+    /* ════════════════════════════════════════
+       STUDENT DASHBOARD  (home.html)
+       ════════════════════════════════════════ */
+
+    /* All dashboard cards — reduce padding */
+    .dashboard-card { padding: 1.25rem !important; }
+
+    /* Tab navigation — horizontal scroll */
+    .tab-nav {
+        gap: 0.35rem !important;
+        padding: 0.3rem !important;
+        overflow-x: auto !important;
+        flex-wrap: nowrap !important;
+        -webkit-overflow-scrolling: touch !important;
+        scrollbar-width: none !important;
+        justify-content: flex-start !important;
+    }
+    .tab-nav::-webkit-scrollbar { display: none; }
+    .tab-link {
+        padding: 7px 11px !important;
+        font-size: 0.75rem !important;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    /* Overview metrics row: 3-col → 1-col */
+    div[style*="grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2rem"] {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+    }
+
+    /* Continue-learning card: flex row → stack */
+    .dashboard-card[style*="justify-content: space-between; align-items: center"] {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 1.25rem !important;
+    }
+    .dashboard-card[style*="justify-content: space-between; align-items: center"] > div:last-child {
+        width: 100px !important;
+        height: 100px !important;
+        align-self: center;
+    }
+
+    /* Attendance summary: 1fr 2fr → 1-col */
+    div[style*="grid-template-columns: 1fr 2fr"] {
+        grid-template-columns: 1fr !important;
+        gap: 1.5rem !important;
+    }
+    .attendance-calendar { gap: 6px !important; }
+    .day-box { font-size: 0.65rem !important; }
+
+    /* Fee stats summary: 3-col → 1-col */
+    div[style*="grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 1.5rem"] {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+    }
+
+    /* Payment history table: make scrollable */
+    .dashboard-card table {
+        display: block !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        white-space: nowrap !important;
+    }
+
+    /* Community tab: class schedule card */
+    div[style*="background: #f0f9ff"] {
+        padding: 1.25rem !important;
+    }
+}
+
+
+/* ================================================================
+   ≤ 600px  — Profile header stacking
+   ================================================================ */
+@media (max-width: 600px) {
+
+    .profile-header {
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+        gap: 1rem !important;
+        padding: 1.25rem !important;
+    }
+    .profile-header > div:last-child { width: 100%; }
+    .profile-header > div:last-child > div:first-child {
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 0.5rem !important;
+    }
+    .profile-header > div:last-child > div:first-child > div:last-child {
+        text-align: center !important;
+    }
+    .info-grid { grid-template-columns: 1fr 1fr !important; }
+    .avatar-large { margin: 0 auto !important; }
+
+    /* Reduce hero section padding a touch more */
+    section[style*="padding: 160px"] { padding: 100px 0 35px !important; }
+    section[style*="padding: 180px"] { padding: 100px 0 40px !important; }
+
+    /* About hero button row */
+    section[style*="padding: 180px"] div[style*="display: flex; gap: 25px; align-items: center"] {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 1rem !important;
+    }
+    section[style*="padding: 180px"] div[style*="display: flex; gap: 25px; align-items: center"] a {
+        text-align: center !important;
+    }
+}
+
+
+/* ================================================================
+   ≤ 480px  — Small phones
+   ================================================================ */
+@media (max-width: 480px) {
+
+    h1 { font-size: 1.75rem !important; }
+    h2 { font-size: 1.5rem  !important; }
+    h3 { font-size: 1.1rem  !important; }
+
+    .container { padding: 0 0.85rem; }
+
+    .offer-card h2 { font-size: 1.8rem !important; }
+    .offer-card { padding: 18px 14px !important; }
+
+    .btn { padding: 0.6rem 1rem !important; font-size: 0.85rem !important; }
+
+    /* Service cards */
+    .glass[style*="padding: 40px"] { padding: 18px 14px !important; }
+
+    /* Why Choose Us: 2-col → 1-col */
+    #why-choose-us div[style*="repeat(4, 1fr)"] {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Student dashboard */
+    .grid-stats { grid-template-columns: 1fr !important; }
+    .stat-card  { padding: 1rem !important; }
+    .info-grid  { grid-template-columns: 1fr !important; }
+    .tab-link   { padding: 5px 8px !important; font-size: 0.68rem !important; }
+    .profile-header h1 { font-size: 1.1rem !important; }
+
+    /* Home stats: 2-col → 1-col */
+    section[style*="padding: 60px 0"] .container > div[style*="repeat(4, 1fr)"] {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Home bottom stats: 2-col → 1-col */
+    section[style*="background: var(--surface-black)"] > .container {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* All remaining 2/4-col inline grids → 1-col */
+    div[style*="grid-template-columns: repeat(2, 1fr)"],
+    div[style*="grid-template-columns: repeat(4, 1fr)"],
+    .section-grid,
+    .admin-stats-grid,
+    .layout-2-col,
+    .contact-main-grid,
+    .contact-form-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1.5rem !important;
+    }
+
+    .contact-main-grid {
+        gap: 2.5rem !important;
+    }
+
+    /* Section padding reduction */
+    section[style*="padding: 100px 0"] { padding: 55px 0 !important; }
+    section[style*="padding: 60px 0"]  { padding: 40px 0 !important; }
+
+    /* About cards */
+    div[style*="padding: 3.5rem"] { padding: 1.25rem !important; }
+    div[style*="padding: 3rem"]   { padding: 1.25rem !important; }
+
+    /* Contact info items */
+    div[style*="display: flex; gap: 1.5rem; align-items: center"] {
+        gap: 1rem !important;
+    }
+
+    /* Founder section */
+    #instructors div[style*="1fr 1.2fr"] > div:first-child {
+        border-radius: 20px !important;
+    }
+
+    /* Modal overlays */
+    #homeCertModal > div {
+        padding: 1.5rem 1rem !important;
+        margin: 0 1rem !important;
+    }
+}
+
+
+/* ================================================================
+   ≤ 360px  — Very small (SE, older Androids)
+   ================================================================ */
+@media (max-width: 360px) {
+    h1 { font-size: 1.55rem !important; }
+    h2 { font-size: 1.35rem !important; }
+    .container { padding: 0 0.75rem; }
+    .offer-card { padding: 14px 12px !important; }
+    .tab-link { padding: 4px 7px !important; font-size: 0.62rem !important; }
+    .nav-links a { font-size: 1.05rem !important; }
+}
+
+
+/* ================================================================
+   CONTACT PAGE — comprehensive mobile coverage
+   ================================================================ */
+
+/* Tablet: reduce the wide gap in the 2-col grid */
+@media (max-width: 1024px) {
+    div[style*="grid-template-columns: 1fr 1.5fr"] {
+        gap: 2.5rem !important;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Hero padding already handled, but reinforce */
+    section[style*="padding: 150px 0"] {
+        padding: 110px 0 50px !important;
+    }
+
+    /* Hero title area — reduce bottom margin */
+    section[style*="padding: 150px"] > .container > div[style*="text-align: center"] {
+        margin-bottom: 2rem !important;
+    }
+
+    /* Hero h1 override */
+    section[style*="padding: 150px"] h1 {
+        font-size: 2rem !important;
+        line-height: 1.2 !important;
+    }
+
+    /* Hero description text */
+    section[style*="padding: 150px"] p[style*="max-width: 600px"] {
+        max-width: 100% !important;
+        font-size: 0.92rem !important;
+    }
+
+    /* Main contact 2-col grid → 1-col */
+    div[style*="grid-template-columns: 1fr 1.5fr"] {
+        grid-template-columns: 1fr !important;
+        gap: 1.5rem !important;
+        align-items: stretch !important;
+    }
+
+    /* Contact info glass card */
+    .animate-up .glass[style*="border-radius: 32px"] {
+        padding: 1.5rem !important;
+        border-radius: 20px !important;
+        margin-bottom: 0 !important;
+    }
+
+    /* Contact info item gaps */
+    .glass div[style*="flex-direction: column; gap: 2rem"] {
+        gap: 1.25rem !important;
+    }
+    div[style*="display: flex; gap: 1.5rem; align-items: center"] {
+        gap: 0.85rem !important;
+        align-items: flex-start !important;
+    }
+
+    /* Contact icon box — keep size but prevent shrinking */
+    .glass div[style*="width: 50px; height: 50px; border-radius: 12px"] {
+        width: 42px !important;
+        height: 42px !important;
+        flex-shrink: 0 !important;
+        border-radius: 10px !important;
+    }
+
+    /* Long email/phone text — prevent overflow */
+    section[style*="padding: 150px"] h5 {
+        font-size: 0.88rem !important;
+        overflow-wrap: break-word !important;
+        word-break: break-all !important;
+    }
+
+    /* Form glass card */
+    section[style*="padding: 150px"] .animate-up div.glass[style*="border-radius: 32px"] {
+        padding: 1.5rem !important;
+        border-radius: 20px !important;
+    }
+
+    /* Name + Email 2-col form grid → 1-col */
+    div[style*="grid-template-columns: 1fr 1fr"][style*="gap: 1.5rem"] {
+        grid-template-columns: 1fr !important;
+        gap: 0.85rem !important;
+    }
+
+    /* Form inputs full width */
+    section[style*="padding: 150px"] input[type="text"],
+    section[style*="padding: 150px"] input[type="email"],
+    section[style*="padding: 150px"] textarea {
+        font-size: 0.9rem !important;
+    }
+}
+
+@media (max-width: 480px) {
+    section[style*="padding: 150px"] h1 {
+        font-size: 1.75rem !important;
+    }
+    .animate-up .glass[style*="border-radius: 32px"] {
+        padding: 1.25rem !important;
+        border-radius: 16px !important;
+    }
+    div[style*="display: flex; gap: 1.5rem; align-items: center"] {
+        gap: 0.6rem !important;
+    }
+}
+
+
+/* ================================================================
+   SETTINGS PAGE  (dashboard/settings.html)
+   ================================================================ */
+
+/* ── ≤900px: Stack 280px sidebar + make tabs horizontal ── */
+@media (max-width: 900px) {
+    /* Main 280px|1fr grid → single column */
+    div[style*="grid-template-columns: 280px 1fr"] {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+    }
+
+    /* Tabs column → horizontal scrollable strip */
+    div[style*="grid-template-columns: 280px 1fr"] > div:first-child {
+        flex-direction: row !important;
+        overflow-x: auto !important;
+        flex-wrap: nowrap !important;
+        padding-bottom: 4px !important;
+        gap: 6px !important;
+        -webkit-overflow-scrolling: touch !important;
+        scrollbar-width: none !important;
+    }
+    div[style*="grid-template-columns: 280px 1fr"] > div:first-child::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Individual tab items */
+    .settings-tab {
+        flex-shrink: 0 !important;
+        white-space: nowrap;
+        padding: 10px 16px !important;
+        font-size: 0.82rem !important;
+        border-radius: 12px !important;
+        gap: 8px !important;
+    }
+    .settings-tab i {
+        font-size: 1rem !important;
+    }
+}
+
+/* ── ≤768px: Content panel & form grids ── */
+@media (max-width: 768px) {
+    /* Reduce content panel padding */
+    div[style*="grid-template-columns: 280px 1fr"] > div:last-child {
+        padding: 1.5rem !important;
+        border-radius: 20px !important;
+    }
+
+    /* Profile picture + info section: row → column */
+    div[style*="gap: 2.5rem; margin-bottom: 2.5rem; padding-bottom: 2.5rem"] {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 1.25rem !important;
+        margin-bottom: 1.5rem !important;
+        padding-bottom: 1.5rem !important;
+    }
+    div[style*="gap: 2.5rem; margin-bottom: 2.5rem; padding-bottom: 2.5rem"] > div:first-child {
+        width: 100px !important;
+        height: 100px !important;
+    }
+
+    /* Profile & Preferences 2-col form grids → 1-col */
+    #tab-profile div[style*="grid-template-columns: 1fr 1fr"],
+    #tab-preferences div[style*="grid-template-columns: 1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+    }
+
+    /* span-2 fields → span-1 when grid is single column */
+    #tab-profile div[style*="grid-column: span 2"] {
+        grid-column: span 1 !important;
+    }
+
+    /* Security items: justify-content:space-between → stack */
+    #tab-security div[style*="background: #f8fafc"][style*="justify-content: space-between"] {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 0.75rem !important;
+        padding: 1.25rem !important;
+    }
+    #tab-security div[style*="background: #f8fafc"][style*="justify-content: space-between"] > button,
+    #tab-security div[style*="background: #f8fafc"][style*="justify-content: space-between"] > span {
+        align-self: flex-start;
+    }
+
+    /* Pref item description — allow full width */
+    .pref-desc { max-width: 100% !important; }
+
+    /* Save / Discard action buttons → stack full-width */
+    div[style*="margin-top: 3rem; display: flex; justify-content: flex-end"] {
+        flex-direction: column-reverse !important;
+        gap: 10px !important;
+        margin-top: 1.75rem !important;
+    }
+    div[style*="margin-top: 3rem; display: flex; justify-content: flex-end"] > button {
+        width: 100% !important;
+        text-align: center !important;
+        justify-content: center !important;
+    }
+}
+
+/* ── ≤480px: Even smaller settings adjustments ── */
+@media (max-width: 480px) {
+    .settings-tab {
+        padding: 8px 10px !important;
+        font-size: 0.72rem !important;
+    }
+    .settings-tab i {
+        font-size: 0.85rem !important;
+    }
+    div[style*="grid-template-columns: 280px 1fr"] > div:last-child {
+        padding: 1rem 0.85rem !important;
+        border-radius: 16px !important;
+    }
+    .setting-input {
+        padding: 11px 14px !important;
+        font-size: 0.88rem !important;
+    }
+    div[style*="gap: 2.5rem; margin-bottom: 2.5rem; padding-bottom: 2.5rem"] > div:first-child {
+        width: 80px !important;
+        height: 80px !important;
+        border-radius: 16px !important;
+    }
+}

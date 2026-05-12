@@ -1,0 +1,95 @@
+{% load static %}
+
+<!-- Floating Components -->
+<a href="https://wa.me/your-placeholder-number" target="_blank" class="float-btn whatsapp-btn" title="Chat on WhatsApp">
+    <i class="fa-brands fa-whatsapp"></i>
+</a>
+
+<div class="floating-actions">
+    <div class="float-btn chat-btn" onclick="toggleChat()" title="Talk to Edufix AI">
+        <i class="fa-solid fa-robot"></i>
+    </div>
+</div>
+
+<!-- Chat Window -->
+<div class="chat-window glass" id="chatWindow">
+    <div class="chat-header">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <i class="fa-solid fa-robot" style="color: #fbbf24;"></i>
+            <span style="font-weight: 700;">Edufix AI Assistant</span>
+        </div>
+        <i class="fa-solid fa-times" style="cursor: pointer;" onclick="toggleChat()"></i>
+    </div>
+    <div class="chat-messages" id="chatMessages" style="background: var(--surface-black, #0f172a);">
+        <div class="msg msg-bot">Hello! I'm the Edufix AI. How can I help you with your creative journey today?</div>
+    </div>
+    <div class="chat-input" style="background: var(--surface-black, #0f172a); border-top: 1px solid var(--glass-border, rgba(255,255,255,0.1));">
+        <input type="text" id="chatInput" placeholder="Ask about courses..." onkeypress="if(event.key === 'Enter') sendMessage()">
+        <button class="btn btn-primary" onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+    </div>
+</div>
+
+<script>
+    // Chatbot Toggle
+    function toggleChat() {
+        const chatWindow = document.getElementById('chatWindow');
+        chatWindow.classList.toggle('active');
+    }
+
+    // Chatbot Send Message
+    function sendMessage() {
+        const input = document.getElementById('chatInput');
+        const messages = document.getElementById('chatMessages');
+        const text = input.value.trim();
+        
+        if (text === "") return;
+
+        // Add User Message
+        const userMsg = document.createElement('div');
+        userMsg.className = 'msg msg-user';
+        userMsg.innerText = text;
+        messages.appendChild(userMsg);
+        input.value = "";
+
+        // Bot Loading State
+        const botMsg = document.createElement('div');
+        botMsg.className = 'msg msg-bot';
+        botMsg.innerText = "...";
+        messages.appendChild(botMsg);
+        messages.scrollTop = messages.scrollHeight;
+
+        // AJAX Call to Core Chatbot View
+        fetch('{% url "core:chatbot_response" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({ message: text })
+        })
+        .then(response => response.json())
+        .then(data => {
+            botMsg.innerText = data.response;
+            messages.scrollTop = messages.scrollHeight;
+        })
+        .catch(error => {
+            botMsg.innerText = "Error connecting to AI. Please try again.";
+            console.error('Error:', error);
+        });
+    }
+</script>
+
+<style>
+    /* Ensure floating actions are above everything */
+    .floating-actions, .whatsapp-btn {
+        z-index: 9999 !important;
+    }
+    .chat-window {
+        z-index: 10000 !important;
+    }
+    /* Dark mode support variables if not defined */
+    :root {
+        --surface-black: #1A0422;
+        --glass-border: rgba(255, 255, 255, 0.1);
+    }
+</style>

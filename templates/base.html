@@ -1,0 +1,171 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Edufix Learning Academy - Master creative skills with industry-leading courses in Video Editing, Photoshop, and Graphic Design. Join our community of creative professionals.">
+    <meta name="keywords" content="Video Editing Course, Photoshop Training, Graphic Design, Creative LMS, Edufix Academy, Learn Premiere Pro, Learn After Effects">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://edufixacademy.com/">
+    <meta property="og:title" content="Edufix Learning Academy - Professional Creative LMS">
+    <meta property="og:description" content="Elevate your creative skills with industry-leading courses in video editing and design.">
+    <meta property="og:image" content="{% static 'images/og-preview.jpg' %}">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="Edufix Learning Academy - Professional Creative LMS">
+    <meta property="twitter:description" content="Elevate your creative skills with industry-leading courses in video editing and design.">
+
+    <title>{% block title %}Edufix Learning Academy - Professional Creative LMS{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/mobile.css' %}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <nav id="navbar" class="glass-nav">
+        <div class="container nav-content">
+            <a href="/" class="logo">
+                <span style="color: #fff; letter-spacing: -1px;">EDUFIX</span><span class="text-yellow" style="letter-spacing: -1px;">LEARN</span>
+            </a>
+            <!-- Hamburger Button (mobile only) -->
+            <button class="nav-hamburger" id="navHamburger" aria-label="Open menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <!-- Close Button inside mobile menu -->
+                <button class="nav-mobile-close" id="navClose" aria-label="Close menu">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+                <li><a href="{% url 'core:index' %}">Home</a></li>
+                <li class="nav-dropdown">
+                    <a href="{% url 'courses:course_list' %}" style="display: flex; align-items: center; gap: 5px;">
+                        Courses <i class="fa-solid fa-chevron-down" style="font-size: 0.6rem; opacity: 0.7;"></i>
+                    </a>
+                </li>
+                <li><a href="{% url 'core:about' %}">About</a></li>
+                <li><a href="{% url 'core:contact' %}">Contact</a></li>
+                <!-- Mobile-only auth links (shown inside hamburger menu) -->
+                <li class="nav-mobile-auth">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'dashboard:home' %}" style="background: #fbbf24; color: #2D0B4E; padding: 12px 30px; border-radius: 50px; font-weight: 800; font-size: 1rem; text-decoration: none; display: block; text-align: center;">Dashboard</a>
+                        <a href="{% url 'account_logout' %}" style="color: rgba(255,255,255,0.6); text-align: center; display: block; margin-top: 1rem; font-size: 1rem;"><i class="fa-solid fa-power-off" style="margin-right: 8px;"></i>Logout</a>
+                    {% else %}
+                        <a href="{% url 'register' %}" style="background: #fbbf24; color: #2D0B4E; padding: 12px 30px; border-radius: 50px; font-weight: 800; font-size: 1rem; text-decoration: none; display: block; text-align: center;">Join Academy</a>
+                        <a href="{% url 'login' %}" style="color: rgba(255,255,255,0.6); text-align: center; display: block; margin-top: 1rem; font-size: 1rem;">Already have an account? <strong style="color:#fbbf24;">Login</strong></a>
+                    {% endif %}
+                </li>
+            </ul>
+            <!-- Desktop-only auth actions -->
+            <div class="nav-actions" style="display: flex; align-items: center; gap: 20px;">
+                {% if user.is_authenticated %}
+                    <div style="display: flex; align-items: center; gap: 15px; border-right: 1px solid rgba(255,255,255,0.1); padding-right: 20px; margin-right: 5px;">
+                        <span style="font-size: 0.9rem; color: #cbd5e1; font-weight: 500;">
+                            <i class="fa-solid fa-circle-user" style="color: #fbbf24; margin-right: 5px;"></i> {{ user.username }}
+                        </span>
+                    </div>
+                    <a href="{% url 'account_logout' %}" class="nav-link-icon" title="Logout" style="color: #fff !important;">
+                        <i class="fa-solid fa-power-off" style="color: #fff !important;"></i>
+                    </a>
+                    <a href="{% url 'dashboard:home' %}" class="nav-link" style="color: #fff !important; font-weight: 700; text-decoration: none; font-size: 0.95rem;">Dashboard</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="nav-link" style="font-weight: 700; font-size: 0.9rem; color: #fff !important;">Login</a>
+                    <a href="{% url 'register' %}" class="btn-nav-primary" style="color: #fff !important;">Join Academy</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer style="padding: 100px 0 50px; background: var(--surface-black); margin-top: 100px; border-top: 1px solid var(--glass-border);">
+        <div class="container" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 4rem;">
+            <div>
+                <a href="/" class="logo" style="margin-bottom: 1.5rem; display: block;">
+                    EDUFIX<span class="text-yellow">LEARN</span>
+                </a>
+                <p class="text-gray">Elevate your creative skills with industry-leading courses in video editing and Photoshop.</p>
+            </div>
+            <div>
+                <h4 style="color: white; margin-bottom: 2rem;">Explore</h4>
+                <ul style="list-style: none; display: flex; flex-direction: column; gap: 1rem;">
+                    <li><a href="{% url 'core:index' %}" class="text-gray">Home</a></li>
+                    <li><a href="{% url 'courses:course_list' %}" class="text-gray">All Courses</a></li>
+                    <li><a href="{% url 'core:about' %}" class="text-gray">About Us</a></li>
+                    <li><a href="{% url 'core:contact' %}" class="text-gray">Contact</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 style="color: white; margin-bottom: 2rem;">Legal</h4>
+                <ul style="list-style: none; display: flex; flex-direction: column; gap: 1rem;">
+                    <li><a href="#" class="text-gray">Privacy Policy</a></li>
+                    <li><a href="#" class="text-gray">Terms of Service</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 style="color: white; margin-bottom: 2rem;">Connect</h4>
+                <div style="display: flex; gap: 1.5rem; font-size: 1.5rem;">
+                    <a href="#" class="text-gray"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" class="text-gray"><i class="fa-brands fa-youtube"></i></a>
+                    <a href="#" class="text-gray"><i class="fa-brands fa-facebook"></i></a>
+                    <a href="#" class="text-gray"><i class="fa-brands fa-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="container" style="border-top: 1px solid var(--glass-border); margin-top: 50px; padding-top: 30px; text-align: center; color: var(--text-gray);">
+            &copy; 2024 Edufix Learning Academy. Built with Python & Passion.
+        </div>
+    </footer>
+
+    <script>
+        // Scroll effect on navbar
+        window.addEventListener('scroll', function() {
+            const nav = document.getElementById('navbar');
+            if (nav) {
+                if (window.scrollY > 50) {
+                    nav.classList.add('scrolled');
+                } else {
+                    nav.classList.remove('scrolled');
+                }
+            }
+        });
+
+        // Mobile nav hamburger
+        const hamburger = document.getElementById('navHamburger');
+        const navLinks  = document.getElementById('navLinks');
+        const navClose  = document.getElementById('navClose');
+
+        if (hamburger) {
+            hamburger.addEventListener('click', () => {
+                navLinks.classList.add('open');
+                document.body.style.overflow = 'hidden';
+            });
+        }
+        if (navClose) {
+            navClose.addEventListener('click', () => {
+                navLinks.classList.remove('open');
+                document.body.style.overflow = '';
+            });
+        }
+        // Close menu when a link is clicked
+        if (navLinks) {
+            navLinks.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    navLinks.classList.remove('open');
+                    document.body.style.overflow = '';
+                });
+            });
+        }
+    </script>
+
+    {% include 'partials/chatbot.html' %}
+</body>
+</html>

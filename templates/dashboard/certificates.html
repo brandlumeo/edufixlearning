@@ -1,0 +1,417 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}My Certificates - Edufix Academy{% endblock %}
+
+{% block extra_css %}
+<style>
+    .cert-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: 2rem;
+    }
+
+    .cert-card {
+        background: var(--card-bg);
+        border-radius: 20px;
+        overflow: hidden;
+        border: 1px solid var(--border-light);
+        box-shadow: var(--card-shadow);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        position: relative;
+    }
+
+    .cert-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+    }
+
+    .cert-preview {
+        width: 100%;
+        height: 200px;
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(135deg, #1e0533 0%, #3b1065 50%, #2d0b4e 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .cert-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .cert-preview img.locked {
+        filter: blur(6px) brightness(0.45);
+    }
+
+    .cert-lock-overlay {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0,0,0,0.5);
+        gap: 8px;
+    }
+
+    .cert-lock-overlay i {
+        font-size: 2.5rem;
+        color: #fbbf24;
+    }
+
+    .cert-lock-overlay span {
+        font-size: 0.7rem;
+        font-weight: 900;
+        color: #fff;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        text-align: center;
+        padding: 0 1rem;
+    }
+
+    .cert-unlocked-badge {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        background: #22c55e;
+        color: white;
+        font-size: 0.65rem;
+        font-weight: 900;
+        padding: 4px 12px;
+        border-radius: 20px;
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .cert-placeholder-icon {
+        font-size: 5rem;
+        color: rgba(255,255,255,0.08);
+    }
+
+    .cert-body {
+        padding: 1.5rem;
+    }
+
+    .cert-course-name {
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: var(--text-main);
+        margin-bottom: 5px;
+    }
+
+    .cert-uid {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        font-family: monospace;
+        margin-bottom: 16px;
+    }
+
+    .cert-progress-bar-wrap {
+        height: 6px;
+        background: var(--border-light);
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 6px;
+    }
+
+    .cert-progress-fill {
+        height: 100%;
+        border-radius: 10px;
+        transition: width 0.6s ease;
+    }
+
+    .cert-progress-label {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        font-weight: 700;
+        margin-bottom: 18px;
+    }
+
+    .cert-btn-download {
+        width: 100%;
+        padding: 12px;
+        border-radius: 12px;
+        border: none;
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: #fff;
+        font-weight: 800;
+        font-size: 0.85rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: opacity 0.2s;
+    }
+
+    .cert-btn-download:hover { opacity: 0.9; }
+
+    .cert-btn-locked {
+        width: 100%;
+        padding: 12px;
+        border-radius: 12px;
+        border: 1px dashed var(--border-light);
+        background: rgba(0,0,0,0.03);
+        color: var(--text-muted);
+        font-weight: 800;
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        cursor: not-allowed;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 5rem 2rem;
+        color: var(--text-muted);
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        color: var(--border-light);
+        margin-bottom: 1.5rem;
+        display: block;
+    }
+
+    .empty-state h3 {
+        font-size: 1.2rem;
+        font-weight: 800;
+        color: var(--text-main);
+        margin-bottom: 8px;
+    }
+
+    /* Modal */
+    .modal-backdrop {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.6);
+        backdrop-filter: blur(6px);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-box {
+        background: var(--card-bg);
+        border-radius: 20px;
+        border: 1px solid var(--border-light);
+        padding: 2rem;
+        width: 100%;
+        max-width: 420px;
+        box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+    }
+
+    .modal-box h3 {
+        margin-top: 0;
+        margin-bottom: 0.5rem;
+        color: var(--text-main);
+        font-size: 1.1rem;
+    }
+
+    .modal-box p {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-bottom: 1.5rem;
+    }
+
+    .modal-input {
+        width: 100%;
+        padding: 12px 14px;
+        border-radius: 10px;
+        border: 1px solid var(--border-light);
+        background: var(--dash-bg);
+        color: var(--text-main);
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        box-sizing: border-box;
+        outline: none;
+    }
+
+    .modal-input:focus {
+        border-color: #10b981;
+        box-shadow: 0 0 0 3px rgba(16,185,129,0.15);
+    }
+
+    .modal-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+    }
+
+    .modal-cancel {
+        padding: 10px 20px;
+        border-radius: 10px;
+        border: 1px solid var(--border-light);
+        background: transparent;
+        color: var(--text-main);
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .modal-submit {
+        padding: 10px 24px;
+        border-radius: 10px;
+        border: none;
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        font-weight: 800;
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="slide-in">
+
+    <!-- Page Header -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem;">
+        <div>
+            <h1 style="margin: 0; font-size: 1.75rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 12px;">
+                <span style="width: 44px; height: 44px; border-radius: 12px; background: rgba(251,191,36,0.15); display: flex; align-items: center; justify-content: center;">
+                    <i class="fa-solid fa-award" style="color: #fbbf24; font-size: 1.2rem;"></i>
+                </span>
+                My Certificates
+            </h1>
+            <p style="margin: 8px 0 0 56px; color: var(--text-muted); font-weight: 600; font-size: 0.9rem;">
+                {% if certificate_items %}
+                    {{ certificate_items|length }} certificate{{ certificate_items|length|pluralize }} assigned to you
+                {% else %}
+                    No certificates assigned yet
+                {% endif %}
+            </p>
+        </div>
+    </div>
+
+    {% if error %}
+    <div style="background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #ef4444; padding: 1rem; border-radius: 10px; margin-bottom: 2rem;">
+        <i class="fa-solid fa-triangle-exclamation"></i> {{ error }}
+    </div>
+    {% endif %}
+
+    {% if certificate_items %}
+    <div class="cert-grid">
+        {% for item in certificate_items %}
+        <div class="cert-card">
+
+            <!-- Certificate Preview Image -->
+            <div class="cert-preview">
+                {% if item.has_file %}
+                    <img src="{{ item.cert.certificate_file.url }}"
+                         class="{% if not item.is_unlocked %}locked{% endif %}"
+                         alt="Certificate preview">
+                {% else %}
+                    <i class="fa-solid fa-certificate cert-placeholder-icon"></i>
+                {% endif %}
+
+                {% if item.is_unlocked %}
+                    <div class="cert-unlocked-badge">
+                        <i class="fa-solid fa-check-circle"></i> Unlocked
+                    </div>
+                {% else %}
+                    <div class="cert-lock-overlay">
+                        <i class="fa-solid fa-lock"></i>
+                        <span>Pending admin approval</span>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Card Body -->
+            <div class="cert-body">
+                <div class="cert-course-name">{{ item.course.title }}</div>
+                <div class="cert-uid">ID: {{ item.cert.certificate_uid }}</div>
+
+                <!-- Progress Bar -->
+                <div class="cert-progress-bar-wrap">
+                    <div class="cert-progress-fill"
+                         style="width: {{ item.progress }}%; background: {% if item.is_unlocked %}#22c55e{% else %}#6366f1{% endif %};"></div>
+                </div>
+                <div class="cert-progress-label">{{ item.progress }}% course completed</div>
+
+                <!-- Action Button -->
+                {% if item.is_unlocked %}
+                    <button class="cert-btn-download"
+                            onclick="openCertModal('{{ item.cert.certificate_uid }}')">
+                        <i class="fa-solid fa-download"></i>
+                        Enter Name &amp; Download Certificate
+                    </button>
+                {% else %}
+                    <div class="cert-btn-locked">
+                        <i class="fa-solid fa-lock"></i>
+                        Locked — awaiting admin approval
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% else %}
+    <div class="empty-state">
+        <i class="fa-solid fa-award"></i>
+        <h3>No Certificates Yet</h3>
+        <p style="max-width: 380px; margin: 0 auto 2rem;">
+            The admin will assign your certificate once you're enrolled. Complete 100% of your course to unlock and download it.
+        </p>
+        <a href="{% url 'dashboard:enrolled_courses' %}"
+           style="padding: 12px 30px; background: linear-gradient(135deg,#6366f1,#4f46e5); color: white; border-radius: 12px; text-decoration: none; font-weight: 800; font-size: 0.9rem;">
+            <i class="fa-solid fa-play-circle"></i> View My Courses
+        </a>
+    </div>
+    {% endif %}
+
+</div>
+
+<!-- Name Entry Modal -->
+<div class="modal-backdrop" id="certModal">
+    <div class="modal-box">
+        <h3><i class="fa-solid fa-award" style="color: #fbbf24; margin-right: 8px;"></i> Claim Your Certificate</h3>
+        <p>Enter the exact name you want printed on your official certificate.</p>
+        <form id="certForm" method="GET" action="">
+            <label style="display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">
+                Recipient Name
+            </label>
+            <input type="text"
+                   name="name"
+                   class="modal-input"
+                   placeholder="E.g. Jane Doe"
+                   required
+                   value="{{ user.full_name|default:user.username }}">
+            <div class="modal-actions">
+                <button type="button" class="modal-cancel" onclick="closeCertModal()">Cancel</button>
+                <button type="submit" class="modal-submit" onclick="setTimeout(closeCertModal, 800)">
+                    <i class="fa-solid fa-download"></i> Generate &amp; Download
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function openCertModal(uid) {
+        const modal = document.getElementById('certModal');
+        const form  = document.getElementById('certForm');
+        form.action = `/courses/certificate/download/${uid}/`;
+        modal.style.display = 'flex';
+    }
+
+    function closeCertModal() {
+        document.getElementById('certModal').style.display = 'none';
+    }
+
+    // Close modal on backdrop click
+    document.getElementById('certModal').addEventListener('click', function(e) {
+        if (e.target === this) closeCertModal();
+    });
+</script>
+{% endblock %}

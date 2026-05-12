@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}Contact Us - Edufix Learning Academy{% endblock %}
+
+{% block content %}
+<section style="padding: 150px 0 100px; background: radial-gradient(circle at bottom left, rgba(138, 43, 226, 0.2), transparent);">
+    <div class="container">
+        <div style="text-align: center; margin-bottom: 5rem;">
+            <span class="text-yellow" style="font-weight: 700; text-transform: uppercase;">Get in Touch</span>
+            <h1 style="font-size: 3.5rem; margin: 1rem 0;">We're Here to <span class="text-yellow">Help</span></h1>
+            <p class="text-gray" style="max-width: 600px; margin: 0 auto;">Have questions about our courses or need help with your enrollment? Our team is standing by to assist you.</p>
+        </div>
+
+        <div class="contact-main-grid" style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 4rem; align-items: start;">
+            <div class="animate-up">
+                <div class="glass" style="padding: 3rem; border-radius: 32px; margin-bottom: 2rem;">
+                    <h3 style="margin-bottom: 2rem;">Contact Information</h3>
+                    <div style="display: flex; flex-direction: column; gap: 2rem;">
+                        <div style="display: flex; gap: 1.5rem; align-items: center;">
+                            <div class="glass" style="width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--accent-yellow);">
+                                <i class="fa-solid fa-envelope"></i>
+                            </div>
+                            <div>
+                                <p style="margin: 0; font-size: 0.9rem;" class="text-gray">Email us at</p>
+                                <h5 style="margin: 0;">academyedufix@gmail.com</h5>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 1.5rem; align-items: center;">
+                            <div class="glass" style="width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--accent-yellow);">
+                                <i class="fa-solid fa-phone"></i>
+                            </div>
+                            <div>
+                                <p style="margin: 0; font-size: 0.9rem;" class="text-gray">Call us at</p>
+                                <h5 style="margin: 0;">+91 7034287049</h5>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 1.5rem; align-items: center;">
+                            <div class="glass" style="width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #25d366;">
+                                <i class="fa-brands fa-whatsapp"></i>
+                            </div>
+                            <div>
+                                <p style="margin: 0; font-size: 0.9rem;" class="text-gray">Chat on WhatsApp</p>
+                                <h5 style="margin: 0;">+91 7034287049</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="animate-up" style="animation-delay: 0.1s;">
+                <div class="glass" style="padding: 3rem; border-radius: 32px;">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-success" style="padding: 1rem; border-radius: 12px; margin-bottom: 2rem; background: rgba(0,255,0,0.1); border-left: 4px solid #25d366;">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="contact-form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Full Name</label>
+                                <input type="text" name="name" class="form-control glass" placeholder="Your Name" required style="width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid var(--glass-border); color: white; background: rgba(255,255,255,0.05);">
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Email Address</label>
+                                <input type="email" name="email" class="form-control glass" placeholder="name@example.com" required style="width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid var(--glass-border); color: white; background: rgba(255,255,255,0.05);">
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 2rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Your Message</label>
+                            <textarea name="message" class="form-control glass" rows="5" placeholder="How can we help you?" required style="width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid var(--glass-border); color: white; background: rgba(255,255,255,0.05); resize: none;"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem; border-radius: 12px; font-weight: 700; text-transform: uppercase;">
+                            Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

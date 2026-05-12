@@ -1,0 +1,195 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}AI Tutor (GPT) - Edufix Academy{% endblock %}
+
+{% block extra_css %}
+<style>
+    .chat-container {
+        background: white;
+        border-radius: 24px;
+        height: calc(100vh - 250px);
+        display: flex;
+        flex-direction: column;
+        box-shadow: var(--card-shadow);
+        border: 1px solid var(--border-light);
+        overflow: hidden;
+    }
+
+    .chat-header {
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid var(--border-light);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #f8fafc;
+    }
+
+    .chat-body {
+        flex-grow: 1;
+        padding: 2rem;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        background: #fafafa;
+    }
+
+    .message {
+        max-width: 70%;
+        padding: 1.25rem;
+        border-radius: 20px;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        position: relative;
+    }
+
+    .msg-bot {
+        align-self: flex-start;
+        background: white;
+        color: var(--text-main);
+        border: 1px solid var(--border-light);
+        border-bottom-left-radius: 4px;
+    }
+
+    .msg-user {
+        align-self: flex-end;
+        background: var(--primary-blue);
+        color: white;
+        border-bottom-right-radius: 4px;
+    }
+
+    .chat-input-area {
+        padding: 1.5rem 2rem;
+        background: white;
+        border-top: 1px solid var(--border-light);
+        display: flex;
+        gap: 15px;
+    }
+
+    .chat-input-area input {
+        flex-grow: 1;
+        padding: 1rem 1.5rem;
+        border-radius: 12px;
+        border: 1px solid var(--border-light);
+        outline: none;
+        font-family: inherit;
+        font-size: 0.95rem;
+        transition: var(--transition);
+    }
+
+    .chat-input-area input:focus {
+        border-color: var(--primary-blue);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .btn-send {
+        background: var(--primary-blue);
+        color: white;
+        border: none;
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+
+    .btn-send:hover {
+        transform: scale(1.05);
+        background: #2563eb;
+    }
+
+    .bot-avatar {
+        width: 35px;
+        height: 35px;
+        background: rgba(59, 130, 246, 0.1);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-blue);
+        margin-bottom: 8px;
+    }
+</style>
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="slide-in">
+    <div style="margin-bottom: 2rem;">
+        <h1 style="margin: 0; font-size: 1.75rem; font-weight: 800; color: var(--text-main);">AI Learning Assistant</h1>
+        <p style="margin: 5px 0 0; color: var(--text-muted); font-weight: 600;">Clear your doubts instantly with our Edufix GPT Tutor.</p>
+    </div>
+
+    <div class="chat-container">
+        <div class="chat-header">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 12px; height: 12px; background: #22c55e; border-radius: 50%; box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);"></div>
+                <span style="font-weight: 800; color: var(--text-main); font-size: 0.9rem;">Edufix AI • Active Now</span>
+            </div>
+            <span style="font-size: 0.75rem; font-weight: 700; color: #94a3b8;"><i class="fa-solid fa-shield-halved"></i> Secured by GPT-4</span>
+        </div>
+
+        <div class="chat-body" id="chatBody">
+            <div class="message msg-bot">
+                <div class="bot-avatar"><i class="fa-solid fa-robot"></i></div>
+                Hello {{ user.username }}! I'm your dedicated AI Tutor. I can help you with anything related to our Video Editing or Poster Designing courses. What's on your mind?
+            </div>
+        </div>
+
+        <div class="chat-input-area">
+            <input type="text" id="userInput" placeholder="Ask a doubt about your course..." onkeypress="if(event.key === 'Enter') sendMessage()">
+            <button class="btn-send" onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function sendMessage() {
+        const input = document.getElementById('userInput');
+        const body = document.getElementById('chatBody');
+        const text = input.value.trim();
+
+        if (!text) return;
+
+        // Add User Message
+        const userMsg = document.createElement('div');
+        userMsg.className = 'message msg-user animate-up';
+        userMsg.textContent = text;
+        body.appendChild(userMsg);
+        
+        input.value = '';
+        body.scrollTop = body.scrollHeight;
+
+        // Mock Loading
+        const botLoading = document.createElement('div');
+        botLoading.className = 'message msg-bot';
+        botLoading.innerHTML = '<div class="bot-avatar"><i class="fa-solid fa-robot"></i></div>Thinking...';
+        body.appendChild(botLoading);
+        body.scrollTop = body.scrollHeight;
+
+        // Fetch from backend
+        fetch('{% url "dashboard:ai_tutor" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({ message: text })
+        })
+        .then(response => response.json())
+        .then(data => {
+            botLoading.innerHTML = `<div class="bot-avatar"><i class="fa-solid fa-robot"></i></div>${data.response}`;
+            body.scrollTop = body.scrollHeight;
+        })
+        .catch(err => {
+            botLoading.innerHTML = `<div class="bot-avatar"><i class="fa-solid fa-robot"></i></div>Sorry, I encountered an error. Please try again soon.`;
+        });
+    }
+</script>
+{% endblock %}

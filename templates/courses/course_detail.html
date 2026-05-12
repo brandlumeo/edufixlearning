@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ course.title }} - Edufix Learning Academy{% endblock %}
+
+{% block content %}
+<!-- Course Hero Section -->
+<section style="padding: 180px 0 100px; background: linear-gradient(rgba(29, 0, 51, 0.9), rgba(29, 0, 51, 0.9)), url({% if course.thumbnail %}{{ course.thumbnail.url }}{% endif %}); background-size: cover; background-position: center;">
+    <div class="container">
+        <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 4rem; align-items: center;">
+            <div class="animate-up">
+                <span class="text-yellow" style="font-weight: 700; background: rgba(255, 215, 0, 0.1); padding: 0.5rem 1rem; border-radius: 8px; margin-bottom: 2rem; display: inline-block;">
+                    {{ course.category.title }}
+                </span>
+                <h1 style="font-size: 4rem; margin-bottom: 1.5rem;">{{ course.title }}</h1>
+                <p class="text-gray" style="font-size: 1.25rem; margin-bottom: 2.5rem; max-width: 700px;">
+                    {{ course.description }}
+                </p>
+                <div style="display: flex; align-items: center; gap: 2rem;">
+                    <div style="display: flex; align-items: center; gap: 0.8rem;">
+                        <div style="width: 50px; height: 50px; border-radius: 50%; background: var(--glass-bg); display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                            {% if course.instructor.profile_picture %}
+                                <img src="{{ course.instructor.profile_picture.url }}" style="width: 100%; height: 100%; object-fit: cover;">
+                            {% else %}
+                                <i class="fa-solid fa-user-tie" style="color: var(--text-gray);"></i>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <span style="display: block; font-size: 0.8rem; color: var(--text-gray);">Instructor</span>
+                            <span style="font-weight: 600;">{{ course.instructor.get_full_name|default:course.instructor.username }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sticky Enrollment Card -->
+            <div class="animate-up" style="animation-delay: 0.2s;">
+                <div class="glass" style="padding: 2.5rem; border-radius: 32px; border: 1px solid rgba(255, 215, 0, 0.2);">
+                    <div style="text-align: center; margin-bottom: 2rem;">
+                        <span style="font-size: 3rem; font-weight: 800;">₹{{ course.price }}</span>
+                    </div>
+                    <div style="margin-bottom: 2rem;">
+                        <h4 style="margin-bottom: 1rem;">This course includes:</h4>
+                        <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.8rem;" class="text-gray">
+                            <li><i class="fa-solid fa-play-circle text-yellow"></i> {{ lessons|length }} HD Lessons</li>
+                            <li><i class="fa-solid fa-file-arrow-down text-yellow"></i> Project Files Included</li>
+                            <li><i class="fa-solid fa-infinity text-yellow"></i> Lifetime access</li>
+                            <li><i class="fa-solid fa-certificate text-yellow"></i> Certificate of completion</li>
+                        </ul>
+                    </div>
+                    {% if is_enrolled %}
+                    <a href="{% url 'dashboard:enrolled_courses' %}" class="btn btn-success" style="width: 100%; justify-content: center; font-size: 1.1rem; padding: 1.2rem; display: flex; gap: 10px; align-items: center;">
+                        <i class="fa-solid fa-graduation-cap"></i> Go to Dashboard
+                    </a>
+                    {% else %}
+                    <a href="#" class="btn btn-primary" style="width: 100%; justify-content: center; font-size: 1.1rem; padding: 1.2rem;">Get Enrolled Now</a>
+                    {% endif %}
+                    <p style="text-align: center; font-size: 0.85rem; margin-top: 1rem;" class="text-gray">30-Day Money-Back Guarantee</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Curriculum Section -->
+<section class="container" style="padding: 100px 0;">
+    <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 4rem;">
+        <div>
+            <h2 style="font-size: 2.5rem; margin-bottom: 3rem;">Course <span class="text-yellow">Curriculum</span></h2>
+            
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                {% for lesson in lessons %}
+                <div class="glass" style="padding: 1.5rem; border-radius: 16px; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 1.5rem;">
+                        <div style="width: 40px; height: 40px; border-radius: 10px; background: rgba(255, 215, 0, 0.1); display: flex; align-items: center; justify-content: center; color: var(--accent-yellow); font-weight: 700;">
+                            {{ forloop.counter }}
+                        </div>
+                        <div>
+                            <h4 style="margin-bottom: 0.2rem;">{{ lesson.title }}</h4>
+                        </div>
+                    </div>
+                    {% if is_enrolled %}
+                    <a href="{% url 'courses:lesson_view' course.slug lesson.id %}" class="btn btn-outline" style="padding: 0.5rem 1rem; font-size: 0.8rem;">
+                        <i class="fa-solid fa-play"></i> Play
+                    </a>
+                    {% else %}
+                    <button class="btn btn-outline text-gray" style="padding: 0.5rem 1rem; font-size: 0.8rem; cursor: not-allowed; border-color: rgba(255,255,255,0.1);" disabled>
+                        <i class="fa-solid fa-lock"></i> Locked
+                    </button>
+                    {% endif %}
+                </div>
+                {% empty %}
+                <p class="text-gray">No lessons uploaded yet for this curriculum.</p>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div style="padding-top: 2rem;">
+            <div class="glass" style="padding: 2.5rem; border-radius: 24px;">
+                <h3 style="margin-bottom: 1.5rem;">Why this course?</h3>
+                <p class="text-gray" style="margin-bottom: 2rem;">
+                    Our courses are designed by industry veterans at Edufix Learning Academy. We focus on practical, project-based learning that you can apply immediately to your career.
+                </p>
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    <div style="display: flex; gap: 1rem;">
+                        <i class="fa-solid fa-check-circle text-yellow" style="font-size: 1.5rem;"></i>
+                        <p>Learn the latest tools and techniques used in top creative studios.</p>
+                    </div>
+                    <div style="display: flex; gap: 1rem;">
+                        <i class="fa-solid fa-check-circle text-yellow" style="font-size: 1.5rem;"></i>
+                        <p>Build a professional portfolio as you learn.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

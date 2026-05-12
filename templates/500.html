@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Server Error - Edufix Learning Academy{% endblock %}
+
+{% block content %}
+<div style="min-height: 80vh; display: flex; align-items: center; justify-content: center; padding-top: 100px;">
+    <div class="container" style="text-align: center;">
+        <div class="glass animate-up" style="padding: 60px; max-width: 600px; margin: 0 auto; position: relative; overflow: hidden; border-color: var(--accent-pink);">
+            <!-- Decorative light effect -->
+            <div style="position: absolute; top: -50px; left: -50px; width: 150px; height: 150px; background: var(--accent-pink); filter: blur(80px); opacity: 0.3;"></div>
+            
+            <i class="fa-solid fa-triangle-exclamation" style="font-size: 5rem; color: var(--accent-pink); margin-bottom: 30px;"></i>
+            
+            <h1 style="font-size: 3rem; margin-bottom: 10px; color: #fff;">System Glitch</h1>
+            <h2 style="font-size: 1.5rem; margin-bottom: 20px; color: var(--text-gray);">Unexpected Server Error (500)</h2>
+            <p style="color: var(--text-gray); font-size: 1.1rem; margin-bottom: 40px;">
+                Our servers are having a moment of creative blockage. We've been notified and our technical team is on it. Please try refreshing or come back in a few minutes.
+            </p>
+            
+            <div style="display: flex; gap: 15px; justify-content: center;">
+                <button onclick="location.reload()" class="btn btn-primary">
+                    <i class="fa-solid fa-rotate-right"></i> Try Again
+                </a>
+                <a href="{% url 'core:contact' %}" class="btn btn-outline">
+                    <i class="fa-solid fa-envelope"></i> Contact Support
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

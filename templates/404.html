@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Page Not Found - Edufix Learning Academy{% endblock %}
+
+{% block content %}
+<div style="min-height: 80vh; display: flex; align-items: center; justify-content: center; padding-top: 100px;">
+    <div class="container" style="text-align: center;">
+        <div class="glass animate-up" style="padding: 60px; max-width: 600px; margin: 0 auto; position: relative; overflow: hidden;">
+            <!-- Decorative light effect -->
+            <div style="position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: var(--accent-pink); filter: blur(80px); opacity: 0.3;"></div>
+            
+            <h1 style="font-size: 8rem; margin: 0; line-height: 1; background: linear-gradient(to right, var(--accent-yellow), var(--accent-pink)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">404</h1>
+            <h2 style="font-size: 2rem; margin-bottom: 20px; color: #fff;">Lost in Space?</h2>
+            <p style="color: var(--text-gray); font-size: 1.1rem; margin-bottom: 40px;">
+                The page you're looking for seems to have vanished into the digital void. Don't worry, even the best creatives get lost sometimes!
+            </p>
+            
+            <div style="display: flex; gap: 15px; justify-content: center;">
+                <a href="{% url 'core:index' %}" class="btn btn-primary">
+                    <i class="fa-solid fa-house"></i> Back Home
+                </a>
+                <a href="{% url 'courses:course_list' %}" class="btn btn-outline">
+                    <i class="fa-solid fa-graduation-cap"></i> Browse Courses
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

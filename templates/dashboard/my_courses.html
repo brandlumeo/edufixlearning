@@ -1,0 +1,166 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}All Courses - Edufix Academy{% endblock %}
+
+{% block dashboard_content %}
+<div class="slide-in">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem;">
+        <div>
+            <h1 style="margin: 0; font-size: 1.75rem; font-weight: 800; color: var(--text-main);">All Courses</h1>
+            <p style="margin: 5px 0 0; color: var(--text-muted); font-weight: 600;">You have access to {{ enrollments|length }} out of {{ all_dashboard_courses|length }} courses</p>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <div style="background: var(--card-bg); padding: 10px 20px; border-radius: 12px; border: 1px solid var(--border-light); font-size: 0.85rem; font-weight: 700; color: var(--text-main);">
+                <i class="fa-solid fa-filter"></i> All Categories
+            </div>
+        </div>
+    </div>
+
+    {% if all_dashboard_courses %}
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem;">
+        {% for item in all_dashboard_courses %}
+        <div class="stat-card" style="padding: 0; overflow: hidden; height: auto; position: relative;">
+            {% if not item.is_enrolled %}
+            <div style="position: absolute; top: 12px; right: 12px; z-index: 10; background: rgba(0,0,0,0.75); backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,0.15); border-radius: 20px; padding: 4px 10px; display: flex; align-items: center; gap: 5px;">
+                <i class="fa-solid fa-lock" style="font-size: 0.65rem; color: #ffd700;"></i>
+                <span style="font-size: 0.65rem; font-weight: 700; color: #ffd700; text-transform: uppercase; letter-spacing: 0.5px;">Not Enrolled</span>
+            </div>
+            {% endif %}
+            <div style="position: relative; height: 180px; background: #eee;">
+                {% if item.course.thumbnail %}
+                    <img src="{{ item.course.thumbnail.url }}" style="width: 100%; height: 100%; object-fit: cover; {% if not item.is_enrolled %}filter: grayscale(100%) opacity(0.8);{% endif %}">
+                {% endif %}
+                <div style="position: absolute; top: 15px; left: 15px; background: rgba(59, 130, 246, 0.9); color: white; padding: 5px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 800;">
+                    {{ item.course.category.title|default:"Design" }}
+                </div>
+            </div>
+            
+            <div style="padding: 1.5rem; {% if not item.is_enrolled %}opacity: 0.75;{% endif %}">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h3 style="margin: 0; font-size: 1.25rem; color: var(--text-main); font-weight: 800;">{{ item.course.title }}</h3>
+                    <div style="width: 35px; height: 35px; background: var(--dash-bg); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--text-muted);">
+                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                    <div style="font-size: 0.75rem; color: var(--text-muted); display: flex; align-items: center; gap: 5px;">
+                        <i class="fa-solid fa-layer-group" style="color: #3b82f6;"></i> {{ item.total_lessons }} Lessons
+                    </div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); display: flex; align-items: center; gap: 5px;">
+                        <i class="fa-solid fa-clock" style="color: #f59e0b;"></i> {{ item.course.duration|floatformat:1 }} Hours
+                    </div>
+                </div>
+
+                {% if item.is_enrolled %}
+                <div style="background: var(--dash-bg); padding: 1.5rem; border-radius: 20px; margin-bottom: 20px; border: 1px solid var(--border-light);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <span style="font-size: 0.75rem; font-weight: 800; color: var(--text-main);">COMPLETION</span>
+                        <span style="font-size: 0.75rem; font-weight: 800; color: #22c55e;">{{ item.progress }}%</span>
+                    </div>
+                    <div style="height: 8px; background: var(--border-light); border-radius: 10px; overflow: hidden; margin-bottom: 12px;">
+                        <div style="width: {{ item.progress }}%; height: 100%; background: linear-gradient(90deg, #22c55e, #4ade80); border-radius: 10px;"></div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-muted); font-weight: 600;">
+                        <span><i class="fa-solid fa-check-circle"></i> {{ item.completed_lessons }} Done</span>
+                        <span><i class="fa-solid fa-circle"></i> {{ item.left_lessons }} Left</span>
+                    </div>
+                </div>
+
+                <!-- Specific Course Details -->
+                <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px;">
+                    <div style="display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px dashed var(--border-light);">
+                         <div style="width: 30px; height: 30px; background: rgba(59, 130, 246, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #3b82f6;">
+                            <i class="fa-solid fa-file-signature" style="font-size: 0.8rem;"></i>
+                         </div>
+                         <div style="flex-grow: 1;">
+                            <p style="margin: 0; font-size: 0.75rem; font-weight: 700; color: var(--text-main);">Assignments</p>
+                            <p style="margin: 0; font-size: 0.65rem; color: var(--text-muted);">3 Pending Submissions</p>
+                         </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                         <div style="width: 30px; height: 30px; background: rgba(16, 185, 129, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #10b981;">
+                            <i class="fa-solid fa-certificate" style="font-size: 0.8rem;"></i>
+                         </div>
+                         <div style="flex-grow: 1;">
+                            <p style="margin: 0; font-size: 0.75rem; font-weight: 700; color: var(--text-main);">Certificate</p>
+                            {% for ci in certificate_items %}
+                                {% if ci.course.id == item.course.id %}
+                                    {% if ci.is_unlocked %}
+                                    <a href="javascript:void(0)" onclick="openCertModal('{{ ci.cert.certificate_uid }}')" style="font-size: 0.65rem; color: #10b981; text-decoration: none; font-weight: 700; display: inline-block; background: rgba(16, 185, 129, 0.1); padding: 2px 8px; border-radius: 4px; margin-top: 4px;">
+                                        <i class="fa-solid fa-download"></i> Download
+                                    </a>
+                                    {% else %}
+                                    <p style="margin: 0; font-size: 0.65rem; color: var(--text-muted);"><i class="fa-solid fa-lock" style="font-size:0.6rem;"></i> Pending approval</p>
+                                    {% endif %}
+                                {% endif %}
+                            {% empty %}
+                            <p style="margin: 0; font-size: 0.65rem; color: var(--text-muted);">Pending approval</p>
+                            {% endfor %}
+                         </div>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 12px;">
+                    {% if item.resume_lesson %}
+                        <a href="{% url 'courses:lesson_view' item.course.slug item.resume_lesson.id %}" class="btn-primary-dash" style="text-align: center; padding: 12px; border-radius: 12px;">
+                            <i class="fa-solid fa-play"></i> Resume Class
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'courses:course_detail' item.course.slug %}" style="text-align: center; padding: 12px; background: var(--dash-bg); border: 1px solid var(--border-light); border-radius: 12px; text-decoration: none; font-size: 0.85rem; font-weight: 700; color: var(--text-main); transition: var(--transition);" onmouseover="this.style.background='var(--border-light)'" onmouseout="this.style.background='var(--dash-bg)'">
+                        Dashboard
+                    </a>
+                </div>
+                {% else %}
+                <div style="display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 15px;">
+                    <button disabled class="btn-primary-dash" style="background: rgba(255,255,255,0.05); color: var(--text-muted); cursor: not-allowed; text-align: center; padding: 12px; border-radius: 12px; border: 1px dashed var(--border-light);">
+                        <i class="fa-solid fa-lock"></i> Locked (Purchase to Access)
+                    </button>
+                    <a href="{% url 'courses:course_detail' item.course.slug %}" style="text-align: center; padding: 12px; background: transparent; border: 1px solid var(--primary); color: var(--primary); border-radius: 12px; text-decoration: none; font-size: 0.85rem; font-weight: 700; transition: var(--transition);" onmouseover="this.style.background='var(--primary)'; this.style.color='white';" onmouseout="this.style.background='transparent'; this.style.color='var(--primary)';">
+                        View Details
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 5rem 0;">
+        <i class="fa-solid fa-book-open" style="font-size: 3rem; color: #e2e8f0; margin-bottom: 1rem;"></i>
+        <h3 style="color: var(--text-muted);">No Courses Available</h3>
+        <p style="color: #94a3b8; margin-bottom: 2rem;">We are working on adding new courses soon!</p>
+    </div>
+    {% endif %}
+
+    <!-- Certificate Name Modal -->
+    <div id="certModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(5px);">
+        <div style="background: var(--dash-bg); padding: 2rem; border-radius: 16px; border: 1px solid var(--border-light); width: 100%; max-width: 400px; box-shadow: 0 20px 40px rgba(0,0,0,0.4);">
+            <h3 style="margin-bottom: 1rem; color: var(--text-main);"><i class="fa-solid fa-award text-success"></i> Claim Your Certificate</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">Enter the exact name you want printed on your official certificate.</p>
+            <form id="certForm" action="" method="GET">
+                <label style="display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin-bottom: 5px;">Recipient Name</label>
+                <input type="text" name="name" placeholder="E.g. Jane Doe" required style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-light); background: rgba(0,0,0,0.2); color: var(--text-main); margin-bottom: 1.5rem; box-sizing: border-box;" value="{{ user.full_name|default:user.username }}">
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" class="btn-outline-dash" style="padding: 10px 20px; border-radius: 8px; cursor: pointer; border: 1px solid var(--border-light); background: transparent; color: var(--text-main);" onclick="closeCertModal()">Cancel</button>
+                    <button type="submit" class="btn-primary-dash" style="padding: 10px 20px; border-radius: 8px; cursor: pointer; border: none; background: #10b981; color: white; font-weight: 700;" onclick="closeCertModalAfterDelay()">Generate PDF</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+        function openCertModal(uid) {
+            const modal = document.getElementById('certModal');
+            const form = document.getElementById('certForm');
+            form.action = `/courses/certificate/download/${uid}/`;
+            modal.style.display = 'flex';
+        }
+        function closeCertModal() {
+            document.getElementById('certModal').style.display = 'none';
+        }
+        function closeCertModalAfterDelay() {
+            setTimeout(() => closeCertModal(), 1000);
+        }
+    </script>
+</div>
+{% endblock %}

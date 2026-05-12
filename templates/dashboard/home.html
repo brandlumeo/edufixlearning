@@ -1,0 +1,611 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Student Hub - Edufix Academy{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hub-container {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 2rem;
+    }
+
+    /* Tabs Navigation */
+    .tab-nav {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        background: white;
+        padding: 0.5rem;
+        border-radius: 16px;
+        border: 1px solid var(--border-light);
+        overflow-x: auto;
+    }
+
+    .tab-link {
+        padding: 10px 20px;
+        color: var(--text-muted);
+        text-decoration: none;
+        font-weight: 700;
+        cursor: pointer;
+        border-radius: 12px;
+        transition: 0.3s;
+        white-space: nowrap;
+        font-size: 0.85rem;
+    }
+
+    .tab-link:hover { background: var(--dash-bg); }
+    .tab-link.active {
+        background: var(--primary);
+        color: white;
+    }
+
+    /* Cards & Sections */
+    .dashboard-card {
+        background: white;
+        border-radius: 24px;
+        padding: 2rem;
+        border: 1px solid var(--border-light);
+        margin-bottom: 2rem;
+        box-shadow: var(--card-shadow);
+    }
+
+    .profile-header {
+        background: linear-gradient(135deg, #1e293b, #2D0B4E);
+        color: white;
+        padding: 2rem;
+        border-radius: 24px;
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .avatar-large {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        border: 4px solid rgba(255,255,255,0.2);
+        object-fit: cover;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1rem;
+    }
+
+    .info-item {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .info-label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        font-weight: 800;
+        opacity: 0.6;
+    }
+
+    .info-value {
+        font-weight: 700;
+        font-size: 0.9rem;
+    }
+
+    .attendance-calendar {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 10px;
+        margin-top: 1.5rem;
+    }
+
+    .day-box {
+        aspect-ratio: 1;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: 700;
+    }
+
+    .day-present { background: rgba(34, 197, 94, 0.1); color: #166534; border: 1px solid rgba(34, 197, 94, 0.2); }
+    .day-absent { background: rgba(239, 68, 68, 0.1); color: #991b1b; border: 1px solid rgba(239, 68, 68, 0.2); }
+
+    .status-warning {
+        background: #fff7ed;
+        border: 1px solid #ffedd5;
+        color: #9a3412;
+        padding: 1rem;
+        border-radius: 12px;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.85rem;
+        font-weight: 700;
+    }
+
+    .btn-download {
+        background: var(--dash-bg);
+        color: var(--text-main);
+        padding: 8px 15px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 0.75rem;
+        font-weight: 800;
+        transition: 0.3s;
+    }
+    .btn-download:hover { background: var(--border-light); }
+
+    .slide-in { animation: slideUp 0.5s ease-out; }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="slide-in">
+    <!-- 👤 Personal Profile Header -->
+    <div class="profile-header">
+        {% if user.profile_picture %}
+            <img src="{{ user.profile_picture.url }}" class="avatar-large">
+        {% else %}
+            <div class="avatar-large" style="background: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: 900;">{{ user.username|first|upper }}</div>
+        {% endif %}
+        <div style="flex: 1;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                    <h1 style="margin: 0; font-size: 1.8rem; font-weight: 900;">{{ user.full_name|default:user.username }}</h1>
+                    <span style="opacity: 0.8; font-size: 0.85rem; font-weight: 700;">Student ID: #EDU{{ user.id|stringformat:"04d" }}</span>
+                </div>
+                <div style="text-align: right;">
+                    <span style="background: rgba(251, 191, 36, 0.2); color: #fbbf24; padding: 5px 12px; border-radius: 50px; font-size: 0.65rem; font-weight: 900; text-transform: uppercase;">
+                        {% if active_batch %}Active: {{ active_batch.name }}{% else %}No Active Batch{% endif %}
+                    </span>
+                </div>
+            </div>
+            <div class="info-grid">
+                <div class="info-item"><span class="info-label">Enrolled Course</span><span class="info-value">{{ enrollments.0.course.title|default:"N/A" }}</span></div>
+                <div class="info-item"><span class="info-label">Batch Timing</span><span class="info-value">{{ active_batch.schedule|default:"Not Assigned" }}</span></div>
+                <div class="info-item"><span class="info-label">Enrollment Date</span><span class="info-value">{{ enrollments.0.enrolled_at|date:"M d, Y"|default:"N/A" }}</span></div>
+                <div class="info-item"><span class="info-label">Contact</span><span class="info-value">{{ user.phone_number|default:user.email }}</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 📑 Navigation Tabs -->
+    <div class="tab-nav">
+        <a class="tab-link active" onclick="switchTab('overview')"><i class="fa-solid fa-house"></i> Overview</a>
+        <a class="tab-link" onclick="switchTab('academics')"><i class="fa-solid fa-graduation-cap"></i> Academics</a>
+        <a class="tab-link" onclick="switchTab('attendance')"><i class="fa-solid fa-calendar-check"></i> Attendance</a>
+        <a class="tab-link" onclick="switchTab('fees')"><i class="fa-solid fa-receipt"></i> Fees Status</a>
+        <a class="tab-link" onclick="switchTab('community')"><i class="fa-solid fa-users"></i> Community</a>
+    </div>
+
+    <!-- 🏠 Tab: Overview -->
+    <div id="tab-overview" class="tab-content">
+        <div class="hub-container">
+            <div class="content-left">
+                <!-- Metrics -->
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2rem;">
+                    <div class="dashboard-card" style="padding: 1.5rem; text-align: center; margin: 0;">
+                        <span class="info-label">Progress</span>
+                        <h2 style="margin: 5px 0;">{{ overall_progress }}%</h2>
+                        <div style="height: 4px; background: #f1f5f9; border-radius: 10px;"><div style="width: {{ overall_progress }}%; height: 100%; background: var(--primary); border-radius: 10px;"></div></div>
+                    </div>
+                    <div class="dashboard-card" style="padding: 1.5rem; text-align: center; margin: 0;">
+                        <span class="info-label">Assignments</span>
+                        <h2 style="margin: 5px 0;">{{ assignments.count }}</h2>
+                        <span style="font-size: 0.7rem; color: var(--text-muted);">{{ assignments|length }} Pending</span>
+                    </div>
+                    <div class="dashboard-card" style="padding: 1.5rem; text-align: center; margin: 0;">
+                        <span class="info-label">Streak</span>
+                        <h2 style="margin: 5px 0;">{{ streak }} 🔥</h2>
+                        <span style="font-size: 0.7rem; color: var(--text-muted);">Days Active</span>
+                    </div>
+                </div>
+
+                <!-- Continue Learning -->
+                {% if enrollments.0 %}
+                <div class="dashboard-card" style="background: var(--dash-bg); border: none; padding: 2.5rem; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <span class="info-label" style="color: var(--primary);">Continue Learning</span>
+                        <h2 style="margin: 10px 0 5px;">{{ enrollments.0.course.title }}</h2>
+                        <p style="margin: 0 0 20px; font-size: 0.9rem; color: var(--text-muted);">Next: <b>{{ enrollments.0.resume_lesson.title }}</b></p>
+                        <a href="{% url 'courses:lesson_view' enrollments.0.course.slug enrollments.0.resume_lesson.id %}" class="btn-resume" style="padding: 12px 25px; font-size: 0.9rem;">Resume Now</a>
+                    </div>
+                    <div style="width: 120px; height: 120px;">
+                        <canvas id="progressRing"></canvas>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Performance Trend -->
+                <div class="dashboard-card">
+                    <h3 style="margin-top: 0;">Performance Trend</h3>
+                    <div style="height: 200px;"><canvas id="weeklyChart"></canvas></div>
+                </div>
+            </div>
+
+            <div class="content-right">
+                <!-- Notifications Mini -->
+                <div class="dashboard-card" style="padding: 1.5rem;">
+                    <h4 style="margin-top: 0;">Recent Notifications</h4>
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        {% for n in notifications|slice:":4" %}
+                        <div style="font-size: 0.8rem; border-left: 3px solid var(--primary); padding-left: 10px;">
+                            <div style="font-weight: 700;">{{ n.type|title }}</div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted);">{{ n.message|truncatechars:40 }}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Instructor Info -->
+                {% if active_batch.instructor %}
+                <div class="dashboard-card" style="padding: 1.5rem; background: #f8fafc;">
+                    <h4 style="margin-top: 0;">Instructor</h4>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div style="width: 50px; height: 50px; border-radius: 12px; background: #e2e8f0; overflow: hidden;">
+                            {% if active_batch.instructor.profile_picture %}<img src="{{ active_batch.instructor.profile_picture.url }}" style="width: 100%; height: 100%; object-fit: cover;">{% endif %}
+                        </div>
+                        <div>
+                            <div style="font-weight: 800; font-size: 0.9rem;">{{ active_batch.instructor.full_name|default:active_batch.instructor.username }}</div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted);">{{ active_batch.instructor.email }}</div>
+                        </div>
+                    </div>
+                    <button style="width: 100%; margin-top: 15px; padding: 10px; border-radius: 8px; border: 1px solid var(--border-light); background: white; font-weight: 800; font-size: 0.75rem; cursor: pointer;">Rate Instructor</button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- 🎓 Tab: Academics -->
+    <div id="tab-academics" class="tab-content" style="display: none;">
+        <div class="hub-container">
+            <div class="content-left">
+                <div class="dashboard-card">
+                    <h3>Course Progress Details</h3>
+                    <div class="info-grid">
+                        <div class="info-item"><span class="info-label">Lessons Completed</span><span class="info-value">{{ total_lessons_completed }} Lessons</span></div>
+                        <div class="info-item"><span class="info-label">Lessons Remaining</span><span class="info-value">{{ enrollments.0.left_lessons }} Lessons</span></div>
+                        <div class="info-item"><span class="info-label">Current Module</span><span class="info-value">{{ enrollments.0.resume_lesson.module.title }}</span></div>
+                        <div class="info-item"><span class="info-label">Est. Completion</span><span class="info-value" style="color: var(--primary);">{{ estimated_completion|date:"M d, Y"|default:"TBD" }}</span></div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <h3>Assignments & Projects</h3>
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        {% for ass in assignments %}
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: var(--dash-bg); border-radius: 12px;">
+                            <div>
+                                <div style="font-weight: 800;">{{ ass.title }}</div>
+                                <div style="font-size: 0.7rem; color: var(--text-muted);">Instructor Feedback: <span style="font-style: italic;">"Great work on the last task"</span></div>
+                            </div>
+                            <div style="text-align: right;">
+                                <span class="status-badge" style="background: rgba(59, 130, 246, 0.1); color: #2563eb;">{{ ass.status|title }}</span>
+                                <div style="font-size: 0.7rem; margin-top: 5px; font-weight: 800;">Score: 9/10</div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-right">
+                <div class="dashboard-card">
+                    <h4>Resources & Materials</h4>
+                    <div style="display: flex; flex-direction: column; gap: 15px;">
+                        {% for res in resources %}
+                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <i class="fa-solid fa-file-pdf" style="color: #ef4444;"></i>
+                                <span style="font-weight: 700;">{{ res.title|truncatechars:20 }}</span>
+                            </div>
+                            <a href="{{ res.file.url }}" class="btn-download"><i class="fa-solid fa-download"></i></a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <h4 style="margin-top:0; display:flex; align-items:center; gap:8px;">
+                        <i class="fa-solid fa-award" style="color:#fbbf24;"></i> My Certificates
+                    </h4>
+                    {% if certificate_items %}
+                        {% for item in certificate_items %}
+                        <div style="border: 1px solid var(--border-light); border-radius: 14px; margin-bottom: 14px; overflow: hidden; position: relative; background: var(--dash-bg);">
+
+                            <!-- Certificate image / placeholder preview (always visible) -->
+                            <div style="width: 100%; height: 110px; background: linear-gradient(135deg, #1e0533 0%, #2d1650 100%); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;">
+                                {% if item.has_file %}
+                                    <img src="{{ item.cert.certificate_file.url }}"
+                                         style="width:100%; height:100%; object-fit:cover; {% if not item.is_unlocked %}filter: blur(4px) brightness(0.5);{% endif %}">
+                                {% else %}
+                                    <!-- Decorative placeholder -->
+                                    <i class="fa-solid fa-certificate"
+                                       style="font-size: 3rem; color: {% if item.is_unlocked %}#fbbf24{% else %}rgba(255,255,255,0.15){% endif %};"></i>
+                                {% endif %}
+
+                                <!-- Lock overlay (only when not unlocked) -->
+                                {% if not item.is_unlocked %}
+                                <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; background:rgba(0,0,0,0.45);">
+                                    <i class="fa-solid fa-lock" style="font-size:1.6rem; color:#fbbf24; margin-bottom:4px;"></i>
+                                    <span style="font-size:0.65rem; font-weight:900; color:#fff; text-transform:uppercase; letter-spacing:1px;">Complete course to unlock</span>
+                                </div>
+                                {% else %}
+                                <div style="position:absolute; top:8px; right:8px; background:#22c55e; border-radius:20px; padding:3px 10px;">
+                                    <span style="font-size:0.6rem; font-weight:900; color:#fff;">✓ UNLOCKED</span>
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Card body -->
+                            <div style="padding: 12px 14px;">
+                                <div style="font-weight:800; font-size:0.85rem; color:var(--text-main); margin-bottom:4px;">{{ item.course.title }}</div>
+
+                                <!-- Progress bar -->
+                                <div style="height:5px; background:var(--border-light); border-radius:10px; overflow:hidden; margin-bottom:10px;">
+                                    <div style="width:{{ item.progress }}%; height:100%; background: {% if item.is_unlocked %}#22c55e{% else %}var(--primary){% endif %}; border-radius:10px; transition:width 0.5s;"></div>
+                                </div>
+                                <div style="font-size:0.7rem; color:var(--text-muted); margin-bottom:10px;">{{ item.progress }}% complete</div>
+
+                                {% if item.is_unlocked and item.cert %}
+                                    <button onclick="openHomeCertModal('{{ item.cert.certificate_uid }}')"
+                                            style="width:100%; padding:9px; border-radius:10px; border:none; background:linear-gradient(135deg,#10b981,#059669); color:#fff; font-weight:800; font-size:0.78rem; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;">
+                                        <i class="fa-solid fa-download"></i> Enter Name & Download
+                                    </button>
+                                {% elif item.is_unlocked and not item.cert %}
+                                    <div style="width:100%; padding:9px; border-radius:10px; background:rgba(251,191,36,0.1); border:1px dashed #fbbf24; color:#fbbf24; font-weight:800; font-size:0.75rem; text-align:center;">
+                                        <i class="fa-solid fa-clock"></i> Certificate being prepared by admin
+                                    </div>
+                                {% else %}
+                                    <div style="width:100%; padding:9px; border-radius:10px; background:rgba(0,0,0,0.05); border:1px dashed var(--border-light); color:var(--text-muted); font-weight:800; font-size:0.75rem; text-align:center;">
+                                        <i class="fa-solid fa-lock"></i> Locked — finish course to unlock
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div style="text-align:center; padding:2rem 0;">
+                            <i class="fa-solid fa-award" style="font-size:2rem; color:var(--border-light); margin-bottom:10px;"></i>
+                            <p style="font-size:0.8rem; color:var(--text-muted);">No certificates assigned yet. Complete your course to earn one!</p>
+                        </div>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- 📅 Tab: Attendance -->
+    <div id="tab-attendance" class="tab-content" style="display: none;">
+        <div class="dashboard-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h3>Attendance Summary</h3>
+                <div style="text-align: right;">
+                    <div style="font-size: 2rem; font-weight: 900; color: {% if attendance_stats.warning %}#ef4444{% else %}#22c55e{% endif %};">{{ attendance_stats.percent }}%</div>
+                    <span class="info-label">Overall Presence</span>
+                </div>
+            </div>
+
+            {% if attendance_stats.warning %}
+            <div class="status-warning">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                Critical Alert: Your attendance is below 75%. Please attend more classes to avoid disqualification.
+            </div>
+            {% endif %}
+
+            <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 3rem;">
+                <div>
+                    <div class="info-item" style="margin-bottom: 1.5rem;"><span class="info-label">Total Classes Held</span><span class="info-value" style="font-size: 1.5rem;">{{ attendance_stats.total }}</span></div>
+                    <div class="info-item"><span class="info-label">Classes Attended</span><span class="info-value" style="font-size: 1.5rem;">{{ attendance_stats.attended }}</span></div>
+                </div>
+                <div>
+                    <h4 style="margin-top: 0;">Recent Presence Log</h4>
+                    <div class="attendance-calendar">
+                        {% for record in attendance_stats.records %}
+                        <div class="day-box {% if record.is_present %}day-present{% else %}day-absent{% endif %}" title="{{ record.date }}">
+                            {{ record.date|date:"d" }}
+                        </div>
+                        {% endfor %}
+                        {% if not attendance_stats.records %}
+                        <p style="grid-column: span 7; color: var(--text-muted); text-align: center;">No attendance marked yet.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 💰 Tab: Fees -->
+    <div id="tab-fees" class="tab-content" style="display: none;">
+        <div class="hub-container">
+            <div class="content-left">
+                <div class="dashboard-card">
+                    <h3>Financial Status</h3>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 1.5rem;">
+                        <div class="info-item"><span class="info-label">Total Course Fee</span><span class="info-value" style="font-size: 1.2rem;">₹{{ fee_stats.total }}</span></div>
+                        <div class="info-item"><span class="info-label">Amount Paid</span><span class="info-value" style="font-size: 1.2rem; color: #10b981;">₹{{ fee_stats.paid }}</span></div>
+                        <div class="info-item"><span class="info-label">Balance Due</span><span class="info-value" style="font-size: 1.2rem; color: #ef4444;">₹{{ fee_stats.balance }}</span></div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <h3>Payment History</h3>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="text-align: left; border-bottom: 1px solid var(--border-light); font-size: 0.75rem; color: var(--text-muted);">
+                                <th style="padding: 10px;">DATE</th>
+                                <th style="padding: 10px;">AMOUNT</th>
+                                <th style="padding: 10px;">METHOD</th>
+                                <th style="padding: 10px;">STATUS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in fee_stats.records %}
+                            <tr style="border-bottom: 1px solid #f8fafc; font-size: 0.85rem;">
+                                <td style="padding: 15px 10px;">{{ record.last_payment_date|date:"M d, Y"|default:"N/A" }}</td>
+                                <td style="padding: 15px 10px; font-weight: 800;">₹{{ record.amount_paid }}</td>
+                                <td style="padding: 15px 10px;">Online / Bank Transfer</td>
+                                <td style="padding: 15px 10px;"><span class="status-badge" style="background: #dcfce7; color: #166534;">Successful</span></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="content-right">
+                <div class="dashboard-card" style="background: #1e293b; color: white;">
+                    <h4 style="margin-top: 0; opacity: 0.8;">Next Installment</h4>
+                    <div style="font-size: 1.5rem; font-weight: 900; margin: 10px 0;">₹5,500.00</div>
+                    <div style="font-size: 0.85rem; font-weight: 700; color: #fbbf24;">Due: {{ fee_stats.records.0.due_date|date:"M d, Y"|default:"TBD" }}</div>
+                    <button style="width: 100%; margin-top: 20px; padding: 12px; border-radius: 10px; border: none; background: #fbbf24; color: #1e293b; font-weight: 900; cursor: pointer;">Pay Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 📢 Tab: Community -->
+    <div id="tab-community" class="tab-content" style="display: none;">
+        <div class="hub-container">
+            <div class="content-left">
+                <div class="dashboard-card">
+                    <h3>Class Schedule</h3>
+                    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                        <div style="background: #f0f9ff; padding: 1.5rem; border-radius: 16px; border-left: 4px solid #3b82f6;">
+                            <div class="info-label" style="color: #3b82f6;">Today's Topic</div>
+                            <h4 style="margin: 5px 0;">Advanced Layout Techniques with Flexbox</h4>
+                            <div style="font-size: 0.8rem; font-weight: 700; margin-top: 10px; display: flex; gap: 20px;">
+                                <span><i class="fa-solid fa-clock"></i> 10:30 AM</span>
+                                <span><i class="fa-solid fa-location-dot"></i> Lab 04</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h4 style="margin-top: 0;">Upcoming Classes</h4>
+                            {% for event in events %}
+                            <div style="display: flex; justify-content: space-between; padding: 1rem; border-bottom: 1px solid var(--border-light);">
+                                <div>
+                                    <div style="font-weight: 800; font-size: 0.9rem;">{{ event.title }}</div>
+                                    <div style="font-size: 0.75rem; color: var(--text-muted);">{{ event.start_time|date:"l, d M" }}</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-weight: 700; font-size: 0.85rem;">{{ event.start_time|date:"H:i" }}</div>
+                                    <span class="status-badge" style="background: #e0f2fe; color: #0369a1;">Online</span>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-right">
+                <div class="dashboard-card">
+                    <h4>Announcements</h4>
+                    <div style="display: flex; flex-direction: column; gap: 15px;">
+                        {% for ann in announcements %}
+                        <div style="border-bottom: 1px solid var(--border-light); padding-bottom: 10px;">
+                            <div style="font-weight: 800; font-size: 0.85rem;">{{ ann.title }}</div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;">{{ ann.message }}</div>
+                            <div style="font-size: 0.65rem; margin-top: 5px; opacity: 0.6;">{{ ann.created_at|date:"d M" }}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Certificate Name Modal (Dashboard Home) -->
+    <div id="homeCertModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); align-items: center; justify-content: center; z-index: 9999; backdrop-filter: blur(6px);">
+        <div style="background: var(--dash-bg); padding: 2rem; border-radius: 16px; border: 1px solid var(--border-light); width: 100%; max-width: 400px; box-shadow: 0 20px 40px rgba(0,0,0,0.4);">
+            <h3 style="margin-bottom: 1rem; color: var(--text-main);"><i class="fa-solid fa-award" style="color:#fbbf24;"></i> Claim Your Certificate</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">Enter the exact name you want printed on your official certificate.</p>
+            <form id="homeCertForm" action="" method="GET">
+                <label style="display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin-bottom: 5px;">Recipient Name</label>
+                <input type="text" name="name" placeholder="E.g. Jane Doe" required style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-light); background: rgba(0,0,0,0.2); color: var(--text-main); margin-bottom: 1.5rem; box-sizing: border-box;" value="{{ user.full_name|default:user.username }}">
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" style="padding: 10px 20px; border-radius: 8px; cursor: pointer; border: 1px solid var(--border-light); background: transparent; color: var(--text-main); font-weight: 700;" onclick="closeHomeCertModal()">Cancel</button>
+                    <button type="submit" style="padding: 10px 20px; border-radius: 8px; cursor: pointer; border: none; background: #10b981; color: white; font-weight: 700;" onclick="setTimeout(closeHomeCertModal, 800)">Generate PDF</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function switchTab(tabId) {
+        // Hide all contents
+        document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+        // Show target
+        document.getElementById('tab-' + tabId).style.display = 'block';
+        // Active link
+        document.querySelectorAll('.tab-link').forEach(l => l.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Performance Trend Chart
+        const ctxWeekly = document.getElementById('weeklyChart').getContext('2d');
+        new Chart(ctxWeekly, {
+            type: 'line',
+            data: {
+                labels: [{% for stat in weekly_stats %}"{{ stat.day }}",{% endfor %}],
+                datasets: [{
+                    label: 'Lessons',
+                    data: [{% for stat in weekly_stats %}{{ stat.count }},{% endfor %}],
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.05)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { y: { display: false }, x: { grid: { display: false } } }
+            }
+        });
+
+        // Progress Ring
+        const ctxRing = document.getElementById('progressRing').getContext('2d');
+        new Chart(ctxRing, {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: [{{ overall_progress }}, 100 - {{ overall_progress }}],
+                    backgroundColor: ['#fbbf24', 'rgba(255,255,255,0.1)'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                cutout: '80%',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } }
+            }
+        });
+    });
+
+    function openHomeCertModal(uid) {
+        const modal = document.getElementById('homeCertModal');
+        const form = document.getElementById('homeCertForm');
+        form.action = `/courses/certificate/download/${uid}/`;
+        modal.style.display = 'flex';
+    }
+    function closeHomeCertModal() {
+        document.getElementById('homeCertModal').style.display = 'none';
+    }
+</script>
+{% endblock %}

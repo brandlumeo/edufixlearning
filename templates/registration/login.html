@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}Log In - Edufix Learning Academy{% endblock %}
+
+{% block content %}
+<section style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 100px 0; background: radial-gradient(circle at bottom left, rgba(138, 43, 226, 0.2), transparent);">
+    <div class="container" style="max-width: 450px;">
+        <div class="glass" style="padding: 3rem; border-radius: 32px; border: 1px solid var(--glass-border);">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h2 style="font-size: 2.5rem; margin-bottom: 0.5rem;" class="animate-up">Welcome <span class="text-yellow">Back</span></h2>
+                <p class="text-gray animate-up" style="animation-delay: 0.1s;">Continue your creative mastery.</p>
+            </div>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% if message.tags == 'error' %}alert-danger{% endif %}{% endif %}" style="padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem; background: rgba(255,255,255,0.1); border-left: 4px solid var(--accent-pink);">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            {% if form.errors %}
+                <div class="alert alert-danger" style="padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem; background: rgba(255,45,85,0.1); border-left: 4px solid var(--accent-pink); color: white;">
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                            <p style="margin: 0; font-size: 0.9rem;">{{ error }}</p>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <form method="post" class="animate-up" style="animation-delay: 0.2s;">
+                {% csrf_token %}
+                
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Email Address</label>
+                    <input type="email" name="username" value="{{ request.POST.username|default:'' }}" class="form-control glass" placeholder="name@example.com" required style="width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid var(--glass-border); color: white; background: rgba(255,255,255,0.05);">
+                </div>
+
+                <div style="margin-bottom: 1rem;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <label style="font-weight: 500;">Password</label>
+                        <a href="{% url 'password_reset' %}" class="text-yellow" style="font-size: 0.9rem;">Forgot Password?</a>
+                    </div>
+                    <div style="position: relative;">
+                        <input type="password" name="password" id="password_input" class="form-control glass" placeholder="••••••••" required style="width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid var(--glass-border); color: white; background: rgba(255,255,255,0.05); padding-right: 3rem;">
+                        <i class="fa-solid fa-eye" id="toggle_password" style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-gray); transition: var(--transition);"></i>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between;">
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                        <input type="checkbox" name="remember_me">
+                        <span class="text-gray" style="font-size: 0.9rem;">Remember me</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem; border-radius: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 10px 20px rgba(0,0,0,0.2);">
+                    Log In
+                </button>
+            </form>
+
+            <script>
+                const toggleBtn = document.getElementById('toggle_password');
+                const passwordInput = document.getElementById('password_input');
+
+                toggleBtn.addEventListener('click', function() {
+                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passwordInput.setAttribute('type', type);
+                    
+                    // Toggle Icon
+                    this.classList.toggle('fa-eye');
+                    this.classList.toggle('fa-eye-slash');
+                    this.style.color = type === 'text' ? 'var(--accent-pink)' : 'var(--text-gray)';
+                });
+            </script>
+
+            <div style="text-align: center; margin-top: 2rem;" class="animate-up" style="animation-delay: 0.3s;">
+                <p class="text-gray">Don't have an account? <a href="{% url 'register' %}" class="text-yellow" style="font-weight: 600;">Sign Up</a></p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,1468 @@
+[
+{
+    "model": "admin.logentry",
+    "pk": 1,
+    "fields": {
+        "action_time": "2026-04-23T09:25:13.151Z",
+        "user": 8,
+        "content_type": 10,
+        "object_id": "3",
+        "object_repr": "video editing",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 2,
+    "fields": {
+        "action_time": "2026-04-23T09:27:11.423Z",
+        "user": 8,
+        "content_type": 8,
+        "object_id": "2",
+        "object_repr": "Photoshop",
+        "action_flag": 3,
+        "change_message": ""
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 3,
+    "fields": {
+        "action_time": "2026-04-25T11:05:33.748Z",
+        "user": 8,
+        "content_type": 15,
+        "object_id": "1",
+        "object_repr": "Notification object (1)",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 4,
+    "fields": {
+        "action_time": "2026-04-28T04:26:06.213Z",
+        "user": 8,
+        "content_type": 15,
+        "object_id": "2",
+        "object_repr": "Notification object (2)",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 5,
+    "fields": {
+        "action_time": "2026-05-01T09:49:49.484Z",
+        "user": 8,
+        "content_type": 12,
+        "object_id": "5",
+        "object_repr": "Editing Basics - video editing  into",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 6,
+    "fields": {
+        "action_time": "2026-05-01T09:59:38.770Z",
+        "user": 8,
+        "content_type": 10,
+        "object_id": "1",
+        "object_repr": "Premiere Pro Masterclass",
+        "action_flag": 3,
+        "change_message": ""
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 7,
+    "fields": {
+        "action_time": "2026-05-01T10:00:21.634Z",
+        "user": 8,
+        "content_type": 14,
+        "object_id": "3",
+        "object_repr": "video editing - video editing",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 8,
+    "fields": {
+        "action_time": "2026-05-01T10:02:34.966Z",
+        "user": 8,
+        "content_type": 12,
+        "object_id": "6",
+        "object_repr": "video editing - class",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 9,
+    "fields": {
+        "action_time": "2026-05-01T10:06:25.656Z",
+        "user": 8,
+        "content_type": 14,
+        "object_id": "3",
+        "object_repr": "video editing - class",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Title\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 10,
+    "fields": {
+        "action_time": "2026-05-01T10:59:33.866Z",
+        "user": 8,
+        "content_type": 18,
+        "object_id": "10",
+        "object_repr": "test2@gmail.com",
+        "action_flag": 3,
+        "change_message": ""
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 11,
+    "fields": {
+        "action_time": "2026-05-02T04:18:56.307Z",
+        "user": 8,
+        "content_type": 18,
+        "object_id": "15",
+        "object_repr": "ziyan@gmail.com",
+        "action_flag": 2,
+        "change_message": "[{\"added\": {\"name\": \"enrollment\", \"object\": \"Enrollment object (6)\"}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 12,
+    "fields": {
+        "action_time": "2026-05-02T05:49:06.450Z",
+        "user": 8,
+        "content_type": 10,
+        "object_id": "2",
+        "object_repr": "Poster Editing Masterclass",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Thumbnail\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 13,
+    "fields": {
+        "action_time": "2026-05-02T06:47:34.957Z",
+        "user": 8,
+        "content_type": 9,
+        "object_id": "2",
+        "object_repr": "Certificate object (2)",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 14,
+    "fields": {
+        "action_time": "2026-05-02T06:49:53.807Z",
+        "user": 8,
+        "content_type": 9,
+        "object_id": "2",
+        "object_repr": "Certificate object (2)",
+        "action_flag": 3,
+        "change_message": ""
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 15,
+    "fields": {
+        "action_time": "2026-05-02T06:50:17.913Z",
+        "user": 8,
+        "content_type": 9,
+        "object_id": "3",
+        "object_repr": "Certificate object (3)",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 16,
+    "fields": {
+        "action_time": "2026-05-04T06:26:01.492Z",
+        "user": 8,
+        "content_type": 12,
+        "object_id": "6",
+        "object_repr": "class - class",
+        "action_flag": 3,
+        "change_message": ""
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 17,
+    "fields": {
+        "action_time": "2026-05-04T06:26:11.043Z",
+        "user": 8,
+        "content_type": 14,
+        "object_id": "3",
+        "object_repr": "video editing - class",
+        "action_flag": 3,
+        "change_message": ""
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 18,
+    "fields": {
+        "action_time": "2026-05-04T07:53:32.264Z",
+        "user": 8,
+        "content_type": 27,
+        "object_id": "1",
+        "object_repr": "ziyan@gmail.com - video editing",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 19,
+    "fields": {
+        "action_time": "2026-05-04T09:35:18.158Z",
+        "user": 8,
+        "content_type": 14,
+        "object_id": "4",
+        "object_repr": "Poster Editing Masterclass - poster editing",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 20,
+    "fields": {
+        "action_time": "2026-05-04T09:55:55.912Z",
+        "user": 8,
+        "content_type": 14,
+        "object_id": "5",
+        "object_repr": "10 Days AI-Integrated Poster Designing - ai",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 21,
+    "fields": {
+        "action_time": "2026-05-04T10:45:39.811Z",
+        "user": 8,
+        "content_type": 14,
+        "object_id": "6",
+        "object_repr": "10 Days AI-Integrated Mobile Video Editing - video edition",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 22,
+    "fields": {
+        "action_time": "2026-05-04T10:46:00.084Z",
+        "user": 8,
+        "content_type": 14,
+        "object_id": "6",
+        "object_repr": "10 Days AI-Integrated Mobile Video Editing - video editiong",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Title\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 23,
+    "fields": {
+        "action_time": "2026-05-04T10:46:12.439Z",
+        "user": 8,
+        "content_type": 14,
+        "object_id": "6",
+        "object_repr": "10 Days AI-Integrated Mobile Video Editing - video editing",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Title\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 24,
+    "fields": {
+        "action_time": "2026-05-04T10:49:06.660Z",
+        "user": 8,
+        "content_type": 14,
+        "object_id": "6",
+        "object_repr": "10 Days AI-Integrated Mobile Video Editing - video editing",
+        "action_flag": 3,
+        "change_message": ""
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 25,
+    "fields": {
+        "action_time": "2026-05-04T10:49:06.696Z",
+        "user": 8,
+        "content_type": 14,
+        "object_id": "5",
+        "object_repr": "10 Days AI-Integrated Poster Designing - ai",
+        "action_flag": 3,
+        "change_message": ""
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 26,
+    "fields": {
+        "action_time": "2026-05-04T10:49:06.726Z",
+        "user": 8,
+        "content_type": 14,
+        "object_id": "4",
+        "object_repr": "Poster Editing Masterclass - poster editing",
+        "action_flag": 3,
+        "change_message": ""
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 27,
+    "fields": {
+        "action_time": "2026-05-04T10:52:52.748Z",
+        "user": 8,
+        "content_type": 14,
+        "object_id": "7",
+        "object_repr": "10 Days AI-Integrated Poster Designing - poster designing",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 28,
+    "fields": {
+        "action_time": "2026-05-04T10:53:28.749Z",
+        "user": 8,
+        "content_type": 14,
+        "object_id": "8",
+        "object_repr": "10 Days AI-Integrated Poster Designing - poster editing",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 29,
+    "fields": {
+        "action_time": "2026-05-04T10:54:07.231Z",
+        "user": 8,
+        "content_type": 14,
+        "object_id": "7",
+        "object_repr": "10 Days AI-Integrated Poster Designing - poster designing",
+        "action_flag": 3,
+        "change_message": ""
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 30,
+    "fields": {
+        "action_time": "2026-05-04T10:54:24.263Z",
+        "user": 8,
+        "content_type": 14,
+        "object_id": "9",
+        "object_repr": "10 Days AI-Integrated Mobile Video Editing - video editing",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 31,
+    "fields": {
+        "action_time": "2026-05-04T10:54:58.128Z",
+        "user": 8,
+        "content_type": 14,
+        "object_id": "10",
+        "object_repr": "Master Metalist - mentalist",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 32,
+    "fields": {
+        "action_time": "2026-05-04T11:01:25.538Z",
+        "user": 8,
+        "content_type": 12,
+        "object_id": "7",
+        "object_repr": "video editing - ai video editing",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 33,
+    "fields": {
+        "action_time": "2026-05-05T04:24:35.001Z",
+        "user": 8,
+        "content_type": 10,
+        "object_id": "4",
+        "object_repr": "10 Days AI-Integrated Poster Designing",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Price\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 34,
+    "fields": {
+        "action_time": "2026-05-05T04:24:58.343Z",
+        "user": 8,
+        "content_type": 10,
+        "object_id": "5",
+        "object_repr": "10 Days AI-Integrated Mobile Video Editing",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Price\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 35,
+    "fields": {
+        "action_time": "2026-05-05T04:25:12.647Z",
+        "user": 8,
+        "content_type": 10,
+        "object_id": "6",
+        "object_repr": "Master Metalist",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Price\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 36,
+    "fields": {
+        "action_time": "2026-05-05T04:29:34.212Z",
+        "user": 8,
+        "content_type": 18,
+        "object_id": "9",
+        "object_repr": "test1@gmail.com",
+        "action_flag": 2,
+        "change_message": "[{\"added\": {\"name\": \"enrollment\", \"object\": \"Enrollment object (7)\"}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 37,
+    "fields": {
+        "action_time": "2026-05-05T04:31:23.331Z",
+        "user": 8,
+        "content_type": 12,
+        "object_id": "7",
+        "object_repr": "video editing - ai video editing",
+        "action_flag": 2,
+        "change_message": "[]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 38,
+    "fields": {
+        "action_time": "2026-05-05T04:31:35.064Z",
+        "user": 8,
+        "content_type": 12,
+        "object_id": "8",
+        "object_repr": "video editing - test 2",
+        "action_flag": 2,
+        "change_message": "[]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 39,
+    "fields": {
+        "action_time": "2026-05-05T04:46:16.360Z",
+        "user": 8,
+        "content_type": 12,
+        "object_id": "7",
+        "object_repr": "video editing - ai video editing",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Video url\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 40,
+    "fields": {
+        "action_time": "2026-05-05T04:48:30.061Z",
+        "user": 8,
+        "content_type": 12,
+        "object_id": "8",
+        "object_repr": "video editing - test 2",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Video url\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 41,
+    "fields": {
+        "action_time": "2026-05-05T05:19:41.551Z",
+        "user": 8,
+        "content_type": 9,
+        "object_id": "4",
+        "object_repr": "Certificate object (4)",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 42,
+    "fields": {
+        "action_time": "2026-05-11T05:04:13.635Z",
+        "user": 8,
+        "content_type": 10,
+        "object_id": "5",
+        "object_repr": "10 Days AI-Integrated Mobile Video Editing",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Thumbnail\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 43,
+    "fields": {
+        "action_time": "2026-05-11T05:05:49.241Z",
+        "user": 8,
+        "content_type": 10,
+        "object_id": "3",
+        "object_repr": "video editing",
+        "action_flag": 3,
+        "change_message": ""
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 44,
+    "fields": {
+        "action_time": "2026-05-11T05:05:49.272Z",
+        "user": 8,
+        "content_type": 10,
+        "object_id": "2",
+        "object_repr": "Poster Editing Masterclass",
+        "action_flag": 3,
+        "change_message": ""
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 45,
+    "fields": {
+        "action_time": "2026-05-11T05:08:19.446Z",
+        "user": 8,
+        "content_type": 10,
+        "object_id": "6",
+        "object_repr": "Master Metalist",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Thumbnail\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 46,
+    "fields": {
+        "action_time": "2026-05-11T05:18:42.773Z",
+        "user": 8,
+        "content_type": 10,
+        "object_id": "4",
+        "object_repr": "10 Days AI-Integrated Poster Designing",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Thumbnail\", \"Price\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 47,
+    "fields": {
+        "action_time": "2026-05-11T05:19:00.043Z",
+        "user": 8,
+        "content_type": 10,
+        "object_id": "4",
+        "object_repr": "10 Days AI-Integrated Poster Designing",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Thumbnail\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 48,
+    "fields": {
+        "action_time": "2026-05-11T05:26:06.047Z",
+        "user": 8,
+        "content_type": 10,
+        "object_id": "8",
+        "object_repr": "Digital Marketing",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Thumbnail\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 49,
+    "fields": {
+        "action_time": "2026-05-11T05:27:22.825Z",
+        "user": 8,
+        "content_type": 10,
+        "object_id": "9",
+        "object_repr": "Computer Graphics Designing Course",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Thumbnail\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 50,
+    "fields": {
+        "action_time": "2026-05-11T05:34:53.524Z",
+        "user": 8,
+        "content_type": 10,
+        "object_id": "6",
+        "object_repr": "Master Metalist",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Thumbnail\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 51,
+    "fields": {
+        "action_time": "2026-05-11T05:35:25.546Z",
+        "user": 8,
+        "content_type": 10,
+        "object_id": "6",
+        "object_repr": "Master Metalist",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Thumbnail\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 52,
+    "fields": {
+        "action_time": "2026-05-11T05:35:40.843Z",
+        "user": 8,
+        "content_type": 10,
+        "object_id": "7",
+        "object_repr": "Master Networking",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Thumbnail\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 53,
+    "fields": {
+        "action_time": "2026-05-11T06:01:03.442Z",
+        "user": 8,
+        "content_type": 10,
+        "object_id": "9",
+        "object_repr": "Computer Graphics Designing Course",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Thumbnail\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 54,
+    "fields": {
+        "action_time": "2026-05-11T06:01:20.725Z",
+        "user": 8,
+        "content_type": 10,
+        "object_id": "8",
+        "object_repr": "Digital Marketing",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Thumbnail\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 55,
+    "fields": {
+        "action_time": "2026-05-11T06:01:33.625Z",
+        "user": 8,
+        "content_type": 10,
+        "object_id": "7",
+        "object_repr": "Master Networking",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Thumbnail\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 56,
+    "fields": {
+        "action_time": "2026-05-11T06:09:08.094Z",
+        "user": 8,
+        "content_type": 10,
+        "object_id": "7",
+        "object_repr": "Master Networking",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Thumbnail\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 57,
+    "fields": {
+        "action_time": "2026-05-11T06:10:00.856Z",
+        "user": 8,
+        "content_type": 10,
+        "object_id": "6",
+        "object_repr": "Master Metalist",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Thumbnail\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 58,
+    "fields": {
+        "action_time": "2026-05-11T06:11:05.383Z",
+        "user": 8,
+        "content_type": 10,
+        "object_id": "5",
+        "object_repr": "10 Days AI-Integrated Mobile Video Editing",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Thumbnail\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 59,
+    "fields": {
+        "action_time": "2026-05-11T06:11:15.799Z",
+        "user": 8,
+        "content_type": 10,
+        "object_id": "4",
+        "object_repr": "10 Days AI-Integrated Poster Designing",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Thumbnail\"]}}]"
+    }
+},
+{
+    "model": "sessions.session",
+    "pk": "j3neqd28g8an1avzffh9snmqggmarvyj",
+    "fields": {
+        "session_data": ".eJxVjMsOwiAURP-FtSFcQIIu3fsNhPtAqoYmpV01_rtt0oXuJnPOzKpSXuaali5TGlhdlVOn3w4zvaTtgJ-5PUZNY5unAfWu6IN2fR9Z3rfD_Tuouddtba0IuVjAOyoQ0CKCMRRjKCb7LQLAGcyFJDoOFj2zWG8dOAYv5NXnC9NSNz8:1wJ4xS:pdImVuswzE_DFLhjYJLuKeBlziGYijZeRSnbWIgVHf8",
+        "expire_date": "2026-05-16T07:40:14.055Z"
+    }
+},
+{
+    "model": "sessions.session",
+    "pk": "se2giq9kzxs5enbht4vhnbkebne0ju7g",
+    "fields": {
+        "session_data": ".eJxVjEEOwiAUBe_C2hA-BUpduvcMzQcetmogKe3KeHdt0oVu38y8lxh5W6dxa1jGOYmzIHH63QLHB8oO0p3LrcpYy7rMQe6KPGiT15rwvBzu38HEbfrWBpmBZKw3yvkeeSAOPSmKqfMmOvKULZTrNIg1AgadOq2CMQAHWPH-AO_yOFQ:1wFArX:ZSWmfOLkmpsk_11tKNtcXPY9wfXhIacoyvHEUW4zpqE",
+        "expire_date": "2026-05-05T13:09:59.929Z"
+    }
+},
+{
+    "model": "courses.category",
+    "pk": 1,
+    "fields": {
+        "title": "Video Editing",
+        "slug": "video-editing",
+        "icon": "fa-video"
+    }
+},
+{
+    "model": "courses.category",
+    "pk": 3,
+    "fields": {
+        "title": "Graphic Design",
+        "slug": "graphic-design",
+        "icon": "fa-pen-nib"
+    }
+},
+{
+    "model": "courses.category",
+    "pk": 4,
+    "fields": {
+        "title": "Edufix Programs",
+        "slug": "edufix-programs",
+        "icon": "fa-layer-group"
+    }
+},
+{
+    "model": "courses.course",
+    "pk": 4,
+    "fields": {
+        "title": "10 Days AI-Integrated Poster Designing",
+        "slug": "10-days-ai-integrated-poster-designing",
+        "description": "A 10-day intensive covering poster layout, typography, and AI-assisted design workflows for print and digital campaigns.",
+        "thumbnail": "course_thumbnails/10_days_ai_intergrated_poster_designing.jpg",
+        "price": "499.00",
+        "discounted_price": null,
+        "duration": 40.0,
+        "instructor": 1,
+        "category": 4,
+        "status": "published",
+        "seo_title": "10 Days AI-Integrated Poster Designing",
+        "seo_description": "A 10-day intensive covering poster layout, typography, and AI-assisted design workflows for print and digital campaigns.",
+        "created_at": "2026-05-02T10:40:46.957Z",
+        "updated_at": "2026-05-11T06:11:15.773Z"
+    }
+},
+{
+    "model": "courses.course",
+    "pk": 5,
+    "fields": {
+        "title": "10 Days AI-Integrated Mobile Video Editing",
+        "slug": "10-days-ai-integrated-mobile-video-editing",
+        "description": "A 10-day program focused on editing professional short-form video on mobile devices using modern apps and AI-powered tools.",
+        "thumbnail": "course_thumbnails/AI-video-generator-apps-landscape-f5b5165c2648bbb612c65ecb9ed3e62c-zyb_8J8aM2E.png",
+        "price": "399.00",
+        "discounted_price": null,
+        "duration": 40.0,
+        "instructor": 1,
+        "category": 4,
+        "status": "published",
+        "seo_title": "10 Days AI-Integrated Mobile Video Editing",
+        "seo_description": "A 10-day program focused on editing professional short-form video on mobile devices using modern apps and AI-powered tools.",
+        "created_at": "2026-05-02T10:40:46.957Z",
+        "updated_at": "2026-05-11T06:11:05.383Z"
+    }
+},
+{
+    "model": "courses.course",
+    "pk": 6,
+    "fields": {
+        "title": "Master Metalist",
+        "slug": "master-metalist",
+        "description": "Structured training to master core listing and catalog concepts used in creative and digital product workflows.",
+        "thumbnail": "course_thumbnails/mentalist_ZnQ7NiN.jpg",
+        "price": "2999.00",
+        "discounted_price": null,
+        "duration": 24.0,
+        "instructor": 1,
+        "category": 4,
+        "status": "published",
+        "seo_title": "Master Metalist",
+        "seo_description": "Structured training to master core listing and catalog concepts used in creative and digital product workflows.",
+        "created_at": "2026-05-02T10:40:46.957Z",
+        "updated_at": "2026-05-11T06:10:00.856Z"
+    }
+},
+{
+    "model": "courses.course",
+    "pk": 7,
+    "fields": {
+        "title": "Master Networking",
+        "slug": "master-networking",
+        "description": "Foundations through practical skills in computer networks, protocols, and real-world troubleshooting.",
+        "thumbnail": "course_thumbnails/High-Speed_Network_Cables_for_Secure_Data_Transfer.jpeg",
+        "price": "0.00",
+        "discounted_price": null,
+        "duration": 36.0,
+        "instructor": 1,
+        "category": 4,
+        "status": "published",
+        "seo_title": "Master Networking",
+        "seo_description": "Foundations through practical skills in computer networks, protocols, and real-world troubleshooting.",
+        "created_at": "2026-05-02T10:40:46.969Z",
+        "updated_at": "2026-05-11T06:09:08.080Z"
+    }
+},
+{
+    "model": "courses.course",
+    "pk": 8,
+    "fields": {
+        "title": "Digital Marketing",
+        "slug": "digital-marketing",
+        "description": "SEO, social media, analytics, and campaign planning for brands and freelance practitioners.",
+        "thumbnail": "course_thumbnails/1683100199482.jpeg",
+        "price": "0.00",
+        "discounted_price": null,
+        "duration": 32.0,
+        "instructor": 1,
+        "category": 4,
+        "status": "published",
+        "seo_title": "Digital Marketing",
+        "seo_description": "SEO, social media, analytics, and campaign planning for brands and freelance practitioners.",
+        "created_at": "2026-05-02T10:40:46.971Z",
+        "updated_at": "2026-05-11T06:01:20.704Z"
+    }
+},
+{
+    "model": "courses.course",
+    "pk": 9,
+    "fields": {
+        "title": "Computer Graphics Designing Course",
+        "slug": "computer-graphics-designing-course",
+        "description": "Raster and vector graphics, composition, color theory, and industry tools for visual design projects.",
+        "thumbnail": "course_thumbnails/computer-grphics.jpg",
+        "price": "0.00",
+        "discounted_price": null,
+        "duration": 48.0,
+        "instructor": 1,
+        "category": 4,
+        "status": "published",
+        "seo_title": "Computer Graphics Designing Course",
+        "seo_description": "Raster and vector graphics, composition, color theory, and industry tools for visual design projects.",
+        "created_at": "2026-05-02T10:40:46.976Z",
+        "updated_at": "2026-05-11T06:01:03.415Z"
+    }
+},
+{
+    "model": "courses.module",
+    "pk": 8,
+    "fields": {
+        "course": 4,
+        "title": "poster editing",
+        "order_index": 0
+    }
+},
+{
+    "model": "courses.module",
+    "pk": 9,
+    "fields": {
+        "course": 5,
+        "title": "video editing",
+        "order_index": 0
+    }
+},
+{
+    "model": "courses.module",
+    "pk": 10,
+    "fields": {
+        "course": 6,
+        "title": "mentalist",
+        "order_index": 0
+    }
+},
+{
+    "model": "courses.lesson",
+    "pk": 7,
+    "fields": {
+        "module": 9,
+        "title": "ai video editing",
+        "video_url": "https://www.youtube.com/embed/6qaeB758Zdk",
+        "duration_seconds": 30,
+        "is_free_preview": false,
+        "order_index": 0,
+        "content": ""
+    }
+},
+{
+    "model": "courses.lesson",
+    "pk": 8,
+    "fields": {
+        "module": 9,
+        "title": "test 2",
+        "video_url": "https://www.youtube.com/embed/x1dJa6XC2tA",
+        "duration_seconds": 0,
+        "is_free_preview": false,
+        "order_index": 1,
+        "content": ""
+    }
+},
+{
+    "model": "courses.enrollment",
+    "pk": 7,
+    "fields": {
+        "student": 9,
+        "course": 5,
+        "payment_id": "",
+        "enrolled_at": "2026-05-05T04:29:34.201Z"
+    }
+},
+{
+    "model": "courses.certificate",
+    "pk": 4,
+    "fields": {
+        "student": 9,
+        "course": 5,
+        "certificate_uid": "EDUFIX-2026-12345",
+        "certificate_file": "",
+        "is_approved": true,
+        "issued_at": "2026-05-05T05:19:41.529Z"
+    }
+},
+{
+    "model": "courses.notification",
+    "pk": 1,
+    "fields": {
+        "student": 6,
+        "type": "student",
+        "message": "test",
+        "is_read": false,
+        "created_at": "2026-04-25T11:05:33.729Z"
+    }
+},
+{
+    "model": "courses.announcement",
+    "pk": 1,
+    "fields": {
+        "title": "Welcome to Edufix Academy!",
+        "message": "We are thrilled to have you here. Start your journey by exploring the Video Editing masterclass.",
+        "expires_at": "2026-05-23T10:57:02.086Z",
+        "created_by": 1,
+        "created_at": "2026-04-23T10:57:02.089Z"
+    }
+},
+{
+    "model": "courses.announcement",
+    "pk": 2,
+    "fields": {
+        "title": "New Masterclass Added",
+        "message": "Check out our latest course on Poster Designing with Photoshop.",
+        "expires_at": "2026-05-23T10:57:02.096Z",
+        "created_by": 1,
+        "created_at": "2026-04-23T10:57:02.096Z"
+    }
+},
+{
+    "model": "courses.event",
+    "pk": 1,
+    "fields": {
+        "title": "Q&A Live Session",
+        "description": "",
+        "event_type": "live_session",
+        "start_time": "2026-04-25T10:57:02.113Z",
+        "end_time": null,
+        "link": ""
+    }
+},
+{
+    "model": "courses.event",
+    "pk": 2,
+    "fields": {
+        "title": "Portfolio Review",
+        "description": "",
+        "event_type": "class",
+        "start_time": "2026-04-28T10:57:02.120Z",
+        "end_time": null,
+        "link": ""
+    }
+},
+{
+    "model": "users.user",
+    "pk": 1,
+    "fields": {
+        "password": "pbkdf2_sha256$600000$2MDvFol42kgW3sSVWkNPpN$kWtWNMvtdFlYRYsTOpCl6FqHccDvmi/8HSEMriZ4zuY=",
+        "last_login": "2026-04-30T06:08:49.620Z",
+        "is_superuser": true,
+        "username": "admin",
+        "first_name": "",
+        "last_name": "",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2026-04-21T11:32:24.745Z",
+        "full_name": "Admin User",
+        "email": "admin@edufix.com",
+        "phone_number": "",
+        "is_verified": true,
+        "login_attempts": 0,
+        "locked_until": null,
+        "is_instructor": false,
+        "profile_picture": "",
+        "bio": "",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.user",
+    "pk": 2,
+    "fields": {
+        "password": "pbkdf2_sha256$600000$Aa3PFb4RtNUoEpB14o6Qcr$291iXg0pKU2Df8/+qt9MpUzzeqWnt/wfwUr6hGoajRc=",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "",
+        "first_name": "",
+        "last_name": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2026-04-21T12:14:25.404Z",
+        "full_name": "rabeeh",
+        "email": "rabeeh@gmail.com",
+        "phone_number": "7736512105",
+        "is_verified": false,
+        "login_attempts": 0,
+        "locked_until": null,
+        "is_instructor": false,
+        "profile_picture": "",
+        "bio": "",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.user",
+    "pk": 3,
+    "fields": {
+        "password": "pbkdf2_sha256$600000$TGnEOOyXApl4t7pVxLEOEC$8DDaD/+gSHb49SRXRDhjt2uGiJsOo98IejlCRL0xW20=",
+        "last_login": "2026-05-02T07:40:14.048Z",
+        "is_superuser": false,
+        "username": "admin@gmail.com",
+        "first_name": "",
+        "last_name": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2026-04-22T04:48:26.742Z",
+        "full_name": "admin",
+        "email": "admin@gmail.com",
+        "phone_number": "1234567891",
+        "is_verified": false,
+        "login_attempts": 0,
+        "locked_until": null,
+        "is_instructor": false,
+        "profile_picture": "",
+        "bio": "",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.user",
+    "pk": 4,
+    "fields": {
+        "password": "pbkdf2_sha256$600000$94Xa3hmJ83IWZ5bLgiLCOo$SnSPOwpWRAVJcX6NoiXjQ5fYHwOtKCOeV7ndJ31uwB0=",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "test_unique@example.com",
+        "first_name": "",
+        "last_name": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2026-04-22T05:04:24.830Z",
+        "full_name": "Test User",
+        "email": "test_unique@example.com",
+        "phone_number": "1234567890",
+        "is_verified": false,
+        "login_attempts": 0,
+        "locked_until": null,
+        "is_instructor": false,
+        "profile_picture": "",
+        "bio": "",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.user",
+    "pk": 5,
+    "fields": {
+        "password": "pbkdf2_sha256$600000$a9ZcyaapYWlFiCo9NOv7uX$uUeUAlJYL1EPpj+j116FgmHTRbEzEJVzVlIfjgLufYo=",
+        "last_login": "2026-04-22T05:16:33.782Z",
+        "is_superuser": false,
+        "username": "fix@example.com",
+        "first_name": "",
+        "last_name": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2026-04-22T05:14:28.653Z",
+        "full_name": "Fix User",
+        "email": "fix@example.com",
+        "phone_number": "1234567890",
+        "is_verified": true,
+        "login_attempts": 0,
+        "locked_until": null,
+        "is_instructor": false,
+        "profile_picture": "",
+        "bio": "",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.user",
+    "pk": 6,
+    "fields": {
+        "password": "pbkdf2_sha256$600000$OwKrVmGEHWsePK2rLzf2IA$2C6rIAjinMmoXk1FKqdP6lWQPQuIgRberM9QM9Ul7f8=",
+        "last_login": "2026-04-22T09:12:29.355Z",
+        "is_superuser": false,
+        "username": "test@gmail.com",
+        "first_name": "",
+        "last_name": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2026-04-22T05:21:49.798Z",
+        "full_name": "test",
+        "email": "test@gmail.com",
+        "phone_number": "1234567890",
+        "is_verified": true,
+        "login_attempts": 5,
+        "locked_until": "2026-04-27T07:47:21.567Z",
+        "is_instructor": false,
+        "profile_picture": "",
+        "bio": "",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.user",
+    "pk": 7,
+    "fields": {
+        "password": "pbkdf2_sha256$600000$f4gvfNDKN17ZGmScjcBxDJ$Ckz0B+gXW60EW+O+AMa9cR70Q+A+YkYj4Q3kOlYr9Rs=",
+        "last_login": "2026-04-22T05:35:04.809Z",
+        "is_superuser": false,
+        "username": "test_final_v3@gmail.com",
+        "first_name": "",
+        "last_name": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2026-04-22T05:34:03.631Z",
+        "full_name": "Final Test User",
+        "email": "test_final_v3@gmail.com",
+        "phone_number": "1234567890",
+        "is_verified": true,
+        "login_attempts": 1,
+        "locked_until": null,
+        "is_instructor": false,
+        "profile_picture": "",
+        "bio": "",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.user",
+    "pk": 8,
+    "fields": {
+        "password": "pbkdf2_sha256$600000$sKRxhPnVMjiU4Utrfa8OlV$CrNcZj/dS3Sz5Ip2ur0FTSSDeQqNwTOoCkClrnMSm6c=",
+        "last_login": "2026-05-11T07:20:04.567Z",
+        "is_superuser": true,
+        "username": "edufix",
+        "first_name": "",
+        "last_name": "",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2026-04-23T04:38:18.486Z",
+        "full_name": "edufix",
+        "email": "edufix@gmail.com",
+        "phone_number": "",
+        "is_verified": false,
+        "login_attempts": 0,
+        "locked_until": null,
+        "is_instructor": false,
+        "profile_picture": "",
+        "bio": "",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.user",
+    "pk": 9,
+    "fields": {
+        "password": "pbkdf2_sha256$600000$0PEUxYrnCzZRQhrTHvXp5U$aZZRB+9B+xkE6H2YjWTD8bHD2BwhecmHAYdBXDDjrIw=",
+        "last_login": "2026-05-11T07:07:43.268Z",
+        "is_superuser": false,
+        "username": "test1@gmail.com",
+        "first_name": "",
+        "last_name": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2026-04-23T06:19:29Z",
+        "full_name": "test",
+        "email": "test1@gmail.com",
+        "phone_number": "1234567890",
+        "is_verified": true,
+        "login_attempts": 0,
+        "locked_until": null,
+        "is_instructor": false,
+        "profile_picture": "",
+        "bio": "",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.user",
+    "pk": 11,
+    "fields": {
+        "password": "pbkdf2_sha256$600000$4P97nEFVjjTF6O4yrUHomF$Ae6YwqwwxHgPW5xYSLssRw6y/PVgQCjzRsWCioj3hbg=",
+        "last_login": "2026-04-27T07:39:31.652Z",
+        "is_superuser": false,
+        "username": "tester@edufix.com",
+        "first_name": "",
+        "last_name": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2026-04-27T07:38:27.920Z",
+        "full_name": "Edufix Tester",
+        "email": "tester@edufix.com",
+        "phone_number": "1122334455",
+        "is_verified": true,
+        "login_attempts": 2,
+        "locked_until": null,
+        "is_instructor": false,
+        "profile_picture": "",
+        "bio": "",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.user",
+    "pk": 12,
+    "fields": {
+        "password": "pbkdf2_sha256$600000$e75md93ry4RufCkNL5B37W$5oY0e5lCdXi7JxNg40iBc1prJ+JLC+EJtBBJVR8252M=",
+        "last_login": "2026-04-27T07:48:53.239Z",
+        "is_superuser": false,
+        "username": "tester_new@edufix.com",
+        "first_name": "",
+        "last_name": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2026-04-27T07:46:19.827Z",
+        "full_name": "Tester Student",
+        "email": "tester_new@edufix.com",
+        "phone_number": "1234567890",
+        "is_verified": true,
+        "login_attempts": 0,
+        "locked_until": null,
+        "is_instructor": false,
+        "profile_picture": "",
+        "bio": "",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.user",
+    "pk": 13,
+    "fields": {
+        "password": "pbkdf2_sha256$600000$rggSX6gTfPwD3SbMIh3pnD$e7Aq5qgJfEOspFzpksyVlUEB8xZ4AcZb56qg8jEpDn0=",
+        "last_login": "2026-04-27T08:36:30.459Z",
+        "is_superuser": false,
+        "username": "testuser123@gmail.com",
+        "first_name": "",
+        "last_name": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2026-04-27T08:35:23.764Z",
+        "full_name": "Test User",
+        "email": "testuser123@gmail.com",
+        "phone_number": "1234567890",
+        "is_verified": true,
+        "login_attempts": 0,
+        "locked_until": null,
+        "is_instructor": false,
+        "profile_picture": "",
+        "bio": "",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.user",
+    "pk": 14,
+    "fields": {
+        "password": "pbkdf2_sha256$600000$zCGBIAsA7BZMf23ixFogUh$n/ij+xRSnD7J5b0+Ej6NH8tubt5VPKK+c+sr+QK0eB4=",
+        "last_login": "2026-04-30T06:32:38.067Z",
+        "is_superuser": false,
+        "username": "cert_tester",
+        "first_name": "",
+        "last_name": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2026-04-30T06:31:19.308Z",
+        "full_name": "",
+        "email": "cert@example.com",
+        "phone_number": "",
+        "is_verified": false,
+        "login_attempts": 0,
+        "locked_until": null,
+        "is_instructor": false,
+        "profile_picture": "",
+        "bio": "",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.user",
+    "pk": 15,
+    "fields": {
+        "password": "pbkdf2_sha256$600000$lyt7u9Yaa6ofGbuUAvmcta$rV8wVkXI0pNbL6yAfWchdUtMl4waT+VkpchCa6LZecc=",
+        "last_login": "2026-05-04T06:32:53.969Z",
+        "is_superuser": false,
+        "username": "ziyan@gmail.com",
+        "first_name": "",
+        "last_name": "",
+        "is_staff": false,
+        "is_active": false,
+        "date_joined": "2026-05-02T04:16:44Z",
+        "full_name": "ziyan",
+        "email": "ziyan@gmail.com",
+        "phone_number": "1234567890",
+        "is_verified": true,
+        "login_attempts": 2,
+        "locked_until": null,
+        "is_instructor": false,
+        "profile_picture": "",
+        "bio": "",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.user",
+    "pk": 16,
+    "fields": {
+        "password": "pbkdf2_sha256$600000$fszmE4mG9XccbX1AMIGon5$tuHeG9uk4/HIflszG6DGPDsNe//1XGA9e24EAI7pXcg=",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "teststudent5@example.com",
+        "first_name": "",
+        "last_name": "",
+        "is_staff": false,
+        "is_active": false,
+        "date_joined": "2026-05-02T07:19:39.321Z",
+        "full_name": "Test Student",
+        "email": "teststudent5@example.com",
+        "phone_number": "1234567890",
+        "is_verified": true,
+        "login_attempts": 0,
+        "locked_until": null,
+        "is_instructor": false,
+        "profile_picture": "",
+        "bio": "",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "management.lead",
+    "pk": 1,
+    "fields": {
+        "name": "Rabeeh Mk",
+        "email": "rabeehmktest@gmail.com",
+        "phone": "1234567890",
+        "course_interested": null,
+        "source": "Website",
+        "status": "converted",
+        "notes": "",
+        "created_at": "2026-05-02T11:05:55.627Z"
+    }
+}
+]

@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Verify Certificate - Edufix Academy{% endblock %}
+
+{% block content %}
+<section style="padding: 150px 0 100px; min-height: 100vh; background: radial-gradient(circle at top, rgba(138, 43, 226, 0.1), transparent);">
+    <div class="container" style="max-width: 800px;">
+        <div class="glass" style="padding: 4rem; border-radius: 32px; border: 1px solid var(--glass-border); text-align: center;">
+            <div style="margin-bottom: 3rem;">
+                <div style="display: inline-flex; align-items: center; justify-content: center; width: 80px; height: 80px; background: rgba(50, 255, 126, 0.1); color: #32ff7e; border-radius: 50%; margin-bottom: 1.5rem; font-size: 2.5rem;">
+                    <i class="fa-solid fa-certificate"></i>
+                </div>
+                <h1 style="font-size: 3rem; margin-bottom: 1rem;">Certificate <span class="text-yellow">Verified</span></h1>
+                <p class="text-gray" style="font-size: 1.2rem;">This certificate is an official document from Edufix Learning Academy.</p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; text-align: left; background: rgba(255,255,255,0.03); padding: 3rem; border-radius: 20px; border: 1px solid var(--glass-border);">
+                <div>
+                    <label style="color: var(--accent-yellow); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700;">Student Name</label>
+                    <h3 style="margin: 0.5rem 0 0;">{{ certificate.student.full_name|default:certificate.student.username }}</h3>
+                </div>
+                <div>
+                    <label style="color: var(--accent-yellow); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700;">Course Title</label>
+                    <h3 style="margin: 0.5rem 0 0;">{{ certificate.course.title }}</h3>
+                </div>
+                <div>
+                    <label style="color: var(--accent-yellow); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700;">Certificate ID</label>
+                    <h4 style="margin: 0.5rem 0 0; font-family: monospace;">{{ certificate.certificate_uid }}</h4>
+                </div>
+                <div>
+                    <label style="color: var(--accent-yellow); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700;">Issued Date</label>
+                    <h4 style="margin: 0.5rem 0 0;">{{ certificate.issued_at|date:"d F Y" }}</h4>
+                </div>
+            </div>
+
+            <p class="text-gray" style="margin-top: 3rem; font-size: 0.9rem;">
+                Edufix Learning Academy verifies that the individual named above has successfully completed all coursework, assignments, and requirements for the specified program.
+            </p>
+
+            <div style="margin-top: 4rem; display: flex; gap: 1.5rem; justify-content: center;">
+                <a href="{% url 'core:index' %}" class="btn btn-outline" style="padding: 1rem 2rem;">Visit Academy</a>
+                <a href="{% url 'courses:course_list' %}" class="btn btn-primary" style="padding: 1rem 2rem;">View All Courses</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
