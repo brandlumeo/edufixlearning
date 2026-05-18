@@ -39,10 +39,6 @@
                 <i class="fa-solid fa-bars"></i>
             </button>
             <ul class="nav-links" id="navLinks">
-                <!-- Close Button inside mobile menu -->
-                <button class="nav-mobile-close" id="navClose" aria-label="Close menu">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
                 <li><a href="{% url 'core:index' %}">Home</a></li>
                 <li class="nav-dropdown">
                     <a href="{% url 'courses:course_list' %}" style="display: flex; align-items: center; gap: 5px;">
@@ -141,18 +137,11 @@
         // Mobile nav hamburger
         const hamburger = document.getElementById('navHamburger');
         const navLinks  = document.getElementById('navLinks');
-        const navClose  = document.getElementById('navClose');
 
         if (hamburger) {
             hamburger.addEventListener('click', () => {
                 navLinks.classList.add('open');
                 document.body.style.overflow = 'hidden';
-            });
-        }
-        if (navClose) {
-            navClose.addEventListener('click', () => {
-                navLinks.classList.remove('open');
-                document.body.style.overflow = '';
             });
         }
         // Close menu when a link is clicked

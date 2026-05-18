@@ -1,7 +1,7 @@
 {% load static %}
 
 <!-- Floating Components -->
-<a href="https://wa.me/your-placeholder-number" target="_blank" class="float-btn whatsapp-btn" title="Chat on WhatsApp">
+<a href="https://wa.me/917034893345?text=Hello%2C%20I%27m%20interested%20in%20Edufix%20Academy%20courses.%20Can%20you%20help%20me%3F" target="_blank" rel="noopener noreferrer" class="float-btn whatsapp-btn" title="Chat on WhatsApp">
     <i class="fa-brands fa-whatsapp"></i>
 </a>
 
@@ -81,8 +81,11 @@
 
 <style>
     /* Ensure floating actions are above everything */
-    .floating-actions, .whatsapp-btn {
-        z-index: 9999 !important;
+    .floating-actions {
+        z-index: 10000 !important;
+    }
+    .whatsapp-btn {
+        z-index: 10001 !important;
     }
     .chat-window {
         z-index: 10000 !important;

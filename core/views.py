@@ -6,7 +6,6 @@ from courses.models import Course
 
 import json
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 
 try:
     from openai import OpenAI
@@ -15,7 +14,7 @@ except ImportError:
     _openai_available = False
 
 def index(request):
-    featured_courses = Course.objects.filter(status='published')[:4]
+    featured_courses = Course.objects.filter(status='published')
     context = {
         'featured_courses': featured_courses,
     }
@@ -66,7 +65,6 @@ Rules:
 - Always be encouraging about the user's learning journey"""
 
 
-@csrf_exempt
 def chatbot_response(request):
     if request.method == 'POST':
         try:

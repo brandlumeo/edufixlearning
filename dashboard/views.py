@@ -1,3 +1,6 @@
+import logging
+import re
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.views.decorators.http import require_POST
@@ -7,6 +10,12 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.utils import timezone
 from datetime import timedelta
 from django.db.models import Count, Sum, Q
+
+logger = logging.getLogger(__name__)
+
+_ALLOWED_IMAGE_EXTENSIONS = {'jpg', 'jpeg', 'png', 'gif', 'webp'}
+_MAX_IMAGE_SIZE = 5 * 1024 * 1024  # 5 MB
+_PHONE_RE = re.compile(r'^\d{10}$')
 from courses.models import (
     Enrollment, LessonProgress, Course, Lesson, Module, 
     Announcement, Certificate, Assignment, Submission, 
@@ -216,41 +225,66 @@ def dashboard_home(request):
     try:
         context = get_student_dashboard_data(request.user)
         return render(request, 'dashboard/home.html', context)
-    except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return render(request, 'dashboard/home.html', {'error': str(e)})
+    except Exception:
+        logger.exception("Error loading student dashboard for user %s", request.user.pk)
+        return render(request, 'dashboard/home.html', {'error': 'An error occurred loading your dashboard. Please try again.'})
 
 @login_required
 def my_courses(request):
     try:
         context = get_student_dashboard_data(request.user)
         return render(request, 'dashboard/my_courses.html', context)
-    except Exception as e:
-        return render(request, 'dashboard/my_courses.html', {'error': str(e)})
+    except Exception:
+        logger.exception("Error loading my_courses for user %s", request.user.pk)
+        return render(request, 'dashboard/my_courses.html', {'error': 'An error occurred. Please try again.'})
 
 @login_required
 def settings_view(request):
     try:
         user = request.user
         success_message = None
-        
+
         if request.method == 'POST' and 'update_profile' in request.POST:
-            user.full_name = request.POST.get('full_name')
-            user.bio = request.POST.get('bio')
-            user.phone_number = request.POST.get('phone_number', user.phone_number)
-            
+            full_name = request.POST.get('full_name', '').strip()
+            bio = request.POST.get('bio', '').strip()
+            phone = request.POST.get('phone_number', '').strip()
+
+            # Validate inputs
+            if len(full_name) < 2:
+                messages.error(request, "Full name must be at least 2 characters.")
+                return redirect('dashboard:settings')
+            if len(full_name) > 255:
+                messages.error(request, "Full name is too long.")
+                return redirect('dashboard:settings')
+            if phone and not _PHONE_RE.match(phone):
+                messages.error(request, "Phone number must be exactly 10 digits.")
+                return redirect('dashboard:settings')
+
+            # Validate profile picture if provided
             if request.FILES.get('profile_picture'):
-                user.profile_picture = request.FILES.get('profile_picture')
-                
+                pic = request.FILES['profile_picture']
+                ext = pic.name.rsplit('.', 1)[-1].lower() if '.' in pic.name else ''
+                if ext not in _ALLOWED_IMAGE_EXTENSIONS:
+                    messages.error(request, "Only image files (JPG, PNG, GIF, WebP) are allowed.")
+                    return redirect('dashboard:settings')
+                if pic.size > _MAX_IMAGE_SIZE:
+                    messages.error(request, "Image must be under 5 MB.")
+                    return redirect('dashboard:settings')
+                user.profile_picture = pic
+
+            user.full_name = full_name
+            user.bio = bio[:1000]  # Enforce max length without hard error
+            if phone:
+                user.phone_number = phone
             user.save()
             success_message = "Profile updated successfully!"
 
         context = get_student_dashboard_data(user)
         context['success_message'] = success_message
         return render(request, 'dashboard/settings.html', context)
-    except Exception as e:
-        return render(request, 'dashboard/settings.html', {'error': str(e)})
+    except Exception:
+        logger.exception("Error in settings_view for user %s", request.user.pk)
+        return render(request, 'dashboard/settings.html', {'error': 'An error occurred. Please try again.'})
 
 @login_required
 def ai_tutor(request):
@@ -284,8 +318,9 @@ def assignments_view(request):
     try:
         context = get_student_dashboard_data(request.user)
         return render(request, 'dashboard/assignments.html', context)
-    except Exception as e:
-        return render(request, 'dashboard/assignments.html', {'error': str(e)})
+    except Exception:
+        logger.exception("Error loading assignments for user %s", request.user.pk)
+        return render(request, 'dashboard/assignments.html', {'error': 'An error occurred. Please try again.'})
 
 @login_required
 def certificates_view(request):
@@ -321,10 +356,9 @@ def certificates_view(request):
             'overall_progress': 0,
         }
         return render(request, 'dashboard/certificates.html', context)
-    except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return render(request, 'dashboard/certificates.html', {'error': str(e), 'certificate_items': []})
+    except Exception:
+        logger.exception("Error loading certificates for user %s", request.user.pk)
+        return render(request, 'dashboard/certificates.html', {'error': 'An error occurred. Please try again.', 'certificate_items': []})
 
 from management.models import Batch, Attendance, FeeRecord, PlacementOutcome, AssetInventory, Lead, SupportTicket
 
@@ -496,8 +530,9 @@ def upload_class_view(request):
                 messages.success(request, f"Class '{title}' uploaded successfully to {module.course.title}!")
             except Module.DoesNotExist:
                 messages.error(request, "Selected module does not exist.")
-            except Exception as e:
-                messages.error(request, f"Error uploading class: {str(e)}")
+            except Exception:
+                logger.exception("Error uploading class")
+                messages.error(request, "An error occurred while uploading the class. Please try again.")
         else:
             messages.error(request, "Please fill in all required fields.")
             
@@ -531,8 +566,9 @@ def create_course_view(request):
                     course.thumbnail = thumbnail
                     course.save()
                 messages.success(request, f"Course '{title}' created successfully as Draft!")
-            except Exception as e:
-                messages.error(request, f"Error creating course: {str(e)}")
+            except Exception:
+                logger.exception("Error creating course")
+                messages.error(request, "An error occurred while creating the course. Please try again.")
         else:
             messages.error(request, "Please fill in all required fields.")
             
@@ -560,8 +596,9 @@ def create_assignment_view(request):
                     allowed_types=allowed_types
                 )
                 messages.success(request, f"Assignment '{title}' created successfully!")
-            except Exception as e:
-                messages.error(request, f"Error creating assignment: {str(e)}")
+            except Exception:
+                logger.exception("Error creating assignment")
+                messages.error(request, "An error occurred while creating the assignment. Please try again.")
         else:
             messages.error(request, "Please fill in all required fields.")
             
@@ -756,8 +793,9 @@ def certificate_issue_view(request):
         messages.error(request, "Student not found.")
     except Course.DoesNotExist:
         messages.error(request, "Course not found.")
-    except Exception as e:
-        messages.error(request, f"Error issuing certificate: {str(e)}")
+    except Exception:
+        logger.exception("Error issuing certificate")
+        messages.error(request, "An error occurred while issuing the certificate. Please try again.")
     return _redirect_admin_certs_tab()
 
 
@@ -817,8 +855,9 @@ def batch_create_view(request):
             is_active=is_active,
         )
         messages.success(request, f"Batch '{name}' created successfully!")
-    except Exception as e:
-        messages.error(request, f"Error creating batch: {str(e)}")
+    except Exception:
+        logger.exception("Error creating batch")
+        messages.error(request, "An error occurred while creating the batch. Please try again.")
     return _redirect_admin_batches_tab()
 
 
@@ -856,8 +895,9 @@ def batch_edit_view(request, batch_id):
         batch.is_active = request.POST.get('is_active') == '1'
         batch.save()
         messages.success(request, f"Batch '{batch.name}' updated successfully!")
-    except Exception as e:
-        messages.error(request, f"Error updating batch: {str(e)}")
+    except Exception:
+        logger.exception("Error updating batch %s", batch_id)
+        messages.error(request, "An error occurred while updating the batch. Please try again.")
     return _redirect_admin_batches_tab()
 
 
@@ -869,8 +909,9 @@ def batch_delete_view(request, batch_id):
     try:
         batch.delete()
         messages.success(request, f"Batch '{name}' deleted successfully.")
-    except Exception as e:
-        messages.error(request, f"Error deleting batch: {str(e)}")
+    except Exception:
+        logger.exception("Error deleting batch %s", batch_id)
+        messages.error(request, "An error occurred while deleting the batch. Please try again.")
     return _redirect_admin_batches_tab()
 
 
@@ -886,6 +927,7 @@ def batch_assign_students_view(request, batch_id):
         else:
             batch.students.clear()
         messages.success(request, f"Students assigned to '{batch.name}' updated.")
-    except Exception as e:
-        messages.error(request, f"Error assigning students: {str(e)}")
+    except Exception:
+        logger.exception("Error assigning students to batch %s", batch_id)
+        messages.error(request, "An error occurred while assigning students. Please try again.")
     return _redirect_admin_batches_tab()

@@ -2,7 +2,6 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import ListView, DetailView
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse, FileResponse
-from django.views.decorators.csrf import csrf_exempt
 from django.contrib import messages
 from .models import Course, Lesson, Category, Enrollment, LessonProgress, Module, Assignment, Submission, Certificate
 from .forms import SubmissionForm
@@ -96,7 +95,6 @@ def lesson_view(request, course_slug, lesson_id):
     }
     return render(request, 'courses/lesson_view.html', context)
 
-@csrf_exempt
 @login_required
 def update_progress(request):
     if request.method == 'POST':
@@ -144,7 +142,7 @@ def download_certificate(request, cert_uid):
     if certificate.certificate_file:
         return FileResponse(certificate.certificate_file.open('rb'), as_attachment=True, filename=f"EDUFIX_Certificate_{cert_uid}.{certificate.certificate_file.name.split('.')[-1]}")
     
-    custom_name = request.GET.get('name', '').strip()
+    custom_name = request.GET.get('name', '').strip()[:100]  # Limit length for PDF safety
     student_name = custom_name if custom_name else (certificate.student.full_name or certificate.student.username)
     
     buffer, uid = generate_certificate_pdf(

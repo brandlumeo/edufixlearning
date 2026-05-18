@@ -235,6 +235,9 @@ nav.scrolled {
     position: fixed;
     bottom: 30px;
     left: 30px;
+    z-index: 10001;
+    pointer-events: all;
+    text-decoration: none;
 }
 
 .chat-btn {
@@ -430,17 +433,23 @@ nav.scrolled {
 }
 
 .offer-card {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.03) 100%);
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 30px;
-    padding: 60px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 40px;
-    align-items: center;
     position: relative;
     overflow: hidden;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.offer-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 35px 80px rgba(0, 0, 0, 0.55);
+}
+
+.offer-card:hover .offer-card-img {
+    transform: scale(1.04);
 }
 
 .offer-card::before {
@@ -486,9 +495,19 @@ nav.scrolled {
 
 @media (max-width: 768px) {
     .offer-card {
-        grid-template-columns: 1fr;
-        padding: 30px;
+        grid-template-columns: 1fr !important;
+        min-height: auto !important;
+    }
+    .offer-card > div:last-child {
+        height: 220px;
+        border-radius: 0 0 30px 30px !important;
+    }
+    .offer-card > div:first-child {
+        padding: 32px 24px !important;
         text-align: center;
+    }
+    .offer-card a[href] {
+        margin: 0 auto;
     }
 }
 
