@@ -59,19 +59,38 @@ class Module(models.Model):
         return f"{self.course.title} - {self.title}"
 
 class Lesson(models.Model):
-    module = models.ForeignKey(Module, on_delete=models.CASCADE, related_name='lessons')
-    title = models.CharField(max_length=200)
-    video_url = models.URLField(help_text="Embed URL")
+    CF_STATUS_NONE       = 'none'
+    CF_STATUS_PROCESSING = 'processing'
+    CF_STATUS_READY      = 'ready'
+    CF_STATUS_ERROR      = 'error'
+    CF_STATUS_CHOICES = [
+        (CF_STATUS_NONE,       'None'),
+        (CF_STATUS_PROCESSING, 'Processing'),
+        (CF_STATUS_READY,      'Ready'),
+        (CF_STATUS_ERROR,      'Error'),
+    ]
+
+    module           = models.ForeignKey(Module, on_delete=models.CASCADE, related_name='lessons')
+    title            = models.CharField(max_length=200)
+    cf_stream_video_id = models.CharField(max_length=200, blank=True, help_text="Cloudflare Stream video UID")
+    cf_stream_status   = models.CharField(max_length=20, choices=CF_STATUS_CHOICES, default=CF_STATUS_NONE)
     duration_seconds = models.PositiveIntegerField(default=0)
-    is_free_preview = models.BooleanField(default=False)
-    order_index = models.PositiveIntegerField(default=0)
-    content = models.TextField(blank=True) # Text content for the lesson
+    is_free_preview  = models.BooleanField(default=False)
+    order_index      = models.PositiveIntegerField(default=0)
+    content          = models.TextField(blank=True)
 
     class Meta:
         ordering = ['order_index']
 
+    @property
+    def stream_embed_url(self):
+        if self.cf_stream_video_id:
+            return f"https://iframe.cloudflarestream.com/{self.cf_stream_video_id}"
+        return None
+
     def __str__(self):
         return f"{self.module.title} - {self.title}"
+
 
 class Resource(models.Model):
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name='resources')

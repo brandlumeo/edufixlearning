@@ -3,6 +3,30 @@
 
 {% block title %}About Us - Edufix Learning Academy{% endblock %}
 
+{% block extra_head %}
+<style>
+    .team-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2.5rem;
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+    @media (max-width: 991px) {
+        .team-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+    }
+    @media (max-width: 600px) {
+        .team-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <!-- About Hero Section (Premium Purple Theme) -->
 <section style="padding: 180px 0 100px; background: #2D0B4E; position: relative; overflow: hidden;">
@@ -196,11 +220,23 @@
             <p style="color: #94a3b8; font-size: 1.1rem; max-width: 600px; margin: 1.25rem auto;">A passionate group of trainers and counsellors dedicated to shaping the next generation of creative professionals.</p>
         </div>
 
-        <!-- Team grid: 3 cols top row, 2 centred bottom row -->
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.5rem; max-width: 1100px; margin: 0 auto;">
+        <!-- Responsive Team Grid (All 9 Members) -->
+        <div class="team-grid">
+
+            <!-- Midlaj MK -->
+            <div class="glass animate-up" style="border-radius: 28px; overflow: hidden; border: 1px solid rgba(241,41,107,0.15); background: rgba(255,255,255,0.03); transition: transform 0.3s ease, box-shadow 0.3s ease;" onmouseover="this.style.transform='translateY(-8px)';this.style.boxShadow='0 24px 60px rgba(0,0,0,0.45)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+                <div style="height: 300px; overflow: hidden; position: relative;">
+                    <img src="{% static 'images/team/midlaj.png' %}" alt="Midlaj MK" style="width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                    <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(26,15,46,0.7) 0%, transparent 50%);"></div>
+                </div>
+                <div style="padding: 22px 24px 26px; text-align: center;">
+                    <h4 style="color: white; font-size: 1.25rem; margin: 0 0 6px;">Midlaj MK</h4>
+                    <span style="background: rgba(168,85,247,0.15); color: #c084fc; font-size: 0.8rem; font-weight: 700; padding: 4px 14px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;">Manager</span>
+                </div>
+            </div>
 
             <!-- Mubashir -->
-            <div class="glass animate-up" style="border-radius: 28px; overflow: hidden; border: 1px solid rgba(241,41,107,0.15); background: rgba(255,255,255,0.03); transition: transform 0.3s ease, box-shadow 0.3s ease;" onmouseover="this.style.transform='translateY(-8px)';this.style.boxShadow='0 24px 60px rgba(0,0,0,0.45)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+            <div class="glass animate-up" style="border-radius: 28px; overflow: hidden; border: 1px solid rgba(241,41,107,0.15); background: rgba(255,255,255,0.03); transition: transform 0.3s ease, box-shadow 0.3s ease; animation-delay: 0.1s;" onmouseover="this.style.transform='translateY(-8px)';this.style.boxShadow='0 24px 60px rgba(0,0,0,0.45)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
                 <div style="height: 300px; overflow: hidden; position: relative;">
                     <img src="{% static 'images/team/mubashir.png' %}" alt="Mubashir" style="width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
                     <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(26,15,46,0.7) 0%, transparent 50%);"></div>
@@ -208,18 +244,6 @@
                 <div style="padding: 22px 24px 26px; text-align: center;">
                     <h4 style="color: white; font-size: 1.25rem; margin: 0 0 6px;">Mubashir</h4>
                     <span style="background: rgba(241,41,107,0.15); color: #f1296b; font-size: 0.8rem; font-weight: 700; padding: 4px 14px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;">Mentalist Trainer</span>
-                </div>
-            </div>
-
-            <!-- Farsana -->
-            <div class="glass animate-up" style="border-radius: 28px; overflow: hidden; border: 1px solid rgba(241,41,107,0.15); background: rgba(255,255,255,0.03); transition: transform 0.3s ease, box-shadow 0.3s ease; animation-delay: 0.1s;" onmouseover="this.style.transform='translateY(-8px)';this.style.boxShadow='0 24px 60px rgba(0,0,0,0.45)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
-                <div style="height: 300px; overflow: hidden; position: relative;">
-                    <img src="{% static 'images/team/farsana.png' %}" alt="Farsana" style="width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-                    <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(26,15,46,0.7) 0%, transparent 50%);"></div>
-                </div>
-                <div style="padding: 22px 24px 26px; text-align: center;">
-                    <h4 style="color: white; font-size: 1.25rem; margin: 0 0 6px;">Farsana</h4>
-                    <span style="background: rgba(251,191,36,0.15); color: #fbbf24; font-size: 0.8rem; font-weight: 700; padding: 4px 14px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;">Admission Counsellor</span>
                 </div>
             </div>
 
@@ -235,42 +259,8 @@
                 </div>
             </div>
 
-        </div>
-
-        <!-- Bottom row: 2 cards centred -->
-        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 2.5rem; max-width: 740px; margin: 2.5rem auto 0;">
-
-            <!-- Nihada -->
-            <div class="glass animate-up" style="border-radius: 28px; overflow: hidden; border: 1px solid rgba(241,41,107,0.15); background: rgba(255,255,255,0.03); transition: transform 0.3s ease, box-shadow 0.3s ease; animation-delay: 0.3s;" onmouseover="this.style.transform='translateY(-8px)';this.style.boxShadow='0 24px 60px rgba(0,0,0,0.45)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
-                <div style="height: 300px; overflow: hidden; position: relative;">
-                    <img src="{% static 'images/team/nihada.png' %}" alt="Nihada" style="width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-                    <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(26,15,46,0.7) 0%, transparent 50%);"></div>
-                </div>
-                <div style="padding: 22px 24px 26px; text-align: center;">
-                    <h4 style="color: white; font-size: 1.25rem; margin: 0 0 6px;">Nihada</h4>
-                    <span style="background: rgba(251,191,36,0.15); color: #fbbf24; font-size: 0.8rem; font-weight: 700; padding: 4px 14px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;">Admission Counsellor</span>
-                </div>
-            </div>
-
-            <!-- Shamir -->
-            <div class="glass animate-up" style="border-radius: 28px; overflow: hidden; border: 1px solid rgba(241,41,107,0.15); background: rgba(255,255,255,0.03); transition: transform 0.3s ease, box-shadow 0.3s ease; animation-delay: 0.4s;" onmouseover="this.style.transform='translateY(-8px)';this.style.boxShadow='0 24px 60px rgba(0,0,0,0.45)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
-                <div style="height: 300px; overflow: hidden; position: relative;">
-                    <img src="{% static 'images/team/shamir.png' %}" alt="Shamir" style="width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-                    <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(26,15,46,0.7) 0%, transparent 50%);"></div>
-                </div>
-                <div style="padding: 22px 24px 26px; text-align: center;">
-                    <h4 style="color: white; font-size: 1.25rem; margin: 0 0 6px;">Shamir</h4>
-                    <span style="background: rgba(168,85,247,0.15); color: #c084fc; font-size: 0.8rem; font-weight: 700; padding: 4px 14px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;">Personal Trainer</span>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- Third row: 2 new members centred -->
-        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 2.5rem; max-width: 740px; margin: 2.5rem auto 0;">
-
             <!-- Irfan Ahmad -->
-            <div class="glass animate-up" style="border-radius: 28px; overflow: hidden; border: 1px solid rgba(241,41,107,0.15); background: rgba(255,255,255,0.03); transition: transform 0.3s ease, box-shadow 0.3s ease; animation-delay: 0.5s;" onmouseover="this.style.transform='translateY(-8px)';this.style.boxShadow='0 24px 60px rgba(0,0,0,0.45)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+            <div class="glass animate-up" style="border-radius: 28px; overflow: hidden; border: 1px solid rgba(241,41,107,0.15); background: rgba(255,255,255,0.03); transition: transform 0.3s ease, box-shadow 0.3s ease; animation-delay: 0.3s;" onmouseover="this.style.transform='translateY(-8px)';this.style.boxShadow='0 24px 60px rgba(0,0,0,0.45)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
                 <div style="height: 300px; overflow: hidden; position: relative;">
                     <img src="{% static 'images/team/irfan.png' %}" alt="Irfan Ahmad" style="width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
                     <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(26,15,46,0.7) 0%, transparent 50%);"></div>
@@ -282,7 +272,7 @@
             </div>
 
             <!-- Sibin -->
-            <div class="glass animate-up" style="border-radius: 28px; overflow: hidden; border: 1px solid rgba(241,41,107,0.15); background: rgba(255,255,255,0.03); transition: transform 0.3s ease, box-shadow 0.3s ease; animation-delay: 0.6s;" onmouseover="this.style.transform='translateY(-8px)';this.style.boxShadow='0 24px 60px rgba(0,0,0,0.45)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+            <div class="glass animate-up" style="border-radius: 28px; overflow: hidden; border: 1px solid rgba(241,41,107,0.15); background: rgba(255,255,255,0.03); transition: transform 0.3s ease, box-shadow 0.3s ease; animation-delay: 0.4s;" onmouseover="this.style.transform='translateY(-8px)';this.style.boxShadow='0 24px 60px rgba(0,0,0,0.45)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
                 <div style="height: 300px; overflow: hidden; position: relative;">
                     <img src="{% static 'images/team/sibin.png' %}" alt="Sibin" style="width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
                     <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(26,15,46,0.7) 0%, transparent 50%);"></div>
@@ -293,7 +283,53 @@
                 </div>
             </div>
 
-        </div>
+            <!-- Shamir -->
+            <div class="glass animate-up" style="border-radius: 28px; overflow: hidden; border: 1px solid rgba(241,41,107,0.15); background: rgba(255,255,255,0.03); transition: transform 0.3s ease, box-shadow 0.3s ease; animation-delay: 0.5s;" onmouseover="this.style.transform='translateY(-8px)';this.style.boxShadow='0 24px 60px rgba(0,0,0,0.45)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+                <div style="height: 300px; overflow: hidden; position: relative;">
+                    <img src="{% static 'images/team/shamir.png' %}" alt="Shamir" style="width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                    <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(26,15,46,0.7) 0%, transparent 50%);"></div>
+                </div>
+                <div style="padding: 22px 24px 26px; text-align: center;">
+                    <h4 style="color: white; font-size: 1.25rem; margin: 0 0 6px;">Shamir</h4>
+                    <span style="background: rgba(168,85,247,0.15); color: #c084fc; font-size: 0.8rem; font-weight: 700; padding: 4px 14px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;">Personal Trainer</span>
+                </div>
+            </div>
+
+            <!-- Farsana -->
+            <div class="glass animate-up" style="border-radius: 28px; overflow: hidden; border: 1px solid rgba(241,41,107,0.15); background: rgba(255,255,255,0.03); transition: transform 0.3s ease, box-shadow 0.3s ease; animation-delay: 0.6s;" onmouseover="this.style.transform='translateY(-8px)';this.style.boxShadow='0 24px 60px rgba(0,0,0,0.45)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+                <div style="height: 300px; overflow: hidden; position: relative;">
+                    <img src="{% static 'images/team/farsana.png' %}" alt="Farsana" style="width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                    <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(26,15,46,0.7) 0%, transparent 50%);"></div>
+                </div>
+                <div style="padding: 22px 24px 26px; text-align: center;">
+                    <h4 style="color: white; font-size: 1.25rem; margin: 0 0 6px;">Farsana</h4>
+                    <span style="background: rgba(251,191,36,0.15); color: #fbbf24; font-size: 0.8rem; font-weight: 700; padding: 4px 14px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;">Admission Counsellor</span>
+                </div>
+            </div>
+
+            <!-- Nihada -->
+            <div class="glass animate-up" style="border-radius: 28px; overflow: hidden; border: 1px solid rgba(241,41,107,0.15); background: rgba(255,255,255,0.03); transition: transform 0.3s ease, box-shadow 0.3s ease; animation-delay: 0.7s;" onmouseover="this.style.transform='translateY(-8px)';this.style.boxShadow='0 24px 60px rgba(0,0,0,0.45)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+                <div style="height: 300px; overflow: hidden; position: relative;">
+                    <img src="{% static 'images/team/nihada.png' %}" alt="Nihada" style="width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                    <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(26,15,46,0.7) 0%, transparent 50%);"></div>
+                </div>
+                <div style="padding: 22px 24px 26px; text-align: center;">
+                    <h4 style="color: white; font-size: 1.25rem; margin: 0 0 6px;">Nihada</h4>
+                    <span style="background: rgba(251,191,36,0.15); color: #fbbf24; font-size: 0.8rem; font-weight: 700; padding: 4px 14px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;">Admission Counsellor</span>
+                </div>
+            </div>
+
+            <!-- Hasna K -->
+            <div class="glass animate-up" style="border-radius: 28px; overflow: hidden; border: 1px solid rgba(241,41,107,0.15); background: rgba(255,255,255,0.03); transition: transform 0.3s ease, box-shadow 0.3s ease; animation-delay: 0.8s;" onmouseover="this.style.transform='translateY(-8px)';this.style.boxShadow='0 24px 60px rgba(0,0,0,0.45)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+                <div style="height: 300px; overflow: hidden; position: relative;">
+                    <img src="{% static 'images/team/hasna.png' %}" alt="Hasna K" style="width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                    <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(26,15,46,0.7) 0%, transparent 50%);"></div>
+                </div>
+                <div style="padding: 22px 24px 26px; text-align: center;">
+                    <h4 style="color: white; font-size: 1.25rem; margin: 0 0 6px;">Hasna K</h4>
+                    <span style="background: rgba(241,41,107,0.15); color: #f1296b; font-size: 0.8rem; font-weight: 700; padding: 4px 14px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;">Telecaller</span>
+                </div>
+            </div>
     </div>
 </section>
 

@@ -25,5 +25,6 @@ urlpatterns = [
     path('admin-analytics/submissions/<int:submission_id>/review/', views.submission_review_view, name='submission_review'),
     path('admin-analytics/certificates/issue/', views.certificate_issue_view, name='certificate_issue'),
     path('admin-analytics/certificates/<str:cert_uid>/approve/', views.certificate_approve_view, name='certificate_approve'),
+    path('admin-analytics/stream-status/<str:video_id>/', views.stream_status_view, name='stream_status'),
     path('certificates/', views.certificates_view, name='certificates'),
 ]

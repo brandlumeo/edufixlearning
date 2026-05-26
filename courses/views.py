@@ -156,13 +156,27 @@ def download_certificate(request, cert_uid):
 def verify_certificate(request, cert_uid):
     certificate = get_object_or_404(Certificate, certificate_uid=cert_uid)
     return render(request, 'courses/verify_certificate.html', {'certificate': certificate})
+
+
 @login_required
-def serve_video(request, lesson_id):
-    lesson = get_object_or_404(Lesson, id=lesson_id)
-    # Check enrollment
-    if not Enrollment.objects.filter(student=request.user, course=lesson.module.course).exists() and not request.user.is_staff:
-        return HttpResponse("Unauthorized", status=403)
-    
-    # In a real app, this would use a signed URL or X-Accel-Redirect/X-Sendfile
-    # For now, we redirect to the video source as a "proxy" or return the file
-    return redirect(lesson.video_url)
+def stream_status_view(request, video_id):
+    """
+    AJAX endpoint — returns Cloudflare Stream processing status.
+    Accessible by any logged-in user so the lesson page spinner can
+    auto-reload once the video becomes ready.
+    """
+    from courses.utils_cf_stream import get_video_status
+    import logging
+    logger = logging.getLogger(__name__)
+    try:
+        info = get_video_status(video_id)
+        # Update the DB record the moment Cloudflare says it's ready
+        if info['ready']:
+            Lesson.objects.filter(
+                cf_stream_video_id=video_id,
+                cf_stream_status='processing'
+            ).update(cf_stream_status='ready')
+        return JsonResponse(info)
+    except Exception as e:
+        logger.exception("Error polling stream status for %s", video_id)
+        return JsonResponse({'ready': False, 'state': 'error', 'error': str(e)}, status=500)

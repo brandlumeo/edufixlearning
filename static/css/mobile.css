@@ -238,6 +238,19 @@ html, body { overflow-x: hidden; max-width: 100%; }
     #instructors h2 { font-size: 2.2rem !important; }
     #instructors a.btn { margin-top: 2rem !important; }
 
+    /* Co-Founder: 2-col → 1-col, image on top */
+    #cofounder div[style*="1.2fr 1fr"] {
+        grid-template-columns: 1fr !important;
+        gap: 2rem !important;
+        direction: ltr !important;
+    }
+    /* Move image (last child) to top on mobile */
+    #cofounder div[style*="1.2fr 1fr"] > div:last-child {
+        order: -1 !important;
+    }
+    #cofounder h2 { font-size: 2.2rem !important; }
+    #cofounder { padding: 55px 0 !important; }
+
     /* Bottom stats banner: 4-col → 2-col */
     section[style*="background: var(--surface-black)"] > .container {
         grid-template-columns: repeat(2, 1fr) !important;

@@ -35,3 +35,6 @@ ENV/
 # OS generated files
 .DS_Store
 Thumbs.db
+
+# Archive / Zip files
+*.zip

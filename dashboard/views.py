@@ -2,6 +2,7 @@ import logging
 import re
 
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 from django.contrib import messages
@@ -22,6 +23,7 @@ from courses.models import (
     Event, Discussion, Question, Notification, Resource, Category
 )
 from users.models import UserActivity
+from management.models import Batch, Attendance, FeeRecord, PlacementOutcome, AssetInventory, Lead, SupportTicket
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -360,7 +362,7 @@ def certificates_view(request):
         logger.exception("Error loading certificates for user %s", request.user.pk)
         return render(request, 'dashboard/certificates.html', {'error': 'An error occurred. Please try again.', 'certificate_items': []})
 
-from management.models import Batch, Attendance, FeeRecord, PlacementOutcome, AssetInventory, Lead, SupportTicket
+# management.models already imported at the top of this file
 
 @staff_member_required
 def admin_dashboard(request):
@@ -507,36 +509,60 @@ def admin_dashboard(request):
 
 @staff_member_required
 def upload_class_view(request):
-    from django.shortcuts import redirect
-    from django.contrib import messages
     if request.method == 'POST':
-        module_id = request.POST.get('module_id')
-        title = request.POST.get('title')
-        video_url = request.POST.get('video_url')
-        
-        if module_id and title and video_url:
-            try:
-                module = Module.objects.get(id=module_id)
-                # Determine next order index
-                last_lesson = module.lessons.order_by('-order_index').first()
-                next_order = last_lesson.order_index + 1 if last_lesson else 0
-                
-                Lesson.objects.create(
-                    module=module,
-                    title=title,
-                    video_url=video_url,
-                    order_index=next_order
-                )
-                messages.success(request, f"Class '{title}' uploaded successfully to {module.course.title}!")
-            except Module.DoesNotExist:
-                messages.error(request, "Selected module does not exist.")
-            except Exception:
-                logger.exception("Error uploading class")
-                messages.error(request, "An error occurred while uploading the class. Please try again.")
-        else:
-            messages.error(request, "Please fill in all required fields.")
-            
+        module_id  = request.POST.get('module_id')
+        title      = request.POST.get('title')
+        video_file = request.FILES.get('video_file')
+
+        if not (module_id and title and video_file):
+            messages.error(request, "Please fill in all required fields and select a video file.")
+            return redirect('dashboard:admin_dashboard')
+
+        try:
+            module = Module.objects.get(id=module_id)
+            last_lesson = module.lessons.order_by('-order_index').first()
+            next_order  = last_lesson.order_index + 1 if last_lesson else 0
+
+            # Upload to Cloudflare Stream
+            from courses.utils_cf_stream import upload_video_from_file
+            cf_video_id = upload_video_from_file(video_file, video_file.name)
+
+            Lesson.objects.create(
+                module=module,
+                title=title,
+                cf_stream_video_id=cf_video_id,
+                cf_stream_status='processing',
+                order_index=next_order,
+            )
+            messages.success(
+                request,
+                f"Video '{title}' uploaded to Cloudflare Stream and is now processing. "
+                f"It will be ready to play shortly."
+            )
+        except Module.DoesNotExist:
+            messages.error(request, "Selected module does not exist.")
+        except Exception:
+            logger.exception("Error uploading class to Cloudflare Stream")
+            messages.error(request, "Upload failed. Check your Cloudflare credentials and try again.")
+
     return redirect('dashboard:admin_dashboard')
+
+
+@staff_member_required
+def stream_status_view(request, video_id):
+    """AJAX endpoint — returns Cloudflare Stream processing status for a video_id."""
+    from courses.utils_cf_stream import get_video_status
+    try:
+        info = get_video_status(video_id)
+        # Also update the Lesson record if it just became ready
+        if info['ready']:
+            Lesson.objects.filter(cf_stream_video_id=video_id, cf_stream_status='processing').update(
+                cf_stream_status='ready'
+            )
+        return JsonResponse(info)
+    except Exception as e:
+        logger.exception("Error polling stream status for %s", video_id)
+        return JsonResponse({'ready': False, 'state': 'error', 'error': str(e)}, status=500)
 
 @staff_member_required
 def create_course_view(request):
