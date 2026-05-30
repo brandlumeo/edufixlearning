@@ -84,6 +84,19 @@ def lesson_view(request, course_slug, lesson_id):
     # Get existing submissions
     user_submissions = Submission.objects.filter(student=request.user, assignment__lesson=lesson)
     
+    # Find next lesson in the index order
+    course_lessons = Lesson.objects.filter(
+        module__course=course
+    ).select_related('module').order_by('module__order_index', 'order_index')
+    
+    next_lesson = None
+    lessons_list = list(course_lessons)
+    for i, l in enumerate(lessons_list):
+        if l.id == lesson.id:
+            if i + 1 < len(lessons_list):
+                next_lesson = lessons_list[i + 1]
+            break
+    
     context = {
         'course': course,
         'lesson': lesson,
@@ -92,6 +105,7 @@ def lesson_view(request, course_slug, lesson_id):
         'assignment': assignment,
         'submission_form': submission_form,
         'user_submissions': user_submissions,
+        'next_lesson': next_lesson,
     }
     return render(request, 'courses/lesson_view.html', context)
 
