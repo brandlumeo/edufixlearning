@@ -17,27 +17,27 @@
     </div>
 
     {% if all_dashboard_courses %}
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem;">
+    <div style="gap: 2rem;" class="grid-3-col">
         {% for item in all_dashboard_courses %}
-        <div class="stat-card" style="padding: 0; overflow: hidden; height: auto; position: relative;">
+        <div class="stat-card" style="padding: 0; overflow: hidden; position: relative; display: flex; flex-direction: column;">
             {% if not item.is_enrolled %}
             <div style="position: absolute; top: 12px; right: 12px; z-index: 10; background: rgba(0,0,0,0.75); backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,0.15); border-radius: 20px; padding: 4px 10px; display: flex; align-items: center; gap: 5px;">
                 <i class="fa-solid fa-lock" style="font-size: 0.65rem; color: #ffd700;"></i>
                 <span style="font-size: 0.65rem; font-weight: 700; color: #ffd700; text-transform: uppercase; letter-spacing: 0.5px;">Not Enrolled</span>
             </div>
             {% endif %}
-            <div style="position: relative; height: 180px; background: #eee;">
+            <div style="position: relative; width: 100%; aspect-ratio: 16/9; background: var(--border-light); flex-shrink: 0; overflow: hidden;">
                 {% if item.course.thumbnail %}
-                    <img src="{{ item.course.thumbnail.url }}" style="width: 100%; height: 100%; object-fit: cover; {% if not item.is_enrolled %}filter: grayscale(100%) opacity(0.8);{% endif %}">
+                    <img src="{{ item.course.thumbnail.url }}" style="width: 100%; height: 100%; object-fit: cover; object-position: center; {% if not item.is_enrolled %}filter: grayscale(100%) opacity(0.8);{% endif %}">
                 {% endif %}
                 <div style="position: absolute; top: 15px; left: 15px; background: rgba(59, 130, 246, 0.9); color: white; padding: 5px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 800;">
                     {{ item.course.category.title|default:"Design" }}
                 </div>
             </div>
             
-            <div style="padding: 1.5rem; {% if not item.is_enrolled %}opacity: 0.75;{% endif %}">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <h3 style="margin: 0; font-size: 1.25rem; color: var(--text-main); font-weight: 800;">{{ item.course.title }}</h3>
+            <div style="padding: 1.5rem; display: flex; flex-direction: column; flex-grow: 1; {% if not item.is_enrolled %}opacity: 0.75;{% endif %}">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; gap: 15px;">
+                    <h3 style="margin: 0; font-size: 1.25rem; line-height: 1.3; color: var(--text-main); font-weight: 800; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 3.25rem;">{{ item.course.title }}</h3>
                     <div style="width: 35px; height: 35px; background: var(--dash-bg); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--text-muted);">
                         <i class="fa-solid fa-ellipsis-vertical"></i>
                     </div>
@@ -101,23 +101,61 @@
                     </div>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 12px;">
+                <div style="gap: 12px; margin-top: auto;" class="grid-2-col">
                     {% if item.resume_lesson %}
-                        <a href="{% url 'courses:lesson_view' item.course.slug item.resume_lesson.id %}" class="btn-primary-dash" style="text-align: center; padding: 12px; border-radius: 12px;">
-                            <i class="fa-solid fa-play"></i> Resume Class
+                        <a href="{% url 'courses:lesson_view' item.course.slug item.resume_lesson.id %}" class="btn-primary-dash" style="text-align: center; padding: 12px; border-radius: 12px; font-size: 0.85rem; font-weight: 700; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <i class="fa-solid fa-play"></i> Resume
+                        </a>
+                    {% else %}
+                        <a href="#" class="btn-primary-dash" style="text-align: center; padding: 12px; border-radius: 12px; font-size: 0.85rem; font-weight: 700; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <i class="fa-solid fa-play"></i> Start
                         </a>
                     {% endif %}
-                    <a href="{% url 'courses:course_detail' item.course.slug %}" style="text-align: center; padding: 12px; background: var(--dash-bg); border: 1px solid var(--border-light); border-radius: 12px; text-decoration: none; font-size: 0.85rem; font-weight: 700; color: var(--text-main); transition: var(--transition);" onmouseover="this.style.background='var(--border-light)'" onmouseout="this.style.background='var(--dash-bg)'">
+                    <a href="{% url 'courses:course_detail' item.course.slug %}" style="text-align: center; padding: 12px; background: var(--dash-bg); border: 1px solid var(--border-light); border-radius: 12px; text-decoration: none; font-size: 0.85rem; font-weight: 700; color: var(--text-main); transition: var(--transition); display: flex; align-items: center; justify-content: center;" onmouseover="this.style.background='var(--border-light)'" onmouseout="this.style.background='var(--dash-bg)'">
                         Dashboard
                     </a>
                 </div>
                 {% else %}
-                <div style="display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 15px;">
-                    <button disabled class="btn-primary-dash" style="background: rgba(255,255,255,0.05); color: var(--text-muted); cursor: not-allowed; text-align: center; padding: 12px; border-radius: 12px; border: 1px dashed var(--border-light);">
-                        <i class="fa-solid fa-lock"></i> Locked (Purchase to Access)
+                <div style="background: var(--dash-bg); padding: 1.5rem; border-radius: 20px; margin-bottom: 20px; border: 1px solid var(--border-light); opacity: 0.5;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <span style="font-size: 0.75rem; font-weight: 800; color: var(--text-main);">COMPLETION</span>
+                        <span style="font-size: 0.75rem; font-weight: 800; color: var(--text-muted);"><i class="fa-solid fa-lock"></i> Locked</span>
+                    </div>
+                    <div style="height: 8px; background: var(--border-light); border-radius: 10px; overflow: hidden; margin-bottom: 12px;"></div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-muted); font-weight: 600;">
+                        <span><i class="fa-solid fa-check-circle"></i> 0 Done</span>
+                        <span><i class="fa-solid fa-circle"></i> {{ item.total_lessons }} Left</span>
+                    </div>
+                </div>
+
+                <!-- Specific Course Details (Locked) -->
+                <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px; opacity: 0.5;">
+                    <div style="display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px dashed var(--border-light);">
+                         <div style="width: 30px; height: 30px; background: var(--dash-bg); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--text-muted);">
+                            <i class="fa-solid fa-file-signature" style="font-size: 0.8rem;"></i>
+                         </div>
+                         <div style="flex-grow: 1;">
+                            <p style="margin: 0; font-size: 0.75rem; font-weight: 700; color: var(--text-main);">Assignments</p>
+                            <p style="margin: 0; font-size: 0.65rem; color: var(--text-muted);">Locked</p>
+                         </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                         <div style="width: 30px; height: 30px; background: var(--dash-bg); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--text-muted);">
+                            <i class="fa-solid fa-certificate" style="font-size: 0.8rem;"></i>
+                         </div>
+                         <div style="flex-grow: 1;">
+                            <p style="margin: 0; font-size: 0.75rem; font-weight: 700; color: var(--text-main);">Certificate</p>
+                            <p style="margin: 0; font-size: 0.65rem; color: var(--text-muted);">Locked</p>
+                         </div>
+                    </div>
+                </div>
+
+                <div style="gap: 12px; margin-top: auto;" class="grid-2-col">
+                    <button disabled class="btn-primary-dash" style="background: rgba(255,255,255,0.05); color: var(--text-muted); cursor: not-allowed; text-align: center; padding: 12px; border-radius: 12px; border: 1px dashed var(--border-light); font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <i class="fa-solid fa-lock"></i> Locked
                     </button>
-                    <a href="{% url 'courses:course_detail' item.course.slug %}" style="text-align: center; padding: 12px; background: transparent; border: 1px solid var(--primary); color: var(--primary); border-radius: 12px; text-decoration: none; font-size: 0.85rem; font-weight: 700; transition: var(--transition);" onmouseover="this.style.background='var(--primary)'; this.style.color='white';" onmouseout="this.style.background='transparent'; this.style.color='var(--primary)';">
-                        View Details
+                    <a href="{% url 'courses:course_detail' item.course.slug %}" style="text-align: center; padding: 12px; background: transparent; border: 1px solid var(--primary-blue, #3b82f6); color: var(--primary-blue, #3b82f6); border-radius: 12px; text-decoration: none; font-size: 0.85rem; font-weight: 700; transition: var(--transition); display: flex; align-items: center; justify-content: center;" onmouseover="this.style.background='var(--primary-blue, #3b82f6)'; this.style.color='white';" onmouseout="this.style.background='transparent'; this.style.color='var(--primary-blue, #3b82f6)';">
+                        Details
                     </a>
                 </div>
                 {% endif %}

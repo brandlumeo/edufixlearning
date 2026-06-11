@@ -74,21 +74,50 @@ html, body { overflow-x: hidden; max-width: 100%; }
         flex-direction: column !important;
         gap: 0.75rem !important;
         padding: 1rem !important;
-        align-items: flex-start !important;
+        align-items: stretch !important;
     }
     .top-header .search-box {
         width: 100% !important;
         max-width: 100% !important;
         margin: 0 !important;
+        order: 2;
     }
     .header-left-prog {
-        flex-direction: column !important;
-        align-items: flex-start !important;
-        gap: 8px !important;
-        width: 100%;
+        flex-direction: row !important;
+        align-items: center !important;
+        flex-wrap: wrap !important;
+        gap: 10px !important;
+        width: 100% !important;
+        order: 1;
     }
-    .global-progress { width: 100% !important; }
-    .header-actions { align-self: flex-end; }
+    /* Mobile menu btn + user profile row */
+    .header-left-prog .mobile-menu-btn {
+        flex-shrink: 0;
+    }
+    .header-left-prog .user-profile {
+        flex: 1;
+        border-left: none !important;
+        padding-left: 0 !important;
+        min-width: 0;
+    }
+    .header-left-prog .user-profile .user-info h4 {
+        font-size: 0.85rem !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 130px;
+    }
+    .header-left-prog .user-profile .user-info p {
+        font-size: 0.65rem !important;
+    }
+    .global-progress {
+        width: 100% !important;
+        order: 3;
+    }
+    .header-actions {
+        align-self: flex-end;
+        order: 4;
+    }
 
     /* ── Dashboard grids ── */
     .hub-container  { grid-template-columns: 1fr !important; }
@@ -112,19 +141,41 @@ html, body { overflow-x: hidden; max-width: 100%; }
     /* ════ NAVBAR ════ */
     nav { padding: 0.9rem 0 !important; }
 
+    /* Nav container: logo left, hamburger right — always aligned */
+    .nav-content {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        flex-wrap: nowrap !important;
+        gap: 0 !important;
+    }
+
+    /* Logo: prevent it from shrinking/wrapping */
+    .nav-content .logo {
+        flex-shrink: 0;
+        font-size: 1.2rem !important;
+        letter-spacing: -0.5px !important;
+    }
+
     /* Hide desktop action buttons */
     .nav-actions { display: none !important; }
 
-    /* Show hamburger */
+    /* Show hamburger — perfectly vertically centered with logo */
     .nav-hamburger {
         display: flex !important;
-        width: 42px; height: 42px;
-        align-items: center; justify-content: center;
+        width: 42px;
+        height: 42px;
+        align-items: center;
+        justify-content: center;
         background: rgba(255,255,255,0.08);
         border: 1px solid rgba(255,255,255,0.15);
         border-radius: 10px;
-        cursor: pointer; color: white;
-        font-size: 1.2rem; flex-shrink: 0;
+        cursor: pointer;
+        color: white;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+        order: 3;
+        margin-left: auto;
     }
 
     /* Fullscreen mobile nav overlay */
@@ -135,10 +186,12 @@ html, body { overflow-x: hidden; max-width: 100%; }
         width: 100vw; height: 100vh;
         background: rgba(26, 4, 34, 0.98);
         backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
         z-index: 9999;
         align-items: center; justify-content: center;
         gap: 2rem; padding: 2rem;
         list-style: none;
+        margin: 0 !important;
     }
     .nav-links.open { display: flex !important; }
     .nav-links li   { list-style: none; width: 100%; text-align: center; }
@@ -150,10 +203,28 @@ html, body { overflow-x: hidden; max-width: 100%; }
         cursor: pointer; background: none; border: none;
     }
     .nav-mobile-auth {
-        display: block;
+        display: flex !important;
+        flex-direction: column;
+        align-items: center;
         width: 100%; margin-top: 1rem;
         padding-top: 1.25rem;
         border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    .nav-mobile-auth a {
+        display: inline-block !important;
+        width: 100% !important;
+        max-width: 280px !important;
+        margin: 0 auto !important;
+        text-align: center !important;
+    }
+    /* Courses dropdown link — override inline display:flex to center properly */
+    .nav-links .nav-dropdown a {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        text-align: center !important;
+        width: 100% !important;
+        gap: 5px !important;
     }
 
 
@@ -431,41 +502,47 @@ html, body { overflow-x: hidden; max-width: 100%; }
     /* ════════════════════════════════════════
        LESSON VIEW  (lesson_view.html)
        ════════════════════════════════════════ */
+    /* Lock body scrolling override for lesson page on mobile */
+    body {
+        overflow: auto !important;
+        height: auto !important;
+    }
 
     /* Stack the 2-panel layout vertically */
-    div[style*="grid-template-columns: 1fr 400px"] {
+    .lesson-main-layout {
         grid-template-columns: 1fr !important;
         height: auto !important;
         min-height: unset !important;
     }
 
     /* Player panel: normal scroll */
-    div[style*="grid-template-columns: 1fr 400px"] > div:first-child {
+    .lesson-main-layout > div:first-child {
         overflow-y: visible !important;
         padding: 1.25rem !important;
     }
 
     /* Sidebar panel: fixed height, scrollable */
-    div[style*="grid-template-columns: 1fr 400px"] > div:last-child {
+    .lesson-main-layout > div:last-child {
         border-left: none !important;
         border-top: 1px solid var(--glass-border) !important;
         height: 320px !important;
         overflow-y: auto !important;
     }
 
-    /* Inner lesson info: 1fr 300px → 1-col */
-    div[style*="grid-template-columns: 1fr 300px"] {
+    /* Inner lesson info: 1fr 320px → 1-col */
+    .lesson-content-grid {
         grid-template-columns: 1fr !important;
         gap: 1.5rem !important;
     }
 
     /* Lesson title header block */
-    div[style*="justify-content: space-between; align-items: start; margin-bottom: 2rem"] {
+    .lesson-header-block {
         flex-direction: column !important;
+        align-items: flex-start !important;
         gap: 1rem !important;
     }
-    div[style*="background: var(--accent-pink)"][style*="border-radius: 12px"] h1 {
-        font-size: 1.35rem !important;
+    .lesson-header-block h1 {
+        font-size: 1.5rem !important;
     }
 
 
@@ -551,6 +628,35 @@ html, body { overflow-x: hidden; max-width: 100%; }
     /* Community tab: class schedule card */
     div[style*="background: #f0f9ff"] {
         padding: 1.25rem !important;
+    }
+
+    /* ── Assignments Page ── */
+    .assignment-card {
+        grid-template-columns: 1fr !important;
+        gap: 1.25rem !important;
+        padding: 1.5rem !important;
+        text-align: left !important;
+    }
+
+    /* Need Project Help? banner stacking */
+    .assignment-help-banner {
+        flex-direction: column !important;
+        gap: 1.5rem !important;
+        padding: 1.5rem !important;
+        align-items: flex-start !important;
+    }
+    .assignment-help-banner > div {
+        max-width: 100% !important;
+    }
+    .assignment-help-banner > a {
+        width: 100% !important;
+        text-align: center !important;
+    }
+
+    /* Assignment metrics grid */
+    .assignment-metrics-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 1rem !important;
     }
 }
 
@@ -643,7 +749,8 @@ html, body { overflow-x: hidden; max-width: 100%; }
     .admin-stats-grid,
     .layout-2-col,
     .contact-main-grid,
-    .contact-form-grid {
+    .contact-form-grid,
+    .assignment-metrics-grid {
         grid-template-columns: 1fr !important;
         gap: 1.5rem !important;
     }
@@ -919,5 +1026,55 @@ html, body { overflow-x: hidden; max-width: 100%; }
         width: 80px !important;
         height: 80px !important;
         border-radius: 16px !important;
+    }
+}
+
+/* ================================================================
+   Mobile Responsiveness Enhancements (Appended)
+   ================================================================ */
+@media (max-width: 768px) {
+    /* 1. Reduce oversized paddings globally */
+    #cofounder, #more-courses, #faq, #cta {
+        padding: 50px 0 !important;
+    }
+
+    /* 2. Optimize the Ready to Start CTA Section */
+    .cta-glass {
+        padding: 2rem !important;
+        border-radius: 24px !important;
+    }
+    .cta-form {
+        flex-direction: column !important;
+        background: transparent !important;
+        border: none !important;
+        padding: 0 !important;
+        gap: 1.5rem !important;
+    }
+    .cta-form input[type="email"] {
+        width: 100% !important;
+        background: rgba(0,0,0,0.3) !important;
+        padding: 15px 1.5rem !important;
+        border-radius: 50px !important;
+        border: 1px solid var(--glass-border) !important;
+        box-sizing: border-box;
+    }
+    .cta-form button {
+        width: 100% !important;
+    }
+
+    /* 3. Hide slider arrows */
+    .course-scroll-btn {
+        display: none !important;
+    }
+
+    /* 4. Reset justified text to prevent huge gaps */
+    .justify-text-mobile {
+        text-align: left !important;
+    }
+    
+    /* 5. Course card width adjustments */
+    .course-scroll-card {
+        min-width: 280px !important;
+        max-width: 280px !important;
     }
 }

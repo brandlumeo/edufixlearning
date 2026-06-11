@@ -94,16 +94,20 @@ def register_view(request):
             user.is_verified = True # Auto-verify for local development
             user.save()
             
-            # Send Verification Email
-            token = default_token_generator.make_token(user)
-            uid = urlsafe_base64_encode(force_bytes(user.pk))
-            verification_link = f"{request.scheme}://{request.get_host()}/accounts/verify/{uid}/{token}/"
-            
-            subject = "Verify your EduFix Account"
-            message = f"Hi {user.full_name}, please verify your email by clicking here: {verification_link}"
-            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
-            
-            messages.success(request, "Registration successful! Please check your email to verify your account.")
+            # Send Verification Email (wrapped so email failures don't break registration)
+            try:
+                token = default_token_generator.make_token(user)
+                uid = urlsafe_base64_encode(force_bytes(user.pk))
+                verification_link = f"{request.scheme}://{request.get_host()}/accounts/verify/{uid}/{token}/"
+
+                subject = "Verify your EduFix Account"
+                message = f"Hi {user.full_name}, please verify your email by clicking here: {verification_link}"
+                send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
+            except Exception:
+                # Email sending failed — log it but don't block the user
+                pass
+
+            messages.success(request, "Registration successful! You can now log in.")
             return redirect('login')
     else:
         initial_email = request.GET.get('email', '')

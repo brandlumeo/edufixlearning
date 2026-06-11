@@ -9,7 +9,7 @@
         <p style="margin: 5px 0 0; color: var(--text-muted); font-weight: 600;">Manage your profile and account preferences</p>
     </div>
 
-    <div style="display: grid; grid-template-columns: 280px 1fr; gap: 3rem;">
+    <div style="gap: 3rem;" class="grid-280-1">
         <!-- Navigation Tabs -->
         <div style="display: flex; flex-direction: column; gap: 8px;">
             <div class="settings-tab active" data-tab="profile">
@@ -83,7 +83,7 @@
                             </div>
                         </div>
 
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                        <div style="gap: 2rem;" class="grid-2-col">
                             <div style="grid-column: span 1;">
                                 <label class="setting-label">FULL NAME</label>
                                 <input type="text" name="full_name" value="{{ user.full_name }}" class="setting-input">
@@ -169,7 +169,7 @@
                 <div class="tab-content" id="tab-preferences" style="display: none;">
                     <h3 style="margin: 0 0 2rem; font-size: 1.4rem; font-weight: 800; color: var(--text-main);">General Preferences</h3>
                     <div style="display: flex; flex-direction: column; gap: 1.5rem;">
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                        <div style="gap: 2rem;" class="grid-2-col">
                             <div>
                                 <label class="setting-label">DEFAULT VIDEO QUALITY</label>
                                 <select class="setting-input">

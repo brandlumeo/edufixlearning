@@ -27,8 +27,8 @@
 
                 <!-- Slide 1: Video Editing -->
                 <div class="carousel-slide">
-                    <div class="offer-card"
-                        style="padding: 0; overflow: hidden; border-radius: 30px; display: grid; grid-template-columns: 1fr 1fr; min-height: 380px;">
+                    <div class="offer-card grid-2-col"
+                        style="padding: 0; overflow: hidden; border-radius: 30px;   min-height: 380px;">
                         <!-- Left: Text -->
                         <div
                             style="padding: 50px 48px; display: flex; flex-direction: column; justify-content: center; gap: 0;">
@@ -72,8 +72,8 @@
 
                 <!-- Slide 2: Poster Designing -->
                 <div class="carousel-slide">
-                    <div class="offer-card"
-                        style="padding: 0; overflow: hidden; border-radius: 30px; display: grid; grid-template-columns: 1fr 1fr; min-height: 380px;">
+                    <div class="offer-card grid-2-col"
+                        style="padding: 0; overflow: hidden; border-radius: 30px;   min-height: 380px;">
                         <!-- Left: Text -->
                         <div
                             style="padding: 50px 48px; display: flex; flex-direction: column; justify-content: center;">
@@ -117,8 +117,8 @@
 
                 <!-- Slide 3: Free Resources -->
                 <div class="carousel-slide">
-                    <div class="offer-card"
-                        style="padding: 0; overflow: hidden; border-radius: 30px; display: grid; grid-template-columns: 1fr 1fr; min-height: 380px;">
+                    <div class="offer-card grid-2-col"
+                        style="padding: 0; overflow: hidden; border-radius: 30px;   min-height: 380px;">
                         <!-- Left: Text -->
                         <div
                             style="padding: 50px 48px; display: flex; flex-direction: column; justify-content: center;">
@@ -143,7 +143,7 @@
                                 style="display: inline-flex; align-items: center; gap: 10px; background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #1a0033; padding: 14px 32px; border-radius: 50px; font-weight: 800; font-size: 0.95rem; text-decoration: none; width: fit-content; box-shadow: 0 10px 30px rgba(251,191,36,0.3); transition: transform 0.2s, box-shadow 0.2s;"
                                 onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 16px 40px rgba(251,191,36,0.45)'"
                                 onmouseout="this.style.transform='';this.style.boxShadow='0 10px 30px rgba(251,191,36,0.3)'">
-                                Explore Courses <i class="fa-solid fa-arrow-right"></i>
+                                Get Resources <i class="fa-solid fa-arrow-right"></i>
                             </a>
                         </div>
                         <!-- Right: Visual -->
@@ -180,68 +180,52 @@
     </div>
 </section>
 
-<!-- Stats Banner (Xylem Model) -->
-<section style="padding: 60px 0; background: #fff;">
+<!-- Stats Banner (Dark Theme) -->
+<section style="padding: 60px 0; background: var(--surface-black); border-top: 1px solid var(--glass-border); border-bottom: 1px solid var(--glass-border);">
     <div class="container">
-        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px;">
+        <div style="gap: 25px;" class="grid-4-col">
             <!-- Stat 1 -->
-            <div style="background: #f0fdf4; padding: 40px 25px; border-radius: 24px; text-align: center; border: 1px solid #dcfce7; transition: transform 0.3s ease; cursor: default;"
-                onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+            <div class="glass animate-up" style="padding: 40px 25px; border-radius: 24px; text-align: center; cursor: default;">
                 <div style="margin-bottom: 20px; display: flex; justify-content: center;">
-                    <div
-                        style="width: 80px; height: 80px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(22, 163, 74, 0.08);">
-                        <i class="fa-solid fa-users" style="font-size: 2.2rem; color: #16a34a;"></i>
+                    <div style="width: 80px; height: 80px; background: rgba(34, 197, 94, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(34, 197, 94, 0.2); border: 1px solid rgba(34, 197, 94, 0.2);">
+                        <i class="fa-solid fa-users" style="font-size: 2.2rem; color: #4ade80;"></i>
                     </div>
                 </div>
-                <h3 style="color: #166534; font-size: 2.5rem; font-weight: 800; margin-bottom: 8px;">2,000+</h3>
-                <p
-                    style="color: #22c55e; font-weight: 700; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px;">
-                    Satisfied Students</p>
+                <h3 style="color: #fff; font-size: 2.5rem; font-weight: 800; margin-bottom: 8px;">2,000+</h3>
+                <p style="color: #4ade80; font-weight: 700; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px;">Satisfied Students</p>
             </div>
 
             <!-- Stat 2 -->
-            <div style="background: #eff6ff; padding: 40px 25px; border-radius: 24px; text-align: center; border: 1px solid #dbeafe; transition: transform 0.3s ease; cursor: default;"
-                onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+            <div class="glass animate-up" style="padding: 40px 25px; border-radius: 24px; text-align: center; cursor: default; animation-delay: 0.1s;">
                 <div style="margin-bottom: 20px; display: flex; justify-content: center;">
-                    <div
-                        style="width: 80px; height: 80px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(37, 99, 235, 0.08);">
-                        <i class="fa-solid fa-graduation-cap" style="font-size: 2.2rem; color: #2563eb;"></i>
+                    <div style="width: 80px; height: 80px; background: rgba(59, 130, 246, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(59, 130, 246, 0.2); border: 1px solid rgba(59, 130, 246, 0.2);">
+                        <i class="fa-solid fa-graduation-cap" style="font-size: 2.2rem; color: #60a5fa;"></i>
                     </div>
                 </div>
-                <h3 style="color: #1e40af; font-size: 2.5rem; font-weight: 800; margin-bottom: 8px;">50,000+</h3>
-                <p
-                    style="color: #3b82f6; font-weight: 700; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px;">
-                    Online Aspirants</p>
+                <h3 style="color: #fff; font-size: 2.5rem; font-weight: 800; margin-bottom: 8px;">50,000+</h3>
+                <p style="color: #60a5fa; font-weight: 700; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px;">Online Aspirants</p>
             </div>
 
             <!-- Stat 3 -->
-            <div style="background: #fff7ed; padding: 40px 25px; border-radius: 24px; text-align: center; border: 1px solid #ffedd5; transition: transform 0.3s ease; cursor: default;"
-                onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+            <div class="glass animate-up" style="padding: 40px 25px; border-radius: 24px; text-align: center; cursor: default; animation-delay: 0.2s;">
                 <div style="margin-bottom: 20px; display: flex; justify-content: center;">
-                    <div
-                        style="width: 80px; height: 80px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(234, 88, 12, 0.08);">
-                        <i class="fa-solid fa-building-columns" style="font-size: 2.2rem; color: #ea580c;"></i>
+                    <div style="width: 80px; height: 80px; background: rgba(249, 115, 22, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(249, 115, 22, 0.2); border: 1px solid rgba(249, 115, 22, 0.2);">
+                        <i class="fa-solid fa-building-columns" style="font-size: 2.2rem; color: #fb923c;"></i>
                     </div>
                 </div>
-                <h3 style="color: #9a3412; font-size: 2.5rem; font-weight: 800; margin-bottom: 8px;">15+</h3>
-                <p
-                    style="color: #f97316; font-weight: 700; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px;">
-                    Learning Centres</p>
+                <h3 style="color: #fff; font-size: 2.5rem; font-weight: 800; margin-bottom: 8px;">15+</h3>
+                <p style="color: #fb923c; font-weight: 700; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px;">Learning Centres</p>
             </div>
 
             <!-- Stat 4 -->
-            <div style="background: #fdf2f8; padding: 40px 25px; border-radius: 24px; text-align: center; border: 1px solid #fce7f3; transition: transform 0.3s ease; cursor: default;"
-                onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+            <div class="glass animate-up" style="padding: 40px 25px; border-radius: 24px; text-align: center; cursor: default; animation-delay: 0.3s;">
                 <div style="margin-bottom: 20px; display: flex; justify-content: center;">
-                    <div
-                        style="width: 80px; height: 80px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(219, 39, 119, 0.08);">
-                        <i class="fa-brands fa-youtube" style="font-size: 2.5rem; color: #db2777;"></i>
+                    <div style="width: 80px; height: 80px; background: rgba(219, 39, 119, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(219, 39, 119, 0.2); border: 1px solid rgba(219, 39, 119, 0.2);">
+                        <i class="fa-brands fa-youtube" style="font-size: 2.5rem; color: #f472b6;"></i>
                     </div>
                 </div>
-                <h3 style="color: #9d174d; font-size: 2.5rem; font-weight: 800; margin-bottom: 8px;">10+</h3>
-                <p
-                    style="color: #ec4899; font-weight: 700; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px;">
-                    YouTube Channels</p>
+                <h3 style="color: #fff; font-size: 2.5rem; font-weight: 800; margin-bottom: 8px;">10+</h3>
+                <p style="color: #f472b6; font-weight: 700; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px;">YouTube Channels</p>
             </div>
         </div>
     </div>
@@ -341,8 +325,7 @@
                                 <span
                                     style="display: block; font-size: 0.7rem; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">Enrollment
                                     Fee</span>
-                                <span style="font-size: 1.4rem; font-weight: 800; color: white;">₹{{ course.price
-                                    }}</span>
+                                <span style="font-size: 1.4rem; font-weight: 800; color: white;">₹{{ course.price }}</span>
                             </div>
                             <button class="btn btn-primary" style="padding: 0.5rem 1.4rem; font-size: 0.88rem;"
                                 onclick="event.stopPropagation(); openCourseModal({{ course.id }})">
@@ -352,86 +335,6 @@
                     </div>
                 </div>
 
-                <!-- Modal for this course -->
-                <div id="modal-{{ course.id }}"
-                    style="display:none; position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.78); backdrop-filter: blur(8px); align-items: center; justify-content: center; padding: 1rem;">
-                    <div
-                        style="background: linear-gradient(145deg, #1a0f2e, #2d0b4e); border-radius: 28px; border: 1px solid rgba(241,41,107,0.25); max-width: 700px; width: 100%; max-height: 90vh; overflow-y: auto; position: relative; box-shadow: 0 30px 80px rgba(0,0,0,0.65);">
-
-                        <!-- Close button -->
-                        <button onclick="closeCourseModal({{ course.id }})"
-                            style="position: absolute; top: 18px; right: 20px; background: rgba(255,255,255,0.1); border: none; color: white; width: 38px; height: 38px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center; transition: background 0.2s;">
-                            <i class="fa-solid fa-xmark"></i>
-                        </button>
-
-                        <!-- Modal hero image -->
-                        <div style="height: 240px; border-radius: 28px 28px 0 0; overflow: hidden; position: relative;">
-                            {% if course.thumbnail %}
-                            <img src="{{ course.thumbnail.url }}" alt="{{ course.title }}"
-                                style="width: 100%; height: 100%; object-fit: cover; display: block;">
-                            <div
-                                style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(26,15,46,0.85) 0%, transparent 50%);">
-                            </div>
-                            {% else %}
-                            <div
-                                style="width: 100%; height: 100%; background: linear-gradient(135deg, #2D0B4E, #5A0F5F); display: flex; align-items: center; justify-content: center;">
-                                <i class="fa-solid fa-{{ course.category.icon|default:'clapperboard' }}"
-                                    style="font-size: 7rem; color: var(--accent-yellow); opacity: 0.3;"></i>
-                            </div>
-                            {% endif %}
-                            <!-- Category tag over image -->
-                            <span
-                                style="position: absolute; bottom: 18px; left: 24px; background: var(--accent-yellow); color: #1a0f2e; font-size: 0.78rem; font-weight: 800; padding: 5px 14px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;">
-                                {{ course.category.title }}
-                            </span>
-                        </div>
-
-                        <!-- Modal body -->
-                        <div style="padding: 2rem 2.5rem 2.5rem;">
-                            <h2 style="font-size: 1.9rem; color: white; margin: 0 0 0.75rem; line-height: 1.3;">{{
-                                course.title }}</h2>
-                            <p class="text-gray" style="line-height: 1.75; margin-bottom: 2rem; font-size: 0.97rem;">{{
-                                course.description }}</p>
-
-                            <!-- Stats row -->
-                            <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem;">
-                                <div
-                                    style="background: rgba(241,41,107,0.08); border: 1px solid rgba(241,41,107,0.2); border-radius: 14px; padding: 12px 20px; text-align: center; min-width: 90px;">
-                                    <div class="text-pink" style="font-size: 1.4rem; font-weight: 800;">{{
-                                        course.duration|floatformat:0 }}h</div>
-                                    <div style="color: #9ca3af; font-size: 0.78rem; margin-top: 2px;">Duration</div>
-                                </div>
-                                <div
-                                    style="background: rgba(241,41,107,0.08); border: 1px solid rgba(241,41,107,0.2); border-radius: 14px; padding: 12px 20px; text-align: center; min-width: 90px;">
-                                    <div class="text-yellow" style="font-size: 1.4rem; font-weight: 800;">✓</div>
-                                    <div style="color: #9ca3af; font-size: 0.78rem; margin-top: 2px;">Certificate</div>
-                                </div>
-                                <div
-                                    style="background: rgba(241,41,107,0.08); border: 1px solid rgba(241,41,107,0.2); border-radius: 14px; padding: 12px 20px; text-align: center; min-width: 90px;">
-                                    <div class="text-yellow" style="font-size: 1.4rem; font-weight: 800;">∞</div>
-                                    <div style="color: #9ca3af; font-size: 0.78rem; margin-top: 2px;">Lifetime Access
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Price + CTA -->
-                            <div
-                                style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.07); padding-top: 1.5rem;">
-                                <div>
-                                    <span
-                                        style="display: block; font-size: 0.75rem; color: #9ca3af; text-transform: uppercase; margin-bottom: 4px;">Enrollment
-                                        Fee</span>
-                                    <span style="font-size: 2.2rem; font-weight: 800; color: white;">₹{{ course.price
-                                        }}</span>
-                                </div>
-                                <a href="{% url 'courses:course_detail' course.slug %}" class="btn btn-primary"
-                                    style="padding: 0.9rem 2.5rem; font-size: 1rem; font-weight: 700; border-radius: 40px;">
-                                    Enroll Now <i class="fa-solid fa-arrow-right"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
                 {% empty %}
                 <div style="text-align: center; padding: 60px; color: #9ca3af; width: 100%;">
                     <i class="fa-solid fa-folder-open"
@@ -443,11 +346,11 @@
             </div><!-- end scroll -->
 
             <!-- Scroll arrows -->
-            <button onclick="scrollCourses(-1)"
+            <button onclick="scrollCourses(-1)" class="course-scroll-btn"
                 style="position: absolute; left: -20px; top: 45%; transform: translateY(-50%); z-index: 10; background: linear-gradient(135deg, #A61E6E, #5A0F5F); border: none; color: white; width: 48px; height: 48px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 25px rgba(0,0,0,0.4);">
                 <i class="fa-solid fa-chevron-left"></i>
             </button>
-            <button onclick="scrollCourses(1)"
+            <button onclick="scrollCourses(1)" class="course-scroll-btn"
                 style="position: absolute; right: -20px; top: 45%; transform: translateY(-50%); z-index: 10; background: linear-gradient(135deg, #A61E6E, #5A0F5F); border: none; color: white; width: 48px; height: 48px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 25px rgba(0,0,0,0.4);">
                 <i class="fa-solid fa-chevron-right"></i>
             </button>
@@ -462,6 +365,85 @@
         </div>
     </div>
 </section>
+
+<!-- Modals for courses -->
+{% for course in featured_courses %}
+<div id="modal-{{ course.id }}"
+    style="display:none; position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.78); backdrop-filter: blur(8px); align-items: center; justify-content: center; padding: 1rem;">
+    <div
+        style="background: linear-gradient(145deg, #1a0f2e, #2d0b4e); border-radius: 28px; border: 1px solid rgba(241,41,107,0.25); max-width: 700px; width: 100%; max-height: 90vh; overflow-y: auto; position: relative; box-shadow: 0 30px 80px rgba(0,0,0,0.65);">
+
+        <!-- Close button -->
+        <button onclick="closeCourseModal({{ course.id }})"
+            style="position: absolute; top: 18px; right: 20px; background: rgba(255,255,255,0.1); border: none; color: white; width: 38px; height: 38px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center; transition: background 0.2s;">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <!-- Modal hero image -->
+        <div style="height: 240px; border-radius: 28px 28px 0 0; overflow: hidden; position: relative;">
+            {% if course.thumbnail %}
+            <img src="{{ course.thumbnail.url }}" alt="{{ course.title }}"
+                style="width: 100%; height: 100%; object-fit: cover; display: block;">
+            <div
+                style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(26,15,46,0.85) 0%, transparent 50%);">
+            </div>
+            {% else %}
+            <div
+                style="width: 100%; height: 100%; background: linear-gradient(135deg, #2D0B4E, #5A0F5F); display: flex; align-items: center; justify-content: center;">
+                <i class="fa-solid fa-{{ course.category.icon|default:'clapperboard' }}"
+                    style="font-size: 7rem; color: var(--accent-yellow); opacity: 0.3;"></i>
+            </div>
+            {% endif %}
+            <!-- Category tag over image -->
+            <span
+                style="position: absolute; bottom: 18px; left: 24px; background: var(--accent-yellow); color: #1a0f2e; font-size: 0.78rem; font-weight: 800; padding: 5px 14px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;">
+                {{ course.category.title }}
+            </span>
+        </div>
+
+        <!-- Modal body -->
+        <div style="padding: 2rem 2.5rem 2.5rem;">
+            <h2 style="font-size: 1.9rem; color: white; margin: 0 0 0.75rem; line-height: 1.3;">{{ course.title }}</h2>
+            <p class="text-gray" style="line-height: 1.75; margin-bottom: 2rem; font-size: 0.97rem;">{{ course.description }}</p>
+
+            <!-- Stats row -->
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem;">
+                <div
+                    style="background: rgba(241,41,107,0.08); border: 1px solid rgba(241,41,107,0.2); border-radius: 14px; padding: 12px 20px; text-align: center; min-width: 90px;">
+                    <div class="text-pink" style="font-size: 1.4rem; font-weight: 800;">{{ course.duration|floatformat:0 }}h</div>
+                    <div style="color: #9ca3af; font-size: 0.78rem; margin-top: 2px;">Duration</div>
+                </div>
+                <div
+                    style="background: rgba(241,41,107,0.08); border: 1px solid rgba(241,41,107,0.2); border-radius: 14px; padding: 12px 20px; text-align: center; min-width: 90px;">
+                    <div class="text-yellow" style="font-size: 1.4rem; font-weight: 800;">✓</div>
+                    <div style="color: #9ca3af; font-size: 0.78rem; margin-top: 2px;">Certificate</div>
+                </div>
+                <div
+                    style="background: rgba(241,41,107,0.08); border: 1px solid rgba(241,41,107,0.2); border-radius: 14px; padding: 12px 20px; text-align: center; min-width: 90px;">
+                    <div class="text-yellow" style="font-size: 1.4rem; font-weight: 800;">∞</div>
+                    <div style="color: #9ca3af; font-size: 0.78rem; margin-top: 2px;">Lifetime Access
+                    </div>
+                </div>
+            </div>
+
+            <!-- Price + CTA -->
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.07); padding-top: 1.5rem;">
+                <div>
+                    <span
+                        style="display: block; font-size: 0.75rem; color: #9ca3af; text-transform: uppercase; margin-bottom: 4px;">Enrollment
+                        Fee</span>
+                    <span style="font-size: 2.2rem; font-weight: 800; color: white;">₹{{ course.price }}</span>
+                </div>
+                <a href="{% url 'courses:course_detail' course.slug %}" class="btn btn-primary"
+                    style="padding: 0.9rem 2.5rem; font-size: 1rem; font-weight: 700; border-radius: 40px;">
+                    Enroll Now <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
 
 <script>
     function scrollCourses(dir) {
@@ -516,7 +498,7 @@
                 software; we build creative careers through industry-standard mentorship and hands-on projects.</p>
         </div>
 
-        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem;">
+        <div style="gap: 2rem;" class="grid-4-col">
             <!-- Expert Mentors -->
             <div class="glass animate-up"
                 style="padding: 2.5rem; border-radius: 24px; border: 1px solid rgba(241, 41, 107, 0.1);">
@@ -580,7 +562,7 @@
             <h2 style="font-size: 3.5rem; margin-top: 1rem;">Student <span class="text-yellow">Success</span> Stories
             </h2>
         </div>
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem;">
+        <div style="gap: 2rem;" class="grid-3-col">
             <div class="glass animate-up" style="padding: 2.5rem; border-radius: 24px; position: relative;">
                 <i class="fa-solid fa-quote-left"
                     style="position: absolute; top: 1.5rem; right: 1.5rem; font-size: 2rem; opacity: 0.1; color: var(--accent-pink);"></i>
@@ -647,7 +629,7 @@
 <!-- Founder Section -->
 <section id="instructors" style="padding: 100px 0; background: linear-gradient(45deg, #2D0B4E, #5A0F5F);">
     <div class="container">
-        <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 5rem; align-items: center;">
+        <div style="gap: 5rem; align-items: center;" class="grid-1-2">
             <div class="animate-up"
                 style="border-radius: 40px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); border: 1px solid rgba(255,255,255,0.1);">
                 <img src="{% static 'images/founder.jpeg' %}" alt="Rasal Farhan"
@@ -658,7 +640,7 @@
                     style="color: #fbbf24; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; font-size: 0.9rem;">FOUNDER</span>
                 <h2 style="font-size: 4rem; margin-top: 1rem; color: white;">RASAL <span
                         style="color: #fbbf24;">FARHAN</span></h2>
-                <p class="text-gray"
+                <p class="text-gray justify-text-mobile"
                     style="font-size: 1.15rem; margin: 1.5rem 0 2.5rem; line-height: 1.8; color: #d1d5db; text-align: justify;">
                     Edufix Learning was founded with a vision to make practical digital education accessible to
                     everyone. Under the leadership of Rasal Farhan, the academy has successfully guided students and
@@ -669,7 +651,7 @@
                     inspire the next generation of digital professionals and content creators.
 
                 </p>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                <div style="gap: 2rem;" class="grid-2-col">
                     <div>
                         <h3 style="color: #fbbf24; font-size: 2.5rem; margin: 0;">5+</h3>
                         <p style="color: #9ca3af; margin: 5px 0 0;">Years Experience</p>
@@ -688,13 +670,13 @@
 <!-- Co-Founder Section -->
 <section id="cofounder" style="padding: 100px 0; background: linear-gradient(45deg, #5A0F5F, #2D0B4E);">
     <div class="container">
-        <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 5rem; align-items: center;">
+        <div style="gap: 5rem; align-items: center;" class="grid-2-1">
             <div class="animate-up">
                 <span
                     style="color: #fbbf24; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; font-size: 0.9rem;">CO-FOUNDER</span>
                 <h2 style="font-size: 4rem; margin-top: 1rem; color: white;">MUHAMMED <span
                         style="color: #fbbf24;">AFTHAB</span></h2>
-                <p class="text-gray"
+                <p class="text-gray justify-text-mobile"
                     style="font-size: 1.15rem; margin: 1.5rem 0 2.5rem; line-height: 1.8; color: #d1d5db; text-align: justify;">
                     Muhammad Afthab, the Co-Founder & COO of Edufix Learning, plays a key role in driving the academy’s
                     operations, growth, and student success initiatives. With a strong passion for digital innovation
@@ -704,7 +686,7 @@
                     platform for aspiring digital professionals and entrepreneurs.
 
                 </p>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                <div style="gap: 2rem;" class="grid-2-col">
                     <div>
                         <h3 style="color: #fbbf24; font-size: 2.5rem; margin: 0;">3+</h3>
                         <p style="color: #9ca3af; margin: 5px 0 0;">Years Active</p>
@@ -779,16 +761,16 @@
 </section>
 
 <!-- Ready to Start CTA Section -->
-<section style="padding: 100px 0; background: radial-gradient(circle at center, rgba(138, 43, 226, 0.2), transparent);">
+<section id="cta" style="padding: 100px 0; background: radial-gradient(circle at center, rgba(138, 43, 226, 0.2), transparent);">
     <div class="container" style="max-width: 900px;">
-        <div class="glass"
+        <div class="glass cta-glass"
             style="padding: 4rem; border-radius: 40px; text-align: center; border: 1px solid rgba(241, 41, 107, 0.2);">
             <h2 style="font-size: 3.5rem; margin-bottom: 1rem;">Ready to <span class="text-pink">Start</span> Today?
             </h2>
             <p class="text-gray" style="font-size: 1.2rem; margin-bottom: 3rem;">Join 5,000+ creators and start your
                 journey to professional mastery.</p>
 
-            <form action="{% url 'register' %}" method="get"
+            <form action="{% url 'register' %}" method="get" class="cta-form"
                 style="display: flex; gap: 1rem; max-width: 600px; margin: 0 auto; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 50px; border: 1px solid var(--glass-border);">
                 <input type="email" name="email" placeholder="Enter your email address" required
                     style="flex: 1; background: transparent; border: none; padding: 0 1.5rem; color: white; outline: none; font-size: 1.1rem;">
@@ -802,7 +784,7 @@
 </section>
 <section
     style="background: var(--surface-black); padding: 80px 0; border-top: 1px solid var(--glass-border); border-bottom: 1px solid var(--glass-border);">
-    <div class="container" style="display: grid; grid-template-columns: repeat(4, 1fr); text-align: center;">
+    <div class="container grid-4-col" style="text-align: center;">
         <div>
             <h2 class="text-yellow" style="font-size: 3rem;">5K+</h2>
             <p class="text-gray">Active Students</p>

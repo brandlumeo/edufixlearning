@@ -508,44 +508,72 @@ def admin_dashboard(request):
     return render(request, 'dashboard/admin_home.html', context)
 
 @staff_member_required
-def upload_class_view(request):
-    if request.method == 'POST':
-        module_id  = request.POST.get('module_id')
-        title      = request.POST.get('title')
-        video_file = request.FILES.get('video_file')
-
-        if not (module_id and title and video_file):
-            messages.error(request, "Please fill in all required fields and select a video file.")
-            return redirect('dashboard:admin_dashboard')
-
-        try:
-            module = Module.objects.get(id=module_id)
-            last_lesson = module.lessons.order_by('-order_index').first()
-            next_order  = last_lesson.order_index + 1 if last_lesson else 0
-
-            # Upload to Cloudflare Stream
+@require_POST
+def admin_lesson_edit_view(request):
+    lesson_pk = request.POST.get('lesson_pk')
+    module_id = request.POST.get('module_id')
+    title = request.POST.get('title')
+    cf_stream_video_id = request.POST.get('cf_stream_video_id')
+    cf_stream_status = request.POST.get('cf_stream_status', 'none')
+    duration_seconds = request.POST.get('duration_seconds', 0)
+    order_index = request.POST.get('order_index', 0)
+    is_free_preview = request.POST.get('is_free_preview') == '1'
+    content = request.POST.get('content', '')
+    video_file = request.FILES.get('video_file')
+    
+    if not module_id or not title:
+        messages.error(request, "Module and Title are required fields.")
+        return redirect(f"{reverse('dashboard:admin_dashboard')}?tab=content")
+        
+    try:
+        module = get_object_or_404(Module, pk=module_id)
+        
+        # Handle new video file upload to Cloudflare
+        if video_file:
             from courses.utils_cf_stream import upload_video_from_file
-            cf_video_id = upload_video_from_file(video_file, video_file.name)
-
+            cf_stream_video_id = upload_video_from_file(video_file, video_file.name)
+            cf_stream_status = 'processing'
+            messages.success(request, f"Video '{title}' uploaded to Cloudflare Stream and is processing.")
+            
+        if lesson_pk:
+            lesson = get_object_or_404(Lesson, pk=lesson_pk)
+            lesson.module = module
+            lesson.title = title
+            lesson.cf_stream_video_id = cf_stream_video_id
+            lesson.cf_stream_status = cf_stream_status
+            lesson.duration_seconds = int(duration_seconds) if duration_seconds else 0
+            lesson.order_index = int(order_index) if order_index else 0
+            lesson.is_free_preview = is_free_preview
+            lesson.content = content
+            lesson.save()
+            if not video_file:
+                messages.success(request, f"Lesson '{title}' updated successfully.")
+        else:
+            # For new lessons, auto-calculate order_index if not provided
+            if not order_index or int(order_index) == 0:
+                last_lesson = module.lessons.order_by('-order_index').first()
+                calculated_order = last_lesson.order_index + 1 if last_lesson else 0
+            else:
+                calculated_order = int(order_index)
+                
             Lesson.objects.create(
                 module=module,
                 title=title,
-                cf_stream_video_id=cf_video_id,
-                cf_stream_status='processing',
-                order_index=next_order,
+                cf_stream_video_id=cf_stream_video_id,
+                cf_stream_status=cf_stream_status,
+                duration_seconds=int(duration_seconds) if duration_seconds else 0,
+                order_index=calculated_order,
+                is_free_preview=is_free_preview,
+                content=content
             )
-            messages.success(
-                request,
-                f"Video '{title}' uploaded to Cloudflare Stream and is now processing. "
-                f"It will be ready to play shortly."
-            )
-        except Module.DoesNotExist:
-            messages.error(request, "Selected module does not exist.")
-        except Exception:
-            logger.exception("Error uploading class to Cloudflare Stream")
-            messages.error(request, "Upload failed. Check your Cloudflare credentials and try again.")
-
-    return redirect('dashboard:admin_dashboard')
+            if not video_file:
+                messages.success(request, f"Lesson '{title}' created successfully.")
+                
+    except Exception as e:
+        logger.exception("Error saving lesson")
+        messages.error(request, "An error occurred while saving the lesson.")
+        
+    return redirect(f"{reverse('dashboard:admin_dashboard')}?tab=content")
 
 
 @staff_member_required
@@ -957,3 +985,301 @@ def batch_assign_students_view(request, batch_id):
         logger.exception("Error assigning students to batch %s", batch_id)
         messages.error(request, "An error occurred while assigning students. Please try again.")
     return _redirect_admin_batches_tab()
+
+@staff_member_required
+@require_POST
+def admin_user_edit_view(request):
+    user_pk = request.POST.get('user_pk')
+    user_type = request.POST.get('user_type', 'student')
+    username = request.POST.get('username', '').strip()
+    email = request.POST.get('email', '').strip()
+    full_name = request.POST.get('full_name', '').strip()
+    phone_number = request.POST.get('phone_number', '').strip()
+    password = request.POST.get('password', '')
+    is_active = request.POST.get('is_active') == '1'
+    is_verified = request.POST.get('is_verified') == '1'
+    is_instructor = request.POST.get('is_instructor') == '1'
+    bio = request.POST.get('bio', '').strip()
+    profile_picture = request.FILES.get('profile_picture')
+    
+    enroll_course_id = request.POST.get('enroll_course_id')
+    enroll_payment_id = request.POST.get('enroll_payment_id', '').strip()
+
+    tab = 'trainers' if user_type == 'trainer' else 'students'
+
+    if not username or not email:
+        messages.error(request, "Username and Email are required.")
+        return redirect(f"{reverse('dashboard:admin_dashboard')}?tab={tab}")
+
+    try:
+        if user_pk:
+            user = get_object_or_404(User, pk=user_pk)
+            user.username = username
+            user.email = email
+            user.full_name = full_name
+            user.phone_number = phone_number
+            user.is_active = is_active
+            user.is_verified = is_verified
+            user.is_instructor = True if user_type == 'trainer' else is_instructor
+            user.bio = bio
+            if profile_picture:
+                user.profile_picture = profile_picture
+            if password:
+                user.set_password(password)
+            user.save()
+            messages.success(request, f"{user_type.title()} '{username}' updated successfully.")
+        else:
+            if User.objects.filter(username=username).exists():
+                messages.error(request, f"Username '{username}' already exists.")
+                return redirect(f"{reverse('dashboard:admin_dashboard')}?tab={tab}")
+            
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                password=password if password else User.objects.make_random_password()
+            )
+            user.full_name = full_name
+            user.phone_number = phone_number
+            user.is_active = is_active
+            user.is_verified = is_verified
+            user.is_instructor = True if user_type == 'trainer' else is_instructor
+            user.bio = bio
+            if profile_picture:
+                user.profile_picture = profile_picture
+            user.save()
+            messages.success(request, f"{user_type.title()} '{username}' created successfully.")
+            
+        # Handle Enrollment if provided
+        if enroll_course_id:
+            try:
+                course = Course.objects.get(pk=enroll_course_id)
+                # Check if enrollment already exists
+                if not Enrollment.objects.filter(student=user, course=course).exists():
+                    Enrollment.objects.create(
+                        student=user,
+                        course=course,
+                        payment_id=enroll_payment_id
+                    )
+                    messages.success(request, f"Enrolled {user.username} into {course.title}.")
+            except Course.DoesNotExist:
+                messages.warning(request, "Selected course for enrollment does not exist.")
+    except Exception as e:
+        logger.exception("Error saving user")
+        messages.error(request, "An error occurred while saving the user.")
+
+    return redirect(f"{reverse('dashboard:admin_dashboard')}?tab={tab}")
+
+@staff_member_required
+@require_POST
+def admin_user_delete_view(request, user_id):
+    user = get_object_or_404(User, pk=user_id)
+    # Prevent deleting oneself
+    if user == request.user:
+        messages.error(request, "You cannot delete your own account.")
+        return redirect(f"{reverse('dashboard:admin_dashboard')}?tab=students")
+        
+    username = user.username
+    user_type = 'trainer' if user.is_instructor else 'student'
+    tab = 'trainers' if user_type == 'trainer' else 'students'
+    
+    try:
+        user.delete()
+        messages.success(request, f"{user_type.title()} '{username}' has been deleted successfully.")
+    except Exception as e:
+        logger.exception(f"Error deleting user {user_id}")
+        messages.error(request, "An error occurred while deleting the user.")
+        
+    return redirect(f"{reverse('dashboard:admin_dashboard')}?tab={tab}")
+
+@staff_member_required
+@require_POST
+def admin_fee_record_edit_view(request):
+    fee_pk = request.POST.get('fee_pk')
+    student_id = request.POST.get('student_id')
+    course_id = request.POST.get('course_id')
+    total_amount = request.POST.get('total_amount')
+    amount_paid = request.POST.get('amount_paid')
+    due_date = request.POST.get('due_date')
+    last_payment_date = request.POST.get('last_payment_date')
+    is_fully_paid = request.POST.get('is_fully_paid') == '1'
+
+    try:
+        student = get_object_or_404(User, pk=student_id)
+        course = get_object_or_404(Course, pk=course_id)
+        
+        if fee_pk:
+            fee = get_object_or_404(FeeRecord, pk=fee_pk)
+            fee.student = student
+            fee.course = course
+            fee.total_amount = total_amount
+            fee.amount_paid = amount_paid
+            fee.due_date = due_date
+            fee.last_payment_date = last_payment_date if last_payment_date else None
+            fee.is_fully_paid = is_fully_paid
+            fee.save()
+            messages.success(request, f"Fee record updated for {student.username}.")
+        else:
+            FeeRecord.objects.create(
+                student=student,
+                course=course,
+                total_amount=total_amount,
+                amount_paid=amount_paid,
+                due_date=due_date,
+                last_payment_date=last_payment_date if last_payment_date else None,
+                is_fully_paid=is_fully_paid
+            )
+            messages.success(request, f"Fee record created for {student.username}.")
+    except Exception as e:
+        logger.exception("Error saving fee record")
+        messages.error(request, "An error occurred while saving the fee record.")
+
+    return redirect(f"{reverse('dashboard:admin_dashboard')}?tab=payments")
+
+
+@staff_member_required
+@require_POST
+def admin_placement_edit_view(request):
+    placement_pk = request.POST.get('placement_pk')
+    student_id = request.POST.get('student_id')
+    company = request.POST.get('company')
+    position = request.POST.get('position')
+    placement_date = request.POST.get('placement_date')
+    package_details = request.POST.get('package_details', '')
+    testimonial = request.POST.get('testimonial', '')
+    is_freelance = request.POST.get('is_freelance') == '1'
+
+    try:
+        student = get_object_or_404(User, pk=student_id)
+        
+        if placement_pk:
+            placement = get_object_or_404(PlacementOutcome, pk=placement_pk)
+            placement.student = student
+            placement.company = company
+            placement.position = position
+            placement.placement_date = placement_date
+            placement.package_details = package_details
+            placement.testimonial = testimonial
+            placement.is_freelance = is_freelance
+            placement.save()
+            messages.success(request, f"Placement record updated for {student.username}.")
+        else:
+            PlacementOutcome.objects.create(
+                student=student,
+                company=company,
+                position=position,
+                placement_date=placement_date,
+                package_details=package_details,
+                testimonial=testimonial,
+                is_freelance=is_freelance
+            )
+            messages.success(request, f"Placement record created for {student.username}.")
+    except Exception as e:
+        logger.exception("Error saving placement record")
+        messages.error(request, "An error occurred while saving the placement record.")
+
+    return redirect(f"{reverse('dashboard:admin_dashboard')}?tab=placements")
+
+@staff_member_required
+@require_POST
+def admin_course_edit_view(request):
+    course_pk = request.POST.get('course_pk')
+    title = request.POST.get('title')
+    instructor_id = request.POST.get('instructor_id')
+    price = request.POST.get('price')
+    duration = request.POST.get('duration')
+    status = request.POST.get('status')
+    thumbnail = request.FILES.get('thumbnail')
+
+    try:
+        instructor = get_object_or_404(User, pk=instructor_id)
+        
+        if course_pk:
+            course = get_object_or_404(Course, pk=course_pk)
+            course.title = title
+            course.instructor = instructor
+            course.price = price
+            course.duration = duration
+            course.status = status
+            if thumbnail:
+                course.thumbnail = thumbnail
+            course.save()
+            messages.success(request, f"Course '{title}' updated.")
+        else:
+            course = Course.objects.create(
+                title=title,
+                instructor=instructor,
+                price=price,
+                duration=duration,
+                status=status
+            )
+            if thumbnail:
+                course.thumbnail = thumbnail
+                course.save()
+            messages.success(request, f"Course '{title}' created.")
+    except Exception as e:
+        logger.exception("Error saving course record")
+        messages.error(request, "An error occurred while saving the course.")
+
+    return redirect(f"{reverse('dashboard:admin_dashboard')}?tab=courses")
+
+@staff_member_required
+@require_POST
+def admin_module_edit_view(request):
+    course_id = request.POST.get('course_id')
+    title = request.POST.get('title')
+    order_index = request.POST.get('order_index', 0)
+
+    try:
+        course = get_object_or_404(Course, pk=course_id)
+        Module.objects.create(
+            course=course,
+            title=title,
+            order_index=order_index
+        )
+        messages.success(request, f"Module '{title}' added to course '{course.title}'.")
+    except Exception as e:
+        logger.exception("Error saving module record")
+        messages.error(request, "An error occurred while saving the module.")
+
+    return redirect(f"{reverse('dashboard:admin_dashboard')}?tab=courses")
+
+@staff_member_required
+@require_POST
+def admin_ticket_edit_view(request):
+    ticket_pk = request.POST.get('ticket_pk')
+    student_id = request.POST.get('student_id')
+    status = request.POST.get('status')
+    subject = request.POST.get('subject')
+    description = request.POST.get('description')
+
+    try:
+        student = get_object_or_404(User, pk=student_id)
+        
+        if ticket_pk:
+            ticket = get_object_or_404(SupportTicket, pk=ticket_pk)
+            ticket.student = student
+            ticket.status = status
+            ticket.subject = subject
+            ticket.description = description
+            if status == 'resolved' and not ticket.resolved_at:
+                ticket.resolved_at = timezone.now()
+            elif status != 'resolved':
+                ticket.resolved_at = None
+            ticket.save()
+            messages.success(request, f"Support ticket #{ticket.id} updated.")
+        else:
+            ticket = SupportTicket.objects.create(
+                student=student,
+                status=status,
+                subject=subject,
+                description=description
+            )
+            if status == 'resolved':
+                ticket.resolved_at = timezone.now()
+                ticket.save()
+            messages.success(request, f"Support ticket #{ticket.id} created.")
+    except Exception as e:
+        logger.exception("Error saving support ticket record")
+        messages.error(request, "An error occurred while saving the support ticket.")
+
+    return redirect(f"{reverse('dashboard:admin_dashboard')}?tab=support")

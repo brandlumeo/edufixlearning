@@ -11,12 +11,18 @@
         gap: 2rem;
     }
 
+    @media (max-width: 1100px) {
+        .hub-container {
+            grid-template-columns: 1fr;
+        }
+    }
+
     /* Tabs Navigation */
     .tab-nav {
         display: flex;
         gap: 1rem;
         margin-bottom: 2rem;
-        background: white;
+        background: var(--card-bg);
         padding: 0.5rem;
         border-radius: 16px;
         border: 1px solid var(--border-light);
@@ -37,13 +43,13 @@
 
     .tab-link:hover { background: var(--dash-bg); }
     .tab-link.active {
-        background: var(--primary);
+        background: var(--primary-blue, #3b82f6);
         color: white;
     }
 
     /* Cards & Sections */
     .dashboard-card {
-        background: white;
+        background: var(--card-bg);
         border-radius: 24px;
         padding: 2rem;
         border: 1px solid var(--border-light);
@@ -112,13 +118,13 @@
         font-weight: 700;
     }
 
-    .day-present { background: rgba(34, 197, 94, 0.1); color: #166534; border: 1px solid rgba(34, 197, 94, 0.2); }
-    .day-absent { background: rgba(239, 68, 68, 0.1); color: #991b1b; border: 1px solid rgba(239, 68, 68, 0.2); }
+    .day-present { background: rgba(34, 197, 94, 0.1); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.2); }
+    .day-absent { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); }
 
     .status-warning {
-        background: #fff7ed;
-        border: 1px solid #ffedd5;
-        color: #9a3412;
+        background: rgba(249, 115, 22, 0.1);
+        border: 1px solid rgba(249, 115, 22, 0.2);
+        color: #f97316;
         padding: 1rem;
         border-radius: 12px;
         margin-bottom: 1.5rem;
@@ -153,7 +159,7 @@
         {% if user.profile_picture %}
             <img src="{{ user.profile_picture.url }}" class="avatar-large">
         {% else %}
-            <div class="avatar-large" style="background: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: 900;">{{ user.username|first|upper }}</div>
+            <div class="avatar-large" style="background: var(--primary-blue, #3b82f6); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: 900;">{{ user.username|first|upper }}</div>
         {% endif %}
         <div style="flex: 1;">
             <div style="display: flex; justify-content: space-between; align-items: flex-start;">
@@ -190,11 +196,11 @@
         <div class="hub-container">
             <div class="content-left">
                 <!-- Metrics -->
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2rem;">
+                <div style="gap: 1.5rem; margin-bottom: 2rem;" class="grid-3-col">
                     <div class="dashboard-card" style="padding: 1.5rem; text-align: center; margin: 0;">
                         <span class="info-label">Progress</span>
                         <h2 style="margin: 5px 0;">{{ overall_progress }}%</h2>
-                        <div style="height: 4px; background: #f1f5f9; border-radius: 10px;"><div style="width: {{ overall_progress }}%; height: 100%; background: var(--primary); border-radius: 10px;"></div></div>
+                        <div style="height: 4px; background: var(--border-light); border-radius: 10px;"><div style="width: {{ overall_progress }}%; height: 100%; background: var(--primary-blue, #3b82f6); border-radius: 10px;"></div></div>
                     </div>
                     <div class="dashboard-card" style="padding: 1.5rem; text-align: center; margin: 0;">
                         <span class="info-label">Assignments</span>
@@ -212,7 +218,7 @@
                 {% if enrollments.0 %}
                 <div class="dashboard-card" style="background: var(--dash-bg); border: none; padding: 2.5rem; display: flex; justify-content: space-between; align-items: center;">
                     <div>
-                        <span class="info-label" style="color: var(--primary);">Continue Learning</span>
+                        <span class="info-label" style="color: var(--primary-blue, #3b82f6);">Continue Learning</span>
                         <h2 style="margin: 10px 0 5px;">{{ enrollments.0.course.title }}</h2>
                         <p style="margin: 0 0 20px; font-size: 0.9rem; color: var(--text-muted);">Next: <b>{{ enrollments.0.resume_lesson.title }}</b></p>
                         <a href="{% url 'courses:lesson_view' enrollments.0.course.slug enrollments.0.resume_lesson.id %}" class="btn-resume" style="padding: 12px 25px; font-size: 0.9rem;">Resume Now</a>
@@ -236,7 +242,7 @@
                     <h4 style="margin-top: 0;">Recent Notifications</h4>
                     <div style="display: flex; flex-direction: column; gap: 12px;">
                         {% for n in notifications|slice:":4" %}
-                        <div style="font-size: 0.8rem; border-left: 3px solid var(--primary); padding-left: 10px;">
+                        <div style="font-size: 0.8rem; border-left: 3px solid var(--primary-blue, #3b82f6); padding-left: 10px;">
                             <div style="font-weight: 700;">{{ n.type|title }}</div>
                             <div style="font-size: 0.75rem; color: var(--text-muted);">{{ n.message|truncatechars:40 }}</div>
                         </div>
@@ -246,10 +252,10 @@
 
                 <!-- Instructor Info -->
                 {% if active_batch.instructor %}
-                <div class="dashboard-card" style="padding: 1.5rem; background: #f8fafc;">
+                <div class="dashboard-card" style="padding: 1.5rem; background: var(--dash-bg);">
                     <h4 style="margin-top: 0;">Instructor</h4>
                     <div style="display: flex; align-items: center; gap: 15px;">
-                        <div style="width: 50px; height: 50px; border-radius: 12px; background: #e2e8f0; overflow: hidden;">
+                        <div style="width: 50px; height: 50px; border-radius: 12px; background: var(--border-light); overflow: hidden;">
                             {% if active_batch.instructor.profile_picture %}<img src="{{ active_batch.instructor.profile_picture.url }}" style="width: 100%; height: 100%; object-fit: cover;">{% endif %}
                         </div>
                         <div>
@@ -274,7 +280,7 @@
                         <div class="info-item"><span class="info-label">Lessons Completed</span><span class="info-value">{{ total_lessons_completed }} Lessons</span></div>
                         <div class="info-item"><span class="info-label">Lessons Remaining</span><span class="info-value">{{ enrollments.0.left_lessons }} Lessons</span></div>
                         <div class="info-item"><span class="info-label">Current Module</span><span class="info-value">{{ enrollments.0.resume_lesson.module.title }}</span></div>
-                        <div class="info-item"><span class="info-label">Est. Completion</span><span class="info-value" style="color: var(--primary);">{{ estimated_completion|date:"M d, Y"|default:"TBD" }}</span></div>
+                        <div class="info-item"><span class="info-label">Est. Completion</span><span class="info-value" style="color: var(--primary-blue, #3b82f6);">{{ estimated_completion|date:"M d, Y"|default:"TBD" }}</span></div>
                     </div>
                 </div>
 
@@ -351,7 +357,7 @@
 
                                 <!-- Progress bar -->
                                 <div style="height:5px; background:var(--border-light); border-radius:10px; overflow:hidden; margin-bottom:10px;">
-                                    <div style="width:{{ item.progress }}%; height:100%; background: {% if item.is_unlocked %}#22c55e{% else %}var(--primary){% endif %}; border-radius:10px; transition:width 0.5s;"></div>
+                                    <div style="width:{{ item.progress }}%; height:100%; background: {% if item.is_unlocked %}#22c55e{% else %}var(--primary-blue, #3b82f6){% endif %}; border-radius:10px; transition:width 0.5s;"></div>
                                 </div>
                                 <div style="font-size:0.7rem; color:var(--text-muted); margin-bottom:10px;">{{ item.progress }}% complete</div>
 
@@ -402,7 +408,7 @@
             </div>
             {% endif %}
 
-            <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 3rem;">
+            <div style="gap: 3rem;" class="grid-1-2">
                 <div>
                     <div class="info-item" style="margin-bottom: 1.5rem;"><span class="info-label">Total Classes Held</span><span class="info-value" style="font-size: 1.5rem;">{{ attendance_stats.total }}</span></div>
                     <div class="info-item"><span class="info-label">Classes Attended</span><span class="info-value" style="font-size: 1.5rem;">{{ attendance_stats.attended }}</span></div>
@@ -430,7 +436,7 @@
             <div class="content-left">
                 <div class="dashboard-card">
                     <h3>Financial Status</h3>
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 1.5rem;">
+                    <div style="gap: 1.5rem; margin-top: 1.5rem;" class="grid-3-col">
                         <div class="info-item"><span class="info-label">Total Course Fee</span><span class="info-value" style="font-size: 1.2rem;">₹{{ fee_stats.total }}</span></div>
                         <div class="info-item"><span class="info-label">Amount Paid</span><span class="info-value" style="font-size: 1.2rem; color: #10b981;">₹{{ fee_stats.paid }}</span></div>
                         <div class="info-item"><span class="info-label">Balance Due</span><span class="info-value" style="font-size: 1.2rem; color: #ef4444;">₹{{ fee_stats.balance }}</span></div>
@@ -450,7 +456,7 @@
                         </thead>
                         <tbody>
                             {% for record in fee_stats.records %}
-                            <tr style="border-bottom: 1px solid #f8fafc; font-size: 0.85rem;">
+                            <tr style="border-bottom: 1px solid var(--border-light); font-size: 0.85rem;">
                                 <td style="padding: 15px 10px;">{{ record.last_payment_date|date:"M d, Y"|default:"N/A" }}</td>
                                 <td style="padding: 15px 10px; font-weight: 800;">₹{{ record.amount_paid }}</td>
                                 <td style="padding: 15px 10px;">Online / Bank Transfer</td>
@@ -480,7 +486,7 @@
                 <div class="dashboard-card">
                     <h3>Class Schedule</h3>
                     <div style="display: flex; flex-direction: column; gap: 1.5rem;">
-                        <div style="background: #f0f9ff; padding: 1.5rem; border-radius: 16px; border-left: 4px solid #3b82f6;">
+                        <div style="background: rgba(59, 130, 246, 0.1); padding: 1.5rem; border-radius: 16px; border-left: 4px solid var(--primary-blue, #3b82f6);">
                             <div class="info-label" style="color: #3b82f6;">Today's Topic</div>
                             <h4 style="margin: 5px 0;">Advanced Layout Techniques with Flexbox</h4>
                             <div style="font-size: 0.8rem; font-weight: 700; margin-top: 10px; display: flex; gap: 20px;">
@@ -499,7 +505,7 @@
                                 </div>
                                 <div style="text-align: right;">
                                     <div style="font-weight: 700; font-size: 0.85rem;">{{ event.start_time|date:"H:i" }}</div>
-                                    <span class="status-badge" style="background: #e0f2fe; color: #0369a1;">Online</span>
+                                    <span class="status-badge" style="background: rgba(59, 130, 246, 0.15); color: var(--primary-blue, #3b82f6);">Online</span>
                                 </div>
                             </div>
                             {% endfor %}
@@ -585,7 +591,7 @@
             data: {
                 datasets: [{
                     data: [{{ overall_progress }}, 100 - {{ overall_progress }}],
-                    backgroundColor: ['#fbbf24', 'rgba(255,255,255,0.1)'],
+                    backgroundColor: ['#3b82f6', getComputedStyle(document.documentElement).getPropertyValue('--border-light').trim() || 'rgba(0,0,0,0.1)'],
                     borderWidth: 0
                 }]
             },
