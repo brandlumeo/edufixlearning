@@ -62,9 +62,8 @@ def generate_certificate_pdf(student_name, course_name, issue_date, template_fil
     1. `template_file` argument (uploaded course/student template from DB)
     2. static/images/edufix_blank_template.jpg  (the Edufix branded blank template)
     3. static/images/default_certificate_template.jpg (legacy fallback)
-    4. Plain white PDF (last resort)
+    4. Plain white PDF (last resort — always works, no external files needed)
     """
-    buffer = BytesIO()
     uid = str(uuid.uuid4())[:8].upper()
 
     # ── Page size: A4 landscape ──────────────────────────────────────────────
@@ -113,40 +112,64 @@ def generate_certificate_pdf(student_name, course_name, issue_date, template_fil
             writer.write(final_buf)
             final_buf.seek(0)
             return final_buf, uid
-        except Exception:
-            pass  # fall through to image path
+        except Exception as exc:
+            logger.warning("PDF template merge failed, falling through: %s", exc)
+            # fall through to image path
 
     # ────────────────────────────────────────────────────────────────────────
     # IMAGE TEMPLATE PATH  (JPEG / PNG — the normal Edufix case)
+    # Each path uses its OWN fresh BytesIO so a failure here cannot corrupt
+    # the buffer used by the plain fallback below.
     # ────────────────────────────────────────────────────────────────────────
     if template_file and not is_pdf_template:
         try:
-            p = canvas.Canvas(buffer, pagesize=landscape(A4))
+            img_bytes = None
 
-            # Draw background image stretched to fill the whole page
             if hasattr(template_file, 'read'):
-                template_file.seek(0)
-                img_data = template_file.read()
-                img_reader = ImageReader(BytesIO(img_data))
+                # Django FieldFile — verify the file actually exists on disk
+                # before trying to read it (production media files may be absent)
+                storage = getattr(template_file, 'storage', None)
+                field_name = getattr(template_file, 'name', None)
+                if storage and field_name and storage.exists(field_name):
+                    template_file.seek(0)
+                    img_bytes = template_file.read()
+                else:
+                    logger.warning(
+                        "Certificate template file missing in storage: %s — using fallback",
+                        field_name
+                    )
             else:
-                img_reader = ImageReader(str(template_file))
+                # Plain filesystem path (from _find_static_image)
+                path_str = str(template_file)
+                if os.path.exists(path_str):
+                    with open(path_str, 'rb') as fh:
+                        img_bytes = fh.read()
+                else:
+                    logger.warning("Certificate template path not found: %s", path_str)
 
-            p.drawImage(img_reader, 0, 0, width=page_w, height=page_h,
-                        preserveAspectRatio=False)
-
-            # Draw the dynamic text on top
-            _draw_edufix_text(p, page_w, page_h, student_name, course_name, issue_date, uid)
-            p.showPage()
-            p.save()
-            buffer.seek(0)
-            return buffer, uid
-        except Exception:
-            pass  # fall through to plain fallback
+            if img_bytes:
+                img_buf = BytesIO()          # fresh buffer for this path
+                p = canvas.Canvas(img_buf, pagesize=landscape(A4))
+                img_reader = ImageReader(BytesIO(img_bytes))
+                p.drawImage(img_reader, 0, 0, width=page_w, height=page_h,
+                            preserveAspectRatio=False)
+                _draw_edufix_text(p, page_w, page_h, student_name, course_name, issue_date, uid)
+                p.showPage()
+                p.save()
+                img_buf.seek(0)
+                return img_buf, uid
+            # img_bytes is None → fall through to plain fallback
+        except Exception as exc:
+            logger.warning("Image template rendering failed, falling through: %s", exc)
+            # fall through to plain fallback
 
     # ────────────────────────────────────────────────────────────────────────
-    # PLAIN WHITE FALLBACK  (only if template image fails to load)
+    # PLAIN WHITE FALLBACK  (no external files — always works in production)
+    # Uses its own fresh BytesIO — completely isolated from above paths.
     # ────────────────────────────────────────────────────────────────────────
-    p = canvas.Canvas(buffer, pagesize=landscape(A4))
+    logger.info("Generating plain-white fallback certificate for student=%s", student_name)
+    plain_buf = BytesIO()
+    p = canvas.Canvas(plain_buf, pagesize=landscape(A4))
 
     # Purple border
     p.setFillColor(HexColor('#ffffff'))
@@ -199,8 +222,9 @@ def generate_certificate_pdf(student_name, course_name, issue_date, template_fil
 
     p.showPage()
     p.save()
-    buffer.seek(0)
-    return buffer, uid
+    plain_buf.seek(0)
+    return plain_buf, uid
+
 
 
 # ─────────────────────────────────────────────────────────────────────────────
