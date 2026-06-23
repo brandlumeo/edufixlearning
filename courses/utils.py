@@ -69,6 +69,23 @@ def generate_certificate_pdf(student_name, course_name, issue_date, template_fil
     # ── Page size: A4 landscape ──────────────────────────────────────────────
     page_w, page_h = landscape(A4)   # 841.89 x 595.28 pts
 
+    # DEBUG: Force plain white fallback to bypass potential Pillow/ImageReader Segfault on cPanel
+    logger.info("Generating plain-white fallback certificate for student=%s", student_name)
+    plain_buf = BytesIO()
+    p = canvas.Canvas(plain_buf, pagesize=landscape(A4))
+    
+    # Heading
+    p.setFont("Helvetica-Bold", 38)
+    p.drawCentredString(page_w / 2, page_h - 120, "CERTIFICATE")
+    p.setFont("Helvetica", 14)
+    p.drawCentredString(page_w / 2, page_h / 2, f"Student: {student_name}")
+    p.drawCentredString(page_w / 2, page_h / 2 - 30, f"Course: {course_name}")
+    
+    p.showPage()
+    p.save()
+    plain_buf.seek(0)
+    return plain_buf, uid
+
     # ── Resolve background template ──────────────────────────────────────────
     if not template_file:
         blank_path   = _find_static_image('edufix_blank_template.jpg')
