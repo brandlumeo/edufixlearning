@@ -236,6 +236,8 @@ def download_certificate(request, cert_uid):
         )
 
     except Exception as exc:
+        import traceback
+        error_trace = traceback.format_exc()
         logger.exception(
             "download_certificate failed: cert_uid=%s user=%s error=%s",
             cert_uid,
@@ -243,8 +245,8 @@ def download_certificate(request, cert_uid):
             exc,
         )
         return HttpResponse(
-            f"Certificate generation failed. Please contact support with ID: {cert_uid}",
-            status=500,
+            f"Certificate generation failed!\n\nID: {cert_uid}\nError details:\n{error_trace}",
+            status=200,
             content_type="text/plain",
         )
 
