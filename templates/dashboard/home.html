@@ -329,7 +329,7 @@
 
                             <!-- Certificate image / placeholder preview (always visible) -->
                             <div style="width: 100%; height: 110px; background: linear-gradient(135deg, #1e0533 0%, #2d1650 100%); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;">
-                                {% if item.has_file %}
+                                {% if item.cert.certificate_file %}
                                     <img src="{{ item.cert.certificate_file.url }}"
                                          style="width:100%; height:100%; object-fit:cover; {% if not item.is_unlocked %}filter: blur(4px) brightness(0.5);{% endif %}">
                                 {% else %}
