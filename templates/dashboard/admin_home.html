@@ -2065,6 +2065,16 @@
                                     {% endif %}
                                 </td>
                                 <td style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+                                    <button onclick="openIssueCertModal(this)"
+                                        data-id="{{ cert.id }}"
+                                        data-student="{{ cert.student.id }}"
+                                        data-course="{{ cert.course.id }}"
+                                        data-approved="{{ cert.is_approved|lower }}"
+                                        class="badge badge-primary"
+                                        style="border:none; cursor:pointer; padding:6px 12px;"
+                                        title="Edit Certificate">
+                                        <i class="fa-solid fa-pen"></i> Edit
+                                    </button>
                                     {% if not cert.is_approved %}
                                     <form method="post"
                                         action="{% url 'dashboard:certificate_approve' cert.certificate_uid %}"
@@ -2077,7 +2087,7 @@
                                         </button>
                                     </form>
                                     {% endif %}
-                                    {% if cert.certificate_file %}
+                                    {% if cert.is_approved %}
                                     <a href="{% url 'courses:download_certificate' cert.certificate_uid %}"
                                         target="_blank" rel="noopener noreferrer" class="badge"
                                         style="background:rgba(99,102,241,0.15);color:var(--primary);text-decoration:none; padding:6px 12px;"
@@ -3016,20 +3026,21 @@
     <div
         style="background:var(--bg-dash); width:100%; max-width:500px; border-radius:18px; padding:2rem; border:1px solid var(--border-light); box-shadow:0 25px 60px rgba(0,0,0,0.5);">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
-            <h3 style="margin:0; font-size:1.1rem; font-weight:800; display:flex; align-items:center; gap:10px;">
+            <h3 id="issueCertModalTitle" style="margin:0; font-size:1.1rem; font-weight:800; display:flex; align-items:center; gap:10px;">
                 <i class="fa-solid fa-award" style="color:var(--primary);"></i> Issue Certificate
             </h3>
             <button type="button" onclick="closeIssueCertModal()"
                 style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:1.25rem;"><i
                     class="fa-solid fa-xmark"></i></button>
         </div>
-        <form method="post" action="{% url 'dashboard:certificate_issue' %}">
+        <form method="post" action="{% url 'dashboard:certificate_issue' %}" id="issueCertForm" enctype="multipart/form-data">
             {% csrf_token %}
+            <input type="hidden" id="cert_pk" name="cert_pk" value="">
             <div style="margin-bottom:1rem;">
                 <label
                     style="display:block; font-size:0.78rem; font-weight:700; color:var(--text-muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.5px;">Student
                     *</label>
-                <select name="student_id" required
+                <select name="student_id" id="cert_student" required
                     style="width:100%; padding:11px 13px; border-radius:9px; border:1px solid var(--border-light); background:rgba(0,0,0,0.2); color:var(--text-main); font-family:inherit; font-size:0.9rem; outline:none;">
                     <option value="">-- Select Student --</option>
                     {% for student in all_students %}
@@ -3037,11 +3048,11 @@
                     {% endfor %}
                 </select>
             </div>
-            <div style="margin-bottom:1.5rem;">
+            <div style="margin-bottom:1rem;">
                 <label
                     style="display:block; font-size:0.78rem; font-weight:700; color:var(--text-muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.5px;">Course
                     *</label>
-                <select name="course_id" required
+                <select name="course_id" id="cert_course" required
                     style="width:100%; padding:11px 13px; border-radius:9px; border:1px solid var(--border-light); background:rgba(0,0,0,0.2); color:var(--text-main); font-family:inherit; font-size:0.9rem; outline:none;">
                     <option value="">-- Select Course --</option>
                     {% for course in courses %}
@@ -3049,16 +3060,26 @@
                     {% endfor %}
                 </select>
             </div>
+            <div style="margin-bottom:1rem;">
+                <label
+                    style="display:block; font-size:0.78rem; font-weight:700; color:var(--text-muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.5px;">Course Certificate Template (Image or PDF)</label>
+                <input type="file" name="certificate_template_file" accept=".pdf,image/*"
+                    style="width:100%; padding:11px 13px; border-radius:9px; border:1px solid var(--border-light); background:rgba(0,0,0,0.2); color:var(--text-main); font-family:inherit; font-size:0.9rem; outline:none;">
+                <p style="font-size:0.73rem; color:var(--text-muted); margin:5px 0 0;">This template will be used for all students in this course. Leave blank to keep existing template.</p>
+            </div>
+            <div style="margin-bottom:1.5rem; display:flex; align-items:center; gap:8px;">
+                <input type="checkbox" name="is_approved" value="1" id="cert_is_approved" checked style="width:16px; height:16px; cursor:pointer;">
+                <label for="cert_is_approved" style="font-size:0.85rem; font-weight:600; color:var(--text-main); cursor:pointer;">Approve and unlock for student</label>
+            </div>
             <div
                 style="background:rgba(99,102,241,0.06); border:1px solid rgba(99,102,241,0.15); border-radius:10px; padding:12px 15px; margin-bottom:1.5rem; font-size:0.82rem; color:var(--text-muted);">
                 <i class="fa-solid fa-circle-info" style="color:var(--primary); margin-right:6px;"></i>
-                A unique Certificate UID will be auto-generated. You can upload the PDF file from Django Admin after
-                issuing.
+                A unique Certificate UID will be auto-generated. The uploaded template will be used as the background for all students downloading their certificate for this course.
             </div>
             <div style="display:flex; justify-content:flex-end; gap:10px;">
                 <button type="button" onclick="closeIssueCertModal()"
                     style="padding:10px 22px; border-radius:9px; border:1px solid var(--border-light); background:transparent; color:var(--text-main); cursor:pointer; font-weight:600; font-size:0.9rem;">Cancel</button>
-                <button type="submit"
+                <button type="submit" id="issueCertSubmitBtn"
                     style="padding:10px 24px; border-radius:9px; border:none; background:var(--primary); color:white; cursor:pointer; font-weight:700; font-size:0.9rem; display:flex; align-items:center; gap:8px;">
                     <i class="fa-solid fa-award"></i> Issue Now
                 </button>
@@ -3305,7 +3326,22 @@
         };
 
         // ── Issue Certificate Modal ──────────────────
-        window.openIssueCertModal = function () {
+        window.openIssueCertModal = function (btn) {
+            const d = btn ? btn.dataset : null;
+            document.getElementById('issueCertForm').reset();
+            if (d) {
+                document.getElementById('issueCertModalTitle').innerHTML = '<i class="fa-solid fa-pen-to-square" style="color:var(--primary);"></i> Edit Certificate';
+                document.getElementById('cert_pk').value = d.id;
+                document.getElementById('cert_student').value = d.student;
+                document.getElementById('cert_course').value = d.course;
+                document.getElementById('cert_is_approved').checked = (d.approved === 'true' || d.approved === 'True');
+                document.getElementById('issueCertSubmitBtn').innerHTML = '<i class="fa-solid fa-save"></i> Save Changes';
+            } else {
+                document.getElementById('issueCertModalTitle').innerHTML = '<i class="fa-solid fa-award" style="color:var(--primary);"></i> Issue Certificate';
+                document.getElementById('cert_pk').value = '';
+                document.getElementById('cert_is_approved').checked = true;
+                document.getElementById('issueCertSubmitBtn').innerHTML = '<i class="fa-solid fa-award"></i> Issue Now';
+            }
             document.getElementById('issueCertModal').style.display = 'flex';
         };
 

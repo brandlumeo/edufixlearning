@@ -25,6 +25,7 @@ class Course(models.Model):
     slug = models.SlugField(unique=True, blank=True)
     description = models.TextField() # Rich text or long text
     thumbnail = models.ImageField(upload_to='course_thumbnails/')
+    certificate_template = models.ImageField(upload_to='certificate_templates/', blank=True, null=True, help_text="Upload certificate template image (JPG/PNG) for this course")
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     discounted_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     duration = models.FloatField(help_text="Duration in hours")
@@ -138,12 +139,21 @@ class Submission(models.Model):
     feedback = models.TextField(blank=True)
     submitted_at = models.DateTimeField(auto_now_add=True)
 
+class CertificateTemplate(models.Model):
+    course = models.OneToOneField(Course, on_delete=models.CASCADE, related_name='certificate_template_model')
+    certificate_template = models.ImageField(upload_to='certificate_templates/', help_text="Upload certificate template image (JPG/PNG) for this course")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Template for {self.course.title}"
+
 class Certificate(models.Model):
     student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='certificates')
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='certificates')
     certificate_uid = models.CharField(max_length=50, unique=True)
     certificate_file = models.FileField(upload_to='certificates/', blank=True, null=True, help_text="Upload custom certificate image or PDF")
     is_approved = models.BooleanField(default=False, help_text="Admin must approve before student can download")
+    # Timestamp when the certificate is created (auto set)
     issued_at = models.DateTimeField(auto_now_add=True)
 
 

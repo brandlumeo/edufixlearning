@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import ListView, DetailView
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse, HttpResponse, FileResponse
+from django.http import JsonResponse, HttpResponse, FileResponse, HttpResponseForbidden
 from django.contrib import messages
 from .models import Course, Lesson, Category, Enrollment, LessonProgress, Module, Assignment, Submission, Certificate
 from .forms import SubmissionForm
@@ -10,7 +10,7 @@ from .utils import generate_certificate_pdf
 import json
 import io
 
-class CourseListView(ListView):
+class CourseListView(ListView): 
     model = Course
     template_name = 'courses/course_list.html'
     context_object_name = 'courses'
@@ -150,21 +150,49 @@ def update_progress(request):
 
 @login_required
 def download_certificate(request, cert_uid):
-    certificate = get_object_or_404(Certificate, certificate_uid=cert_uid, student=request.user)
-    
-    # If the admin has uploaded a custom certificate file, serve that instead
-    if certificate.certificate_file:
-        return FileResponse(certificate.certificate_file.open('rb'), as_attachment=True, filename=f"EDUFIX_Certificate_{cert_uid}.{certificate.certificate_file.name.split('.')[-1]}")
-    
+    if request.user.is_staff:
+        certificate = get_object_or_404(Certificate, certificate_uid=cert_uid)
+    else:
+        certificate = get_object_or_404(Certificate, certificate_uid=cert_uid, student=request.user, is_approved=True)
+
     custom_name = request.GET.get('name', '').strip()[:100]  # Limit length for PDF safety
-    student_name = custom_name if custom_name else (certificate.student.full_name or certificate.student.username)
-    
+    student_name = custom_name if custom_name else (getattr(certificate.student, 'full_name', None) or certificate.student.username)
+
+    custom_course = request.GET.get('course_title', '').strip()[:150]
+    course_name = custom_course if custom_course else certificate.course.title
+
+    # Safely obtain the issue date – fallback to now if missing or attribute not present
+    issue_date_raw = getattr(certificate, 'issued_at', None)
+    if issue_date_raw:
+        issue_date = issue_date_raw.strftime('%d %B %Y')
+    else:
+        issue_date = timezone.now().strftime('%d %B %Y')
+
+    # Resolve template: course-level CertificateTemplate takes priority
+    template_file = None
+    # 1) Check the CertificateTemplate model (uploaded via admin cert panel)
+    try:
+        ct_model = certificate.course.certificate_template_model
+        if ct_model and ct_model.certificate_template:
+            template_file = ct_model.certificate_template
+    except Exception:
+        pass
+    # 2) Fall back to Course.certificate_template field
+    if not template_file:
+        if getattr(certificate.course, 'certificate_template', None):
+            template_file = certificate.course.certificate_template
+    # 3) Fall back to per-student certificate_file (legacy support)
+    if not template_file:
+        if getattr(certificate, 'certificate_file', None):
+            template_file = certificate.certificate_file
+
     buffer, uid = generate_certificate_pdf(
         student_name=student_name,
-        course_name=certificate.course.title,
-        issue_date=certificate.issued_at.strftime('%d %B %Y')
+        course_name=course_name,
+        issue_date=issue_date,
+        template_file=template_file
     )
-    
+
     return FileResponse(buffer, as_attachment=True, filename=f'EDUFIX_Certificate_{cert_uid}.pdf')
 
 def verify_certificate(request, cert_uid):

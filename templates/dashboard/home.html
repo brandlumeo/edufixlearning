@@ -539,6 +539,7 @@
             <form id="homeCertForm" action="" method="GET">
                 <label style="display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin-bottom: 5px;">Recipient Name</label>
                 <input type="text" name="name" placeholder="E.g. Jane Doe" required style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-light); background: rgba(0,0,0,0.2); color: var(--text-main); margin-bottom: 1.5rem; box-sizing: border-box;" value="{{ user.full_name|default:user.username }}">
+                
                 <div style="display: flex; gap: 10px; justify-content: flex-end;">
                     <button type="button" style="padding: 10px 20px; border-radius: 8px; cursor: pointer; border: 1px solid var(--border-light); background: transparent; color: var(--text-main); font-weight: 700;" onclick="closeHomeCertModal()">Cancel</button>
                     <button type="submit" style="padding: 10px 20px; border-radius: 8px; cursor: pointer; border: none; background: #10b981; color: white; font-weight: 700;" onclick="setTimeout(closeHomeCertModal, 800)">Generate PDF</button>
@@ -567,6 +568,7 @@
             type: 'line',
             data: {
                 labels: [{% for stat in weekly_stats %}"{{ stat.day }}",{% endfor %}],
+                parentStyle: 'line',
                 datasets: [{
                     label: 'Lessons',
                     data: [{% for stat in weekly_stats %}{{ stat.count }},{% endfor %}],

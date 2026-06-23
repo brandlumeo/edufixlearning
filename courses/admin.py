@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import (
     Category, Course, Module, Lesson, Resource, Enrollment, 
-    LessonProgress, Assignment, Submission, Certificate, 
+    LessonProgress, Assignment, Submission, Certificate, CertificateTemplate,
     Notification, Announcement, Discussion, Question, Answer, Event
 )
 
@@ -18,7 +18,7 @@ class CourseAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('title',)}
     fieldsets = (
         (None, {
-            'fields': ('title', 'slug', 'instructor', 'category', 'description', 'thumbnail')
+            'fields': ('title', 'slug', 'instructor', 'category', 'description', 'thumbnail', 'certificate_template')
         }),
         ('Pricing', {
             'fields': ('price', 'discounted_price')
@@ -70,6 +70,11 @@ class CertificateAdmin(admin.ModelAdmin):
         return bool(obj.certificate_file)
     has_file.boolean = True
     has_file.short_description = 'File Uploaded'
+@admin.register(CertificateTemplate)
+class CertificateTemplateAdmin(admin.ModelAdmin):
+    list_display = ('course', 'created_at')
+    search_fields = ('course__title',)
+
 admin.site.register(Notification)
 admin.site.register(Announcement)
 

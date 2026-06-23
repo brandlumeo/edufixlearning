@@ -141,7 +141,7 @@ def get_student_dashboard_data(user):
     # Build a quick progress lookup from course_data
     progress_by_course = {data['course'].id: data['progress'] for data in course_data}
 
-    raw_certs = Certificate.objects.filter(student=user).select_related('course')
+    raw_certs = Certificate.objects.filter(student=user, is_approved=True).select_related('course')
     certificates = list(raw_certs)                    # keep legacy list for other template parts
     certificate_items = []
     for cert in raw_certs:
@@ -150,8 +150,8 @@ def get_student_dashboard_data(user):
             'course': cert.course,
             'progress': progress,
             'cert': cert,
-            'is_unlocked': cert.is_approved,
-            'has_file': bool(cert.certificate_file),
+            'is_unlocked': cert.is_approved or progress == 100,
+            'has_file': bool(cert.certificate_file or getattr(cert.course, 'certificate_template', None) or getattr(cert.course, 'certificate_template_model', None)),
         })
 
     # Assignments
@@ -341,7 +341,7 @@ def certificates_view(request):
             progress_by_course[course.id] = int((completed / total * 100)) if total > 0 else 0
 
         # Get all certificates the admin has assigned to this student
-        raw_certs = Certificate.objects.filter(student=user).select_related('course')
+        raw_certs = Certificate.objects.filter(student=user, is_approved=True).select_related('course')
         certificate_items = []
         for cert in raw_certs:
             progress = progress_by_course.get(cert.course.id, 0)
@@ -349,8 +349,8 @@ def certificates_view(request):
                 'course': cert.course,
                 'progress': progress,
                 'cert': cert,
-                'is_unlocked': cert.is_approved,
-                'has_file': bool(cert.certificate_file),
+                'is_unlocked': cert.is_approved or progress == 100,
+                'has_file': bool(cert.certificate_file or getattr(cert.course, 'certificate_template', None) or getattr(cert.course, 'certificate_template_model', None)),
             })
 
         context = {
@@ -823,33 +823,56 @@ def submission_review_view(request, submission_id):
 @require_POST
 def certificate_issue_view(request):
     import uuid
+    from courses.models import CertificateTemplate
+    cert_pk = request.POST.get('cert_pk')
     student_id = request.POST.get('student_id')
     course_id = request.POST.get('course_id')
+    is_approved = request.POST.get('is_approved') == '1'
+    # certificate_template_file is a course-level template (reused for all students in this course)
+    certificate_template_file = request.FILES.get('certificate_template_file')
+
     if not (student_id and course_id):
         messages.error(request, "Student and course are required.")
         return _redirect_admin_certs_tab()
     try:
         student = User.objects.get(id=student_id, is_staff=False)
         course = Course.objects.get(id=course_id)
-        existing = Certificate.objects.filter(student=student, course=course).first()
-        if existing:
-            if existing.is_approved:
-                messages.warning(request, f"Certificate already approved for {student.username} — {course.title}.")
-            else:
-                existing.is_approved = True
-                existing.save(update_fields=['is_approved'])
-                messages.success(request, f"Certificate approved for {student.username} in '{course.title}'!")
+
+        # If a course-level template was uploaded, save/update it for the course
+        if certificate_template_file:
+            ct, _ = CertificateTemplate.objects.get_or_create(course=course)
+            ct.certificate_template = certificate_template_file
+            ct.save()
+
+        if cert_pk:
+            cert = get_object_or_404(Certificate, id=cert_pk)
+            cert.student = student
+            cert.course = course
+            cert.is_approved = is_approved
+            cert.save()
+            messages.success(request, f"Certificate updated for {student.username} in '{course.title}'!")
         else:
-            cert_uid = f"CERT-{uuid.uuid4().hex[:8].upper()}"
-            Certificate.objects.create(student=student, course=course, certificate_uid=cert_uid, is_approved=True)
-            messages.success(request, f"Certificate approved and issued to {student.username} for '{course.title}'!")
+            existing = Certificate.objects.filter(student=student, course=course).first()
+            if existing:
+                existing.is_approved = is_approved
+                existing.save()
+                messages.success(request, f"Certificate updated and approved for {student.username} in '{course.title}'!")
+            else:
+                cert_uid = f"CERT-{uuid.uuid4().hex[:8].upper()}"
+                Certificate.objects.create(
+                    student=student,
+                    course=course,
+                    certificate_uid=cert_uid,
+                    is_approved=is_approved,
+                )
+                messages.success(request, f"Certificate approved and issued to {student.username} for '{course.title}'!")
     except User.DoesNotExist:
         messages.error(request, "Student not found.")
     except Course.DoesNotExist:
         messages.error(request, "Course not found.")
     except Exception:
-        logger.exception("Error issuing certificate")
-        messages.error(request, "An error occurred while issuing the certificate. Please try again.")
+        logger.exception("Error issuing/updating certificate")
+        messages.error(request, "An error occurred while saving the certificate. Please try again.")
     return _redirect_admin_certs_tab()
 
 
