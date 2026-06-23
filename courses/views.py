@@ -224,14 +224,17 @@ def download_certificate(request, cert_uid):
                 getattr(certificate, 'certificate_file', None)
             )
 
-        # DEBUG: completely bypass reportlab to check for segfaults
-        import io
-        dummy_buf = io.BytesIO(b"This is a test file. If you can download this, reportlab is crashing the server.")
-        dummy_buf.seek(0)
+        buffer, uid = generate_certificate_pdf(
+            student_name=student_name,
+            course_name=course_name,
+            issue_date=issue_date,
+            template_file=template_file,
+        )
+
         return FileResponse(
-            dummy_buf,
+            buffer,
             as_attachment=True,
-            filename=f'EDUFIX_Certificate_{cert_uid}.txt'
+            filename=f'EDUFIX_Certificate_{cert_uid}.pdf'
         )
 
     except Exception as exc:
