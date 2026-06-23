@@ -153,62 +153,101 @@ def update_progress(request):
 
 @login_required
 def download_certificate(request, cert_uid):
-    if request.user.is_staff:
-        certificate = get_object_or_404(Certificate, certificate_uid=cert_uid)
-    else:
-        certificate = get_object_or_404(Certificate, certificate_uid=cert_uid, student=request.user, is_approved=True)
-
-    custom_name = request.GET.get('name', '').strip()[:100]  # Limit length for PDF safety
-    student_name = custom_name if custom_name else (getattr(certificate.student, 'full_name', None) or certificate.student.username)
-
-    custom_course = request.GET.get('course_title', '').strip()[:150]
-    course_name = custom_course if custom_course else certificate.course.title
-
-    # Safely obtain the issue date – fallback to now if missing or attribute not present
-    issue_date_raw = getattr(certificate, 'issued_at', None)
-    if issue_date_raw:
-        issue_date = issue_date_raw.strftime('%d %B %Y')
-    else:
-        issue_date = timezone.now().strftime('%d %B %Y')
-
-    # Resolve template: course-level CertificateTemplate takes priority
-    template_file = None
-    # 1) Check the CertificateTemplate model (uploaded via admin cert panel)
     try:
-        ct_model = certificate.course.certificate_template_model
-        if ct_model and ct_model.certificate_template:
-            template_file = ct_model.certificate_template
-    except Exception:
-        pass
-    # 2) Fall back to Course.certificate_template field
-    if not template_file:
-        if getattr(certificate.course, 'certificate_template', None):
-            template_file = certificate.course.certificate_template
-    # 3) Fall back to per-student certificate_file (legacy support)
-    if not template_file:
-        if getattr(certificate, 'certificate_file', None):
-            template_file = certificate.certificate_file
+        if request.user.is_staff:
+            certificate = get_object_or_404(Certificate, certificate_uid=cert_uid)
+        else:
+            certificate = get_object_or_404(
+                Certificate,
+                certificate_uid=cert_uid,
+                student=request.user,
+                is_approved=True
+            )
 
-    try:
+        custom_name = request.GET.get('name', '').strip()[:100]
+        student_name = custom_name if custom_name else (
+            getattr(certificate.student, 'full_name', None) or certificate.student.username
+        )
+
+        custom_course = request.GET.get('course_title', '').strip()[:150]
+        course_name = custom_course if custom_course else certificate.course.title
+
+        # Safely obtain the issue date
+        issue_date_raw = getattr(certificate, 'issued_at', None)
+        issue_date = (
+            issue_date_raw.strftime('%d %B %Y')
+            if issue_date_raw
+            else timezone.now().strftime('%d %B %Y')
+        )
+
+        # ── Resolve template file ─────────────────────────────────────────────
+        # Only pass a FieldFile if the physical file actually exists in storage,
+        # otherwise production would get FileNotFoundError inside the PDF generator.
+        def _safe_field_file(field_file):
+            """Return field_file only if it has a name AND the file exists."""
+            if not field_file:
+                return None
+            name = getattr(field_file, 'name', None)
+            if not name:
+                return None
+            storage = getattr(field_file, 'storage', None)
+            if storage:
+                try:
+                    if storage.exists(name):
+                        return field_file
+                except Exception:
+                    pass
+            return None
+
+        template_file = None
+
+        # 1) CertificateTemplate model (admin cert panel upload)
+        try:
+            ct_model = certificate.course.certificate_template_model
+            template_file = _safe_field_file(
+                ct_model.certificate_template if ct_model else None
+            )
+        except Exception:
+            pass
+
+        # 2) Course.certificate_template field
+        if not template_file:
+            template_file = _safe_field_file(
+                getattr(certificate.course, 'certificate_template', None)
+            )
+
+        # 3) Per-student certificate_file (legacy)
+        if not template_file:
+            template_file = _safe_field_file(
+                getattr(certificate, 'certificate_file', None)
+            )
+
         buffer, uid = generate_certificate_pdf(
             student_name=student_name,
             course_name=course_name,
             issue_date=issue_date,
-            template_file=template_file
-        )
-    except Exception as exc:
-        logger.exception(
-            "Certificate PDF generation failed for cert_uid=%s student=%s: %s",
-            cert_uid, request.user.username, exc
-        )
-        return HttpResponse(
-            "Sorry, there was a problem generating your certificate. "
-            "Please contact support and quote your certificate ID: " + cert_uid,
-            status=500,
-            content_type="text/plain"
+            template_file=template_file,
         )
 
-    return FileResponse(buffer, as_attachment=True, filename=f'EDUFIX_Certificate_{cert_uid}.pdf')
+        return FileResponse(
+            buffer,
+            as_attachment=True,
+            filename=f'EDUFIX_Certificate_{cert_uid}.pdf'
+        )
+
+    except Exception as exc:
+        logger.exception(
+            "download_certificate failed: cert_uid=%s user=%s error=%s",
+            cert_uid,
+            getattr(request.user, 'username', 'unknown'),
+            exc,
+        )
+        return HttpResponse(
+            f"Certificate generation failed. Please contact support with ID: {cert_uid}",
+            status=500,
+            content_type="text/plain",
+        )
+
 
 def verify_certificate(request, cert_uid):
     certificate = get_object_or_404(Certificate, certificate_uid=cert_uid)
