@@ -153,6 +153,8 @@ def update_progress(request):
 
 @login_required
 def download_certificate(request, cert_uid):
+    if request.GET.get('test') == 'ping':
+        return HttpResponse("PONG - The server is running the new code!", status=200, content_type="text/plain")
     try:
         if request.user.is_staff:
             certificate = get_object_or_404(Certificate, certificate_uid=cert_uid)
