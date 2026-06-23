@@ -231,11 +231,9 @@ def download_certificate(request, cert_uid):
             template_file=template_file,
         )
 
-        return FileResponse(
-            buffer,
-            as_attachment=True,
-            filename=f'EDUFIX_Certificate_{cert_uid}.pdf'
-        )
+        response = HttpResponse(buffer.getvalue(), content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="EDUFIX_Certificate_{cert_uid}.pdf"'
+        return response
 
     except Exception as exc:
         import traceback
