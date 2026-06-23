@@ -1,4 +1,5 @@
 import os
+import logging
 from io import BytesIO
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4, landscape
@@ -6,6 +7,8 @@ from reportlab.lib.colors import HexColor
 from reportlab.lib.utils import ImageReader
 from django.conf import settings
 import uuid
+
+logger = logging.getLogger(__name__)
 
 
 def _wrap_text(text, max_chars_per_line):
@@ -26,6 +29,31 @@ def _wrap_text(text, max_chars_per_line):
     return lines
 
 
+def _find_static_image(filename):
+    """
+    Returns the absolute path of a static image, checking both:
+      1. STATICFILES_DIRS source folder  → works locally (DEBUG=True)
+      2. STATIC_ROOT collected folder    → works in production (DEBUG=False)
+    In production, collectstatic moves files to STATIC_ROOT (staticfiles/),
+    so the source static/ folder may be absent or empty on the server.
+    """
+    # Source static directories (development / local)
+    for static_dir in getattr(settings, 'STATICFILES_DIRS', []):
+        candidate = os.path.join(str(static_dir), 'images', filename)
+        if os.path.exists(candidate):
+            logger.debug("Found static image at source path: %s", candidate)
+            return candidate
+    # Collected static root (production after `collectstatic`)
+    static_root = getattr(settings, 'STATIC_ROOT', None)
+    if static_root:
+        candidate = os.path.join(str(static_root), 'images', filename)
+        if os.path.exists(candidate):
+            logger.debug("Found static image at STATIC_ROOT: %s", candidate)
+            return candidate
+    logger.warning("Static image not found: %s (checked STATICFILES_DIRS and STATIC_ROOT)", filename)
+    return None
+
+
 def generate_certificate_pdf(student_name, course_name, issue_date, template_file=None):
     """
     Generate a certificate PDF using the Edufix template image as background.
@@ -44,16 +72,11 @@ def generate_certificate_pdf(student_name, course_name, issue_date, template_fil
 
     # ── Resolve background template ──────────────────────────────────────────
     if not template_file:
-        # Try blank Edufix template first
-        blank_path = os.path.join(
-            settings.BASE_DIR, 'static', 'images', 'edufix_blank_template.jpg'
-        )
-        default_path = os.path.join(
-            settings.BASE_DIR, 'static', 'images', 'default_certificate_template.jpg'
-        )
-        if os.path.exists(blank_path):
+        blank_path   = _find_static_image('edufix_blank_template.jpg')
+        default_path = _find_static_image('default_certificate_template.jpg')
+        if blank_path:
             template_file = blank_path
-        elif os.path.exists(default_path):
+        elif default_path:
             template_file = default_path
 
     # ── Check if template is a PDF (merge overlay) ───────────────────────────

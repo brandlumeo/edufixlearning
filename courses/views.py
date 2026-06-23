@@ -1,3 +1,4 @@
+import logging
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import ListView, DetailView
 from django.contrib.auth.decorators import login_required
@@ -9,6 +10,8 @@ from django.utils import timezone
 from .utils import generate_certificate_pdf
 import json
 import io
+
+logger = logging.getLogger(__name__)
 
 class CourseListView(ListView): 
     model = Course
@@ -186,12 +189,24 @@ def download_certificate(request, cert_uid):
         if getattr(certificate, 'certificate_file', None):
             template_file = certificate.certificate_file
 
-    buffer, uid = generate_certificate_pdf(
-        student_name=student_name,
-        course_name=course_name,
-        issue_date=issue_date,
-        template_file=template_file
-    )
+    try:
+        buffer, uid = generate_certificate_pdf(
+            student_name=student_name,
+            course_name=course_name,
+            issue_date=issue_date,
+            template_file=template_file
+        )
+    except Exception as exc:
+        logger.exception(
+            "Certificate PDF generation failed for cert_uid=%s student=%s: %s",
+            cert_uid, request.user.username, exc
+        )
+        return HttpResponse(
+            "Sorry, there was a problem generating your certificate. "
+            "Please contact support and quote your certificate ID: " + cert_uid,
+            status=500,
+            content_type="text/plain"
+        )
 
     return FileResponse(buffer, as_attachment=True, filename=f'EDUFIX_Certificate_{cert_uid}.pdf')
 
