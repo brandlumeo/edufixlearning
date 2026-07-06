@@ -174,13 +174,8 @@ def download_certificate(request, cert_uid):
         custom_course = request.GET.get('course_title', '').strip()[:150]
         course_name = custom_course if custom_course else certificate.course.title
 
-        # Safely obtain the issue date
-        issue_date_raw = getattr(certificate, 'issued_at', None)
-        issue_date = (
-            issue_date_raw.strftime('%d %B %Y')
-            if issue_date_raw
-            else timezone.now().strftime('%d %B %Y')
-        )
+        # Always use today's date so the certificate shows the download date
+        issue_date = timezone.now().strftime('%d %B %Y')
 
         # ── Resolve template file ─────────────────────────────────────────────
         # Only pass a FieldFile if the physical file actually exists in storage,

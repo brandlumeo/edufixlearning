@@ -56,7 +56,10 @@
 
                 <div style="margin-bottom: 1.5rem;">
                     <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Password</label>
-                    <input type="password" name="password" class="form-control glass" placeholder="Min. 8 chars, 1 upper, 1 number" required style="width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid var(--glass-border); color: white; background: rgba(255,255,255,0.05);">
+                    <div style="position: relative;">
+                        <input type="password" name="password" id="password_input" class="form-control glass" placeholder="Min. 8 chars, 1 upper, 1 number" required style="width: 100%; padding: 0.8rem 3rem 0.8rem 1rem; border-radius: 12px; border: 1px solid var(--glass-border); color: white; background: rgba(255,255,255,0.05);">
+                        <i class="fa-solid fa-eye" id="toggle_password" style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-gray); transition: var(--transition);"></i>
+                    </div>
                     {% if form.password.errors %}
                         <small class="text-pink" style="font-size: 0.8rem;">{{ form.password.errors.0 }}</small>
                     {% endif %}
@@ -64,7 +67,10 @@
 
                 <div style="margin-bottom: 1.5rem;">
                     <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Confirm Password</label>
-                    <input type="password" name="confirm_password" class="form-control glass" placeholder="Must match password" required style="width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid var(--glass-border); color: white; background: rgba(255,255,255,0.05);">
+                    <div style="position: relative;">
+                        <input type="password" name="confirm_password" id="confirm_password_input" class="form-control glass" placeholder="Must match password" required style="width: 100%; padding: 0.8rem 3rem 0.8rem 1rem; border-radius: 12px; border: 1px solid var(--glass-border); color: white; background: rgba(255,255,255,0.05);">
+                        <i class="fa-solid fa-eye" id="toggle_confirm_password" style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-gray); transition: var(--transition);"></i>
+                    </div>
                     {% if form.confirm_password.errors %}
                         <small class="text-pink" style="font-size: 0.8rem;">{{ form.confirm_password.errors.0 }}</small>
                     {% endif %}
@@ -83,6 +89,27 @@
             <div style="text-align: center; margin-top: 2rem;" class="animate-up" style="animation-delay: 0.3s;">
                 <p class="text-gray">Already have an account? <a href="{% url 'login' %}" class="text-yellow" style="font-weight: 600;">Log In</a></p>
             </div>
+            <script>
+                const togglePassword = document.getElementById('toggle_password');
+                const passwordInput = document.getElementById('password_input');
+                togglePassword.addEventListener('click', function() {
+                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passwordInput.setAttribute('type', type);
+                    this.classList.toggle('fa-eye');
+                    this.classList.toggle('fa-eye-slash');
+                    this.style.color = type === 'text' ? 'var(--accent-pink)' : 'var(--text-gray)';
+                });
+
+                const toggleConfirmPassword = document.getElementById('toggle_confirm_password');
+                const confirmPasswordInput = document.getElementById('confirm_password_input');
+                toggleConfirmPassword.addEventListener('click', function() {
+                    const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    confirmPasswordInput.setAttribute('type', type);
+                    this.classList.toggle('fa-eye');
+                    this.classList.toggle('fa-eye-slash');
+                    this.style.color = type === 'text' ? 'var(--accent-pink)' : 'var(--text-gray)';
+                });
+            </script>
         </div>
     </div>
 </section>

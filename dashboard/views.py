@@ -891,6 +891,19 @@ def certificate_approve_view(request, cert_uid):
 
 @staff_member_required
 @require_POST
+def certificate_delete_view(request, cert_uid):
+    cert = get_object_or_404(Certificate, certificate_uid=cert_uid)
+    student_name = cert.student.full_name or cert.student.username
+    course_title = cert.course.title
+    if cert.certificate_file:
+        cert.certificate_file.delete(save=False)
+    cert.delete()
+    messages.success(request, f"Certificate for {student_name} in '{course_title}' has been deleted.")
+    return _redirect_admin_certs_tab()
+
+
+@staff_member_required
+@require_POST
 def batch_create_view(request):
     name = request.POST.get('name', '').strip()
     course_id = request.POST.get('course')

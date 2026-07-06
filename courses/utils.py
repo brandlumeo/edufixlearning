@@ -70,9 +70,19 @@ def generate_certificate_pdf(student_name, course_name, issue_date, template_fil
     page_w, page_h = landscape(A4)   # 841.89 x 595.28 pts
 
     # ── Resolve background template ──────────────────────────────────────────
-    if not template_file:
-        blank_path   = _find_static_image('edufix_blank_template.jpg')
-        default_path = _find_static_image('default_certificate_template.jpg')
+    blank_path   = _find_static_image('edufix_blank_template.jpg')
+    default_path = _find_static_image('default_certificate_template.jpg')
+
+    if template_file:
+        name_str = template_file.name if hasattr(template_file, 'name') else str(template_file)
+        name_lower = name_str.lower()
+        if 'default_certificate_template' in name_lower or 'default_edufix_template' in name_lower:
+            logger.info("Legacy/default template with text detected: %s. Swapping to blank template.", name_str)
+            if blank_path:
+                template_file = blank_path
+            elif default_path:
+                template_file = default_path
+    else:
         if blank_path:
             template_file = blank_path
         elif default_path:
@@ -84,6 +94,13 @@ def generate_certificate_pdf(student_name, course_name, issue_date, template_fil
         name_str = template_file.name if hasattr(template_file, 'name') else str(template_file)
         is_pdf_template = name_str.lower().endswith('.pdf')
 
+    is_prerendered = False
+    if template_file:
+        name_str = template_file.name if hasattr(template_file, 'name') else str(template_file)
+        name_lower = name_str.lower()
+        if 'mobile_editing' in name_lower or 'media__1782792182488' in name_lower:
+            is_prerendered = True
+
     # ────────────────────────────────────────────────────────────────────────
     # PDF TEMPLATE PATH
     # ────────────────────────────────────────────────────────────────────────
@@ -92,7 +109,7 @@ def generate_certificate_pdf(student_name, course_name, issue_date, template_fil
             import pypdf
             overlay_buf = BytesIO()
             p = canvas.Canvas(overlay_buf, pagesize=landscape(A4))
-            _draw_edufix_text(p, page_w, page_h, student_name, course_name, issue_date, uid)
+            _draw_edufix_text(p, page_w, page_h, student_name, course_name, issue_date, uid, is_prerendered=is_prerendered)
             p.showPage()
             p.save()
             overlay_buf.seek(0)
@@ -153,7 +170,7 @@ def generate_certificate_pdf(student_name, course_name, issue_date, template_fil
                 img_reader = ImageReader(BytesIO(img_bytes))
                 p.drawImage(img_reader, 0, 0, width=page_w, height=page_h,
                             preserveAspectRatio=False)
-                _draw_edufix_text(p, page_w, page_h, student_name, course_name, issue_date, uid)
+                _draw_edufix_text(p, page_w, page_h, student_name, course_name, issue_date, uid, is_prerendered=is_prerendered)
                 p.showPage()
                 p.save()
                 img_buf.seek(0)
@@ -226,98 +243,136 @@ def generate_certificate_pdf(student_name, course_name, issue_date, template_fil
     return plain_buf, uid
 
 
-
-# ─────────────────────────────────────────────────────────────────────────────
-# TEXT PLACEMENT — calibrated for the Edufix blank certificate template
-# (1600 x 1130 px image rendered as A4 landscape: 841.89 x 595.28 pts)
-#
-# The blank template has:
-#   - Edufix logo at top (already on image, no need to draw)
-#   - Empty center for all text content
-#   - Geometric colored panels on left and right sides
-#
-# PDF coordinate system: (0,0) = bottom-left, Y increases upward
-# Image pixel Y → PDF Y:  pdf_y = page_h - (pixel_y / img_h * page_h)
-#
-# Key positions in the blank template (centre text area):
-#   CERTIFICATE large title    → top of blank area, y ~250-330px → pdf_y ~440
-#   OF APPRECIATION subtitle   → y ~335-400px → pdf_y ~390
-#   THIS CERT IS PRESENTED TO → y ~430px → pdf_y ~370
-#   Name                       → y ~510px → pdf_y ~323
-#   Body paragraph             → y ~640-760px → pdf_y ~240-175
-#   Date                       → y ~870px → pdf_y ~120
-# ─────────────────────────────────────────────────────────────────────────────
-def _draw_edufix_text(p, page_w, page_h, student_name, course_name, issue_date, uid):
+def _draw_edufix_text(p, page_w, page_h, student_name, course_name, issue_date, uid, is_prerendered=False):
     cx = page_w / 2   # horizontal centre ≈ 420.95 pts
 
-    # ── CERTIFICATE (large purple heading) ───────────────────────────────────
-    p.setFillColor(HexColor('#5b2d8e'))
-    p.setFont("Helvetica-Bold", 44)
-    p.drawCentredString(cx, 430, "CERTIFICATE")
+    # Helper function to find signature files in static or media
+    def _find_sig_file(filename):
+        path = _find_static_image(filename)
+        if not path:
+            from django.conf import settings as dj_settings
+            media_root = getattr(dj_settings, 'MEDIA_ROOT', None)
+            if media_root:
+                _fallback = os.path.join(str(media_root), 'certificates', filename)
+                if os.path.exists(_fallback):
+                    path = _fallback
+        return path
 
-    # ── OF APPRECIATION (amber subtitle) ─────────────────────────────────────
-    p.setFillColor(HexColor('#f59e0b'))
-    p.setFont("Helvetica-Bold", 20)
-    p.drawCentredString(cx, 393, "OF APPRECIATION")
+    if is_prerendered:
+        # ── Student Name (centered between two pre-rendered gold lines) ───────
+        p.setFillColor(HexColor('#1a1a1a'))
+        p.setFont("Helvetica-Bold", 32)
+        display_name = student_name if len(student_name) <= 32 else student_name[:30] + '\u2026'
+        p.drawCentredString(cx, 242, display_name)
 
-    # ── THIS CERTIFICATE IS PRESENTED TO ─────────────────────────────────────
-    p.setFillColor(HexColor('#f59e0b'))
-    p.setFont("Helvetica-Bold", 11)
-    p.drawCentredString(cx, 358, "THIS CERTIFICATE IS PRESENTED TO")
+        # ── DATE (centered below the pre-rendered DATE label) ─────────────────
+        p.setFillColor(HexColor('#333333'))
+        p.setFont("Helvetica", 9)
+        p.drawCentredString(cx - 130, 59, issue_date)
 
-    # Thin amber line below label
-    p.setStrokeColor(HexColor('#f59e0b'))
-    p.setLineWidth(1)
-    p.line(cx - 190, 352, cx + 190, 352)
+        # ── Signature circle only (placed over the pre-rendered signature line) ──
+        sig_path = _find_sig_file('rasal_handwritten_circle.png')
+        if sig_path and os.path.exists(sig_path):
+            try:
+                sig_reader = ImageReader(sig_path)
+                # Circle only: width ~50, height ~37 pts
+                sig_w, sig_h = 50, 37
+                sig_x = cx + 105         # Centered above Rasal Farhan text
+                sig_y = 66
+                p.drawImage(sig_reader, sig_x, sig_y, width=sig_w, height=sig_h,
+                            mask='auto', preserveAspectRatio=True)
+            except Exception as exc:
+                logger.warning("Could not draw signature image (prerendered): %s", exc)
 
-    # ── Student Name ─────────────────────────────────────────────────────────
-    p.setFillColor(HexColor('#1a1a1a'))
-    p.setFont("Helvetica-Bold", 32)
-    # Reduce font size for very long names
-    display_name = student_name if len(student_name) <= 32 else student_name[:30] + '\u2026'
-    p.drawCentredString(cx, 313, display_name)
+        # ── Verification UID (very bottom center) ────────────────────────────
+        p.setFillColor(HexColor('#aaaaaa'))
+        p.setFont("Helvetica", 7)
+        p.drawCentredString(cx, 28, f"Verification ID: EDUFIX-{uid}")
+    else:
+        # ── CERTIFICATE (large purple heading) ───────────────────────────────────
+        p.setFillColor(HexColor('#5b2d8e'))
+        p.setFont("Helvetica-Bold", 44)
+        p.drawCentredString(cx, 430, "CERTIFICATE")
 
-    # Thin amber line below name
-    p.setStrokeColor(HexColor('#f59e0b'))
-    p.setLineWidth(1.5)
-    p.line(cx - 190, 305, cx + 190, 305)
+        # ── OF APPRECIATION (amber subtitle) ─────────────────────────────────────
+        p.setFillColor(HexColor('#f59e0b'))
+        p.setFont("Helvetica-Bold", 20)
+        p.drawCentredString(cx, 393, "OF APPRECIATION")
 
-    # ── Body paragraph (course description) ──────────────────────────────────
-    p.setFillColor(HexColor('#444444'))
-    p.setFont("Helvetica", 12)
-    body = (
-        f"This certificate recognizes the successful completion of "
-        f"Edufix Learning\u2019s {course_name}, "
-        f"empowering creative skills through AI tools and "
-        f"advanced mobile editing techniques."
-    )
-    lines = _wrap_text(body, 58)
-    y_body = 272
-    line_h = 17
-    for line in lines:
-        p.drawCentredString(cx, y_body, line)
-        y_body -= line_h
+        # ── THIS CERTIFICATE IS PRESENTED TO ─────────────────────────────────────
+        p.setFillColor(HexColor('#f59e0b'))
+        p.setFont("Helvetica-Bold", 11)
+        p.drawCentredString(cx, 358, "THIS CERTIFICATE IS PRESENTED TO")
 
-    # ── DATE section (bottom-left, matching Edufix template position) ─────────
-    p.setFillColor(HexColor('#888888'))
-    p.setFont("Helvetica-Bold", 8)
-    p.drawCentredString(cx - 130, 120, "DATE")
-    p.setStrokeColor(HexColor('#888888'))
-    p.setLineWidth(0.5)
-    p.line(cx - 185, 116, cx - 75, 116)
-    p.setFont("Helvetica", 9)
-    p.drawCentredString(cx - 130, 104, issue_date)
+        # Thin amber line below label
+        p.setStrokeColor(HexColor('#f59e0b'))
+        p.setLineWidth(1)
+        p.line(cx - 190, 352, cx + 190, 352)
 
-    # ── SIGNATURE section (bottom-right, matching Edufix template) ───────────
-    p.setFont("Helvetica-Bold", 8)
-    p.setFillColor(HexColor('#888888'))
-    p.drawCentredString(cx + 130, 120, "SIGNATURE")
-    p.setStrokeColor(HexColor('#888888'))
-    p.line(cx + 75, 116, cx + 185, 116)
-    p.setFont("Helvetica", 9)
-    p.drawCentredString(cx + 130, 104, "Founder")
+        # ── Student Name ─────────────────────────────────────────────────────────
+        p.setFillColor(HexColor('#1a1a1a'))
+        p.setFont("Helvetica-Bold", 32)
+        # Reduce font size for very long names
+        display_name = student_name if len(student_name) <= 32 else student_name[:30] + '\u2026'
+        p.drawCentredString(cx, 313, display_name)
 
-    # ── Verification UID (very bottom center) ────────────────────────────────
-    p.setFillColor(HexColor('#aaaaaa'))
-    p.setFont("Helvetica", 7)
-    p.drawCentredString(cx, 60, f"Verification ID: EDUFIX-{uid}")
+        # Thin amber line below name
+        p.setStrokeColor(HexColor('#f59e0b'))
+        p.setLineWidth(1.5)
+        p.line(cx - 190, 305, cx + 190, 305)
+
+        # ── Body paragraph (course description) ──────────────────────────────────
+        p.setFillColor(HexColor('#444444'))
+        p.setFont("Helvetica", 12)
+        body = (
+            f"This certificate recognizes the successful completion of "
+            f"Edufix Learning\u2019s {course_name}, "
+            f"empowering creative skills through AI tools and "
+            f"advanced mobile editing techniques."
+        )
+        lines = _wrap_text(body, 58)
+        y_body = 272
+        line_h = 17
+        for line in lines:
+            p.drawCentredString(cx, y_body, line)
+            y_body -= line_h
+
+        # ── DATE section (bottom-left, matching Edufix template position) ─────────
+        p.setFillColor(HexColor('#888888'))
+        p.setFont("Helvetica-Bold", 8)
+        p.drawCentredString(cx - 130, 122, "DATE")
+        p.setStrokeColor(HexColor('#888888'))
+        p.setLineWidth(0.5)
+        p.line(cx - 185, 118, cx - 75, 118)
+        p.setFillColor(HexColor('#222222'))
+        p.setFont("Helvetica-Bold", 10)
+        p.drawCentredString(cx - 130, 104, issue_date)
+
+        # ── Signature block (bottom-right) ─────────────────────────────────────
+        sig_path = (
+            _find_sig_file('rasal_full_sig_block.png')
+            or _find_sig_file('rasal_farhan_signature.png')
+        )
+        if sig_path and os.path.exists(sig_path):
+            try:
+                sig_reader = ImageReader(sig_path)
+                # The signature image replaces the old horizontal signature line.
+                sig_w, sig_h = 118, 52
+                sig_x = cx + 71
+                sig_y = 102
+                p.drawImage(sig_reader, sig_x, sig_y, width=sig_w, height=sig_h,
+                            mask='auto', preserveAspectRatio=True)
+            except Exception as exc:
+                logger.warning("Could not draw signature image: %s", exc)
+                p.setFillColor(HexColor('#333333'))
+                p.setFont("Helvetica-Bold", 9)
+                p.drawCentredString(cx + 130, 112, "Rasal Farhan")
+        else:
+            p.setFillColor(HexColor('#333333'))
+            p.setFont("Helvetica-Bold", 9)
+            p.drawCentredString(cx + 130, 112, "Rasal Farhan")
+
+        # ── Verification UID (very bottom center) ──────────────────────────────────
+        p.setFillColor(HexColor('#aaaaaa'))
+        p.setFont("Helvetica", 7)
+        p.drawCentredString(cx, 60, f"Verification ID: EDUFIX-{uid}")

@@ -154,7 +154,7 @@
                 </button>
                 <div class="search-box" style="flex: 1;">
                     <i class="fa-solid fa-magnifying-glass text-muted"></i>
-                    <input type="text" placeholder="Search management hub...">
+                    <input type="text" id="adminHubSearch" placeholder="Search students, courses, certificates..." autocomplete="off">
                 </div>
             </div>
             <div style="display: flex; align-items: center; gap: 20px;">
@@ -2095,6 +2095,17 @@
                                         <i class="fa-solid fa-download"></i> PDF
                                     </a>
                                     {% endif %}
+                                    <form method="post"
+                                        action="{% url 'dashboard:certificate_delete' cert.certificate_uid %}"
+                                        style="margin:0;"
+                                        onsubmit="return confirm('Delete certificate {{ cert.certificate_uid|escapejs }} for {{ cert.student.username|escapejs }}?');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="badge"
+                                            style="border:none; cursor:pointer; padding:6px 12px; background:rgba(239,68,68,0.12); color:#ef4444;"
+                                            title="Delete Certificate">
+                                            <i class="fa-solid fa-trash"></i> Delete
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                             {% empty %}
@@ -2417,12 +2428,109 @@
         if (adminToggle) adminToggle.addEventListener('click', openAdminSidebar);
         if (adminOverlay) adminOverlay.addEventListener('click', closeAdminSidebar);
 
+        const adminHubSearch = document.getElementById('adminHubSearch');
+        if (adminHubSearch) {
+            adminHubSearch.addEventListener('keydown', function (e) {
+                if (e.key !== 'Enter') return;
+                e.preventDefault();
+                runAdminHubSearch(this.value);
+            });
+            adminHubSearch.addEventListener('input', function () {
+                if (this.value.trim().length >= 3) runAdminHubSearch(this.value);
+            });
+        }
+
+
         document.querySelectorAll('.admin-sidebar .nav-item, .admin-sidebar .sub-item').forEach(function (el) {
             el.addEventListener('click', function () {
                 if (window.innerWidth <= 900) closeAdminSidebar();
             });
         });
     });
+
+    const adminSearchParents = {
+        analytics: null,
+        leads: 'enrollment', students: 'enrollment', progress: 'enrollment',
+        courses: 'academics', batches: 'academics', content: 'academics', assignments: 'academics', portfolio: 'academics', certs: 'academics',
+        payments: 'finance', trainers: 'finance', placements: 'finance',
+        support: 'system', notifications: 'system', 'system-logs': 'system', reviews: 'system', settings: 'system'
+    };
+
+    const adminSearchAliases = [
+        { terms: ['certificate', 'certificates', 'cert', 'uid', 'approved', 'pending certificate'], tab: 'certs' },
+        { terms: ['student', 'students', 'learner', 'admission', 'user'], tab: 'students' },
+        { terms: ['lead', 'leads', 'enquiry', 'enquiries', 'inquiry'], tab: 'leads' },
+        { terms: ['course', 'courses', 'category'], tab: 'courses' },
+        { terms: ['batch', 'batches', 'schedule'], tab: 'batches' },
+        { terms: ['lesson', 'module', 'content', 'video', 'resource'], tab: 'content' },
+        { terms: ['assignment', 'assignments', 'submission', 'submissions'], tab: 'assignments' },
+        { terms: ['portfolio', 'project', 'review submission'], tab: 'portfolio' },
+        { terms: ['fee', 'fees', 'payment', 'payments', 'revenue', 'due'], tab: 'payments' },
+        { terms: ['trainer', 'trainers', 'instructor', 'teacher'], tab: 'trainers' },
+        { terms: ['placement', 'placements', 'job'], tab: 'placements' },
+        { terms: ['support', 'ticket', 'chat'], tab: 'support' },
+        { terms: ['announcement', 'notification', 'notifications'], tab: 'notifications' },
+        { terms: ['review', 'feedback'], tab: 'reviews' },
+        { terms: ['setting', 'settings', 'admin settings'], tab: 'settings' },
+        { terms: ['dashboard', 'analytics', 'overview', 'stats'], tab: 'analytics' }
+    ];
+
+    function normalizeAdminSearchText(value) {
+        return (value || '').toLowerCase().replace(/[^a-z0-9@._ -]/g, ' ').replace(/\s+/g, ' ').trim();
+    }
+
+    function findAdminSearchTab(query) {
+        const q = normalizeAdminSearchText(query);
+        if (!q) return null;
+        const aliasMatch = adminSearchAliases.find(item => item.terms.some(term => q.includes(term) || term.includes(q)));
+        if (aliasMatch && document.getElementById('tab-' + aliasMatch.tab)) return aliasMatch.tab;
+        let best = null;
+        let bestScore = 0;
+        document.querySelectorAll('div[id^="tab-"]').forEach(tab => {
+            const tabId = tab.id.replace('tab-', '');
+            if (tabId === 'coming-soon') return;
+            const text = normalizeAdminSearchText(tab.textContent);
+            let score = text.includes(q) ? q.length + 20 : 0;
+            q.split(' ').forEach(part => {
+                if (part.length > 1 && text.includes(part)) score += part.length;
+            });
+            if (score > bestScore) {
+                bestScore = score;
+                best = tabId;
+            }
+        });
+        return best;
+    }
+
+    function scrollToAdminSearchMatch(tabId, query) {
+        const tab = document.getElementById('tab-' + tabId);
+        if (!tab) return;
+        const q = normalizeAdminSearchText(query);
+        const candidates = tab.querySelectorAll('tr, .stat-card, .dashboard-card, .batch-card, .course-card, .data-table tbody tr, h2, h3');
+        let target = null;
+        for (const el of candidates) {
+            if (normalizeAdminSearchText(el.textContent).includes(q)) {
+                target = el;
+                break;
+            }
+        }
+        if (!target) target = tab.querySelector('table, .section-grid, .dashboard-card, h2, h3') || tab;
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        target.style.transition = 'box-shadow 0.2s ease, outline 0.2s ease';
+        target.style.outline = '2px solid rgba(99,102,241,0.75)';
+        target.style.boxShadow = '0 0 0 6px rgba(99,102,241,0.12)';
+        setTimeout(() => {
+            target.style.outline = '';
+            target.style.boxShadow = '';
+        }, 1800);
+    }
+
+    function runAdminHubSearch(query) {
+        const tabId = findAdminSearchTab(query);
+        if (!tabId) return;
+        switchTab(tabId, adminSearchParents[tabId] || null);
+        setTimeout(() => scrollToAdminSearchMatch(tabId, query), 80);
+    }
 
     document.addEventListener('DOMContentLoaded', function () {
         const tab = new URLSearchParams(window.location.search).get('tab');

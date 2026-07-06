@@ -130,3 +130,22 @@ def verify_email(request, uidb64, token):
     else:
         messages.error(request, "Verification link is invalid or has expired.")
         return redirect('core:index')
+
+from django.contrib.auth.views import PasswordResetView
+import logging
+
+class CustomPasswordResetView(PasswordResetView):
+    template_name = 'registration/password_reset_form.html'
+    
+    def form_valid(self, form):
+        try:
+            return super().form_valid(form)
+        except Exception as e:
+            logger = logging.getLogger(__name__)
+            logger.error(f"Password reset email sending failed: {e}", exc_info=True)
+            messages.error(
+                self.request, 
+                "Failed to send password reset email. This is likely due to incorrect or expired "
+                "email server (SMTP) settings. Please check your credentials or try again later."
+            )
+            return self.form_invalid(form)
