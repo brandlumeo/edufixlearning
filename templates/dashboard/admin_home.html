@@ -2803,19 +2803,17 @@
             <input type="hidden" id="lesson_pk" name="lesson_pk" value="">
 
             <div style="margin-bottom: 1rem;">
-                <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">Module *</label>
+                <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">Course / Module *</label>
                 <select name="module_id" id="lesson_module_id" required style="width: 100%; padding: 11px 13px; border-radius: 9px; border: 1px solid var(--border-light); background: rgba(0,0,0,0.2); color: var(--text-main); font-family: inherit; font-size: 0.9rem; outline: none;">
                     <option value="">-- Choose a Course &rarr; Module --</option>
                     {% for course in courses_with_modules %}
-                        {% with mods=course.modules.all %}
-                            {% if mods %}
-                            <optgroup label="{{ course.title }}">
-                                {% for module in mods %}
-                                <option value="{{ module.id }}" data-course-id="{{ course.id }}">{{ module.title }}</option>
-                                {% endfor %}
-                            </optgroup>
-                            {% endif %}
-                        {% endwith %}
+                    <optgroup label="{{ course.title }}">
+                        {% for module in course.modules.all %}
+                        <option value="{{ module.id }}" data-course-id="{{ course.id }}">{{ module.title }}</option>
+                        {% empty %}
+                        <option value="auto:{{ course.id }}" data-course-id="{{ course.id }}">Module 1 (create &amp; use)</option>
+                        {% endfor %}
+                    </optgroup>
                     {% endfor %}
                 </select>
             </div>

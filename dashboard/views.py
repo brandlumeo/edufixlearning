@@ -28,6 +28,20 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
+
+def _ensure_default_module(course):
+    """Guarantee a course has at least one module so lessons can be attached (same flow as Master Metalist)."""
+    module = course.modules.order_by('order_index').first()
+    if module:
+        return module
+    module, _ = Module.objects.get_or_create(
+        course=course,
+        order_index=0,
+        defaults={'title': 'Module 1'},
+    )
+    return module
+
+
 def get_student_dashboard_data(user):
     enrollments = Enrollment.objects.filter(student=user).select_related('course')
     enrolled_course_ids = set([e.course.id for e in enrollments])
@@ -366,16 +380,21 @@ def certificates_view(request):
 
 @staff_member_required
 def admin_dashboard(request):
+    # Ensure every course has at least one module so video lessons can be attached
+    # (Master AI previously had 0 modules, so it never appeared in the lesson uploader).
+    for course in Course.objects.annotate(module_count=Count('modules')).filter(module_count=0):
+        _ensure_default_module(course)
+
     # 1. Students & Enrollment
     total_students = User.objects.filter(is_staff=False).count()
     new_admissions_this_month = Enrollment.objects.filter(enrolled_at__month=timezone.now().month).count()
     active_students = Enrollment.objects.filter(course__status='published').values('student').distinct().count()
-    
+
     # Dropout rate / Inactive (Mock logic: didn't login in last 30 days)
     last_30_days = timezone.now() - timedelta(days=30)
     inactive_students = User.objects.filter(is_staff=False, last_login__lt=last_30_days).count()
     dropout_rate = round((inactive_students / total_students * 100), 1) if total_students > 0 else 0
-    
+
     # 2. Courses & Batches
     courses = Course.objects.annotate(
         student_count=Count('enrolled_students'),
@@ -526,7 +545,12 @@ def admin_lesson_edit_view(request):
         return redirect(f"{reverse('dashboard:admin_dashboard')}?tab=content")
         
     try:
-        module = get_object_or_404(Module, pk=module_id)
+        # Support "auto:<course_id>" so courses without modules (e.g. Master AI) can still receive lessons
+        if str(module_id).startswith('auto:'):
+            course = get_object_or_404(Course, pk=str(module_id).split(':', 1)[1])
+            module = _ensure_default_module(course)
+        else:
+            module = get_object_or_404(Module, pk=module_id)
         
         # Handle new video file upload to Cloudflare
         if video_file:
@@ -619,6 +643,7 @@ def create_course_view(request):
                 if thumbnail:
                     course.thumbnail = thumbnail
                     course.save()
+                _ensure_default_module(course)
                 messages.success(request, f"Course '{title}' created successfully as Draft!")
             except Exception:
                 logger.exception("Error creating course")
@@ -1089,6 +1114,7 @@ def admin_user_edit_view(request):
         if enroll_course_id:
             try:
                 course = Course.objects.get(pk=enroll_course_id)
+                _ensure_default_module(course)
                 # Check if enrollment already exists
                 if not Enrollment.objects.filter(student=user, course=course).exists():
                     Enrollment.objects.create(
