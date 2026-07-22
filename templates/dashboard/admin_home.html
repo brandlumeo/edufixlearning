@@ -2215,17 +2215,17 @@
                                             <i class="fa-solid fa-pen"></i>
                                         </button>
                                         {% if lesson.cf_stream_video_id %}
-                                        {% if lesson.cf_stream_status == 'ready' %}
+                                        {% if lesson.cf_stream_status == 'ready' or lesson.is_youtube %}
                                         <a href="{{ lesson.stream_embed_url }}" target="_blank"
                                             rel="noopener noreferrer" class="badge badge-warning"
                                             style="text-decoration:none; padding:6px 10px;"
-                                            title="Preview on Cloudflare Stream">
-                                            <i class="fa-solid fa-play"></i>
+                                            title="{% if lesson.is_youtube %}Preview on YouTube{% else %}Preview video{% endif %}">
+                                            <i class="fa-{% if lesson.is_youtube %}brands fa-youtube{% else %}solid fa-play{% endif %}"></i>
                                         </a>
                                         {% else %}
                                         <span class="badge"
                                             style="background:rgba(243,128,32,0.15); color:#f38020; padding:6px 10px;"
-                                            title="Video is processing on Cloudflare Stream">
+                                            title="Video is processing">
                                             <i class="fa-solid fa-spinner fa-spin"></i> Processing
                                         </span>
                                         {% endif %}
@@ -2823,30 +2823,14 @@
                 <input type="text" name="title" id="lesson_title" required style="width: 100%; padding: 11px 13px; border-radius: 9px; border: 1px solid var(--border-light); background: rgba(0,0,0,0.2); color: var(--text-main); font-family: inherit; font-size: 0.9rem; box-sizing: border-box; outline: none;">
             </div>
 
-            <div style="gap: 1rem; margin-bottom: 1rem;" class="grid-2-col">
-                <div>
-                    <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">Cloudflare Stream Video ID</label>
-                    <input type="text" name="cf_stream_video_id" id="lesson_cf_video_id" style="width: 100%; padding: 11px 13px; border-radius: 9px; border: 1px solid var(--border-light); background: rgba(0,0,0,0.2); color: var(--text-main); font-family: inherit; font-size: 0.9rem; box-sizing: border-box; outline: none;">
-                </div>
-                <div>
-                    <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">Status</label>
-                    <select name="cf_stream_status" id="lesson_cf_status" style="width: 100%; padding: 11px 13px; border-radius: 9px; border: 1px solid var(--border-light); background: rgba(0,0,0,0.2); color: var(--text-main); font-family: inherit; font-size: 0.9rem; outline: none;">
-                        <option value="none">None</option>
-                        <option value="processing">Processing</option>
-                        <option value="ready">Ready</option>
-                        <option value="error">Error</option>
-                    </select>
-                </div>
-            </div>
-
-            <div style="margin-bottom: 1.5rem;">
+            <div style="margin-bottom: 1rem;">
                 <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">
-                    <i class="fa-brands fa-cloudflare" style="color:#f38020;"></i> Direct Video File Upload (Optional)
+                    <i class="fa-brands fa-youtube" style="color:#ff0000;"></i> YouTube Video URL or ID *
                 </label>
-                <input type="file" name="video_file" id="lesson_video_file" accept="video/*" style="width: 100%; padding: 8px 10px; border-radius: 9px; border: 1px solid var(--border-light); background: rgba(0,0,0,0.2); color: var(--text-main); font-family: inherit; font-size: 0.8rem; box-sizing: border-box; outline: none;">
+                <input type="text" name="cf_stream_video_id" id="lesson_cf_video_id" placeholder="https://www.youtube.com/watch?v=XXXX or video ID" style="width: 100%; padding: 11px 13px; border-radius: 9px; border: 1px solid var(--border-light); background: rgba(0,0,0,0.2); color: var(--text-main); font-family: inherit; font-size: 0.9rem; box-sizing: border-box; outline: none;">
+                <input type="hidden" name="cf_stream_status" id="lesson_cf_status" value="ready">
                 <p style="font-size:0.72rem; color:var(--text-muted); margin:6px 0 0;">
-                    <i class="fa-solid fa-circle-info" style="color:#f38020;"></i>
-                    Upload will override the Stream ID/Status above. Max 500 MB.
+                    Upload the video on YouTube (unlisted is fine), then paste the link here. Students will play it inside the course.
                 </p>
             </div>
 
@@ -2893,7 +2877,7 @@
                 document.getElementById('lesson_module_id').value = d.moduleId;
                 document.getElementById('lesson_title').value = d.title;
                 document.getElementById('lesson_cf_video_id').value = d.cfId || '';
-                document.getElementById('lesson_cf_status').value = d.cfStatus || 'none';
+                document.getElementById('lesson_cf_status').value = 'ready';
                 document.getElementById('lesson_duration').value = d.duration || '0';
                 document.getElementById('lesson_order').value = d.order || '0';
                 document.getElementById('lesson_is_free').checked = (d.isFree === 'true' || d.isFree === 'True');
@@ -2901,6 +2885,7 @@
             } else {
                 document.getElementById('lessonModalTitle').innerHTML = '<i class="fa-solid fa-play" style="color:var(--primary);"></i> Add Lesson';
                 document.getElementById('lesson_pk').value = '';
+                document.getElementById('lesson_cf_status').value = 'ready';
                 if (preselectedCourseId) {
                     const sel = document.getElementById('lesson_module_id');
                     const firstMatch = sel.querySelector('option[data-course-id="' + preselectedCourseId + '"]');

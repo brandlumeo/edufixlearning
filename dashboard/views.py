@@ -20,7 +20,8 @@ _PHONE_RE = re.compile(r'^\d{10}$')
 from courses.models import (
     Enrollment, LessonProgress, Course, Lesson, Module, 
     Announcement, Certificate, Assignment, Submission, 
-    Event, Discussion, Question, Notification, Resource, Category
+    Event, Discussion, Question, Notification, Resource, Category,
+    extract_youtube_id,
 )
 from users.models import UserActivity
 from management.models import Batch, Attendance, FeeRecord, PlacementOutcome, AssetInventory, Lead, SupportTicket
@@ -532,13 +533,11 @@ def admin_lesson_edit_view(request):
     lesson_pk = request.POST.get('lesson_pk')
     module_id = request.POST.get('module_id')
     title = request.POST.get('title')
-    cf_stream_video_id = request.POST.get('cf_stream_video_id')
-    cf_stream_status = request.POST.get('cf_stream_status', 'none')
+    raw_video = (request.POST.get('cf_stream_video_id') or '').strip()
     duration_seconds = request.POST.get('duration_seconds', 0)
     order_index = request.POST.get('order_index', 0)
     is_free_preview = request.POST.get('is_free_preview') == '1'
     content = request.POST.get('content', '')
-    video_file = request.FILES.get('video_file')
     
     if not module_id or not title:
         messages.error(request, "Module and Title are required fields.")
@@ -551,13 +550,19 @@ def admin_lesson_edit_view(request):
             module = _ensure_default_module(course)
         else:
             module = get_object_or_404(Module, pk=module_id)
-        
-        # Handle new video file upload to Cloudflare
-        if video_file:
-            from courses.utils_cf_stream import upload_video_from_file
-            cf_stream_video_id = upload_video_from_file(video_file, video_file.name)
-            cf_stream_status = 'processing'
-            messages.success(request, f"Video '{title}' uploaded to Cloudflare Stream and is processing.")
+
+        # Prefer YouTube URL/ID; store the clean 11-char ID when possible
+        yt_id = extract_youtube_id(raw_video)
+        if yt_id:
+            cf_stream_video_id = yt_id
+            cf_stream_status = 'ready'
+        elif raw_video:
+            # Keep legacy Cloudflare UID as-is if someone still pastes one
+            cf_stream_video_id = raw_video
+            cf_stream_status = request.POST.get('cf_stream_status', 'ready') or 'ready'
+        else:
+            cf_stream_video_id = ''
+            cf_stream_status = 'none'
             
         if lesson_pk:
             lesson = get_object_or_404(Lesson, pk=lesson_pk)
@@ -570,8 +575,7 @@ def admin_lesson_edit_view(request):
             lesson.is_free_preview = is_free_preview
             lesson.content = content
             lesson.save()
-            if not video_file:
-                messages.success(request, f"Lesson '{title}' updated successfully.")
+            messages.success(request, f"Lesson '{title}' updated successfully.")
         else:
             # For new lessons, auto-calculate order_index if not provided
             if not order_index or int(order_index) == 0:
@@ -590,8 +594,7 @@ def admin_lesson_edit_view(request):
                 is_free_preview=is_free_preview,
                 content=content
             )
-            if not video_file:
-                messages.success(request, f"Lesson '{title}' created successfully.")
+            messages.success(request, f"Lesson '{title}' created successfully.")
                 
     except Exception as e:
         logger.exception("Error saving lesson")

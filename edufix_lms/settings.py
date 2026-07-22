@@ -147,6 +147,8 @@ else:
 SECURE_CONTENT_TYPE_NOSNIFF = True   # Prevent MIME-type sniffing
 SECURE_BROWSER_XSS_FILTER = True     # Legacy IE XSS filter (harmless on modern browsers)
 X_FRAME_OPTIONS = 'DENY'             # Block clickjacking via iframes
+# Required for YouTube embeds (Error 153 if same-origin / no-referrer)
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
 CSRF_COOKIE_HTTPONLY = False         # JS needs to read the cookie for AJAX (default False is correct)
 SESSION_COOKIE_HTTPONLY = True       # Session cookie must never be readable by JS
 

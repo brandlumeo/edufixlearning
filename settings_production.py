@@ -135,6 +135,8 @@ DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_BROWSER_XSS_FILTER = True
 X_FRAME_OPTIONS = 'DENY'
+# Required for YouTube embeds (Error 153 if same-origin / no-referrer)
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
 CSRF_COOKIE_HTTPONLY = False       # JS needs to read the cookie for AJAX
 SESSION_COOKIE_HTTPONLY = True
 

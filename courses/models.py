@@ -1,8 +1,27 @@
+import re
 from django.db import models
 from django.conf import settings
 from django.utils.text import slugify
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+
+
+def extract_youtube_id(value):
+    """Accept a YouTube URL or raw 11-char video ID; return the ID or None."""
+    if not value:
+        return None
+    value = value.strip()
+    if re.fullmatch(r'[\w-]{11}', value):
+        return value
+    patterns = [
+        r'(?:youtube\.com/watch\?v=|youtu\.be/|youtube\.com/embed/|youtube\.com/shorts/)([\w-]{11})',
+    ]
+    for pattern in patterns:
+        match = re.search(pattern, value)
+        if match:
+            return match.group(1)
+    return None
+
 
 class Category(models.Model):
     title = models.CharField(max_length=100)
@@ -73,7 +92,8 @@ class Lesson(models.Model):
 
     module           = models.ForeignKey(Module, on_delete=models.CASCADE, related_name='lessons')
     title            = models.CharField(max_length=200)
-    cf_stream_video_id = models.CharField(max_length=200, blank=True, help_text="Cloudflare Stream video UID")
+    # Stores YouTube video ID/URL (preferred) or legacy Cloudflare Stream UID
+    cf_stream_video_id = models.CharField(max_length=200, blank=True, help_text="YouTube video URL or ID (legacy: Cloudflare Stream UID)")
     cf_stream_status   = models.CharField(max_length=20, choices=CF_STATUS_CHOICES, default=CF_STATUS_NONE)
     duration_seconds = models.PositiveIntegerField(default=0)
     is_free_preview  = models.BooleanField(default=False)
@@ -84,10 +104,22 @@ class Lesson(models.Model):
         ordering = ['order_index']
 
     @property
+    def youtube_id(self):
+        return extract_youtube_id(self.cf_stream_video_id)
+
+    @property
+    def is_youtube(self):
+        return bool(self.youtube_id)
+
+    @property
     def stream_embed_url(self):
-        if self.cf_stream_video_id:
-            return f"https://iframe.cloudflarestream.com/{self.cf_stream_video_id}"
-        return None
+        if not self.cf_stream_video_id:
+            return None
+        yt_id = self.youtube_id
+        if yt_id:
+            return f"https://www.youtube-nocookie.com/embed/{yt_id}"
+        # Legacy Cloudflare Stream fallback for old lessons
+        return f"https://iframe.cloudflarestream.com/{self.cf_stream_video_id}"
 
     def __str__(self):
         return f"{self.module.title} - {self.title}"
