@@ -8,11 +8,11 @@ import datetime
 from pathlib import Path
 from dotenv import load_dotenv
 
+# Load environment variables from .env file
+load_dotenv()
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-# Load environment variables from .env file
-load_dotenv(BASE_DIR / '.env')
 
 
 # ── Security ──────────────────────────────────────────────────────────────────
@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sitemaps',
 
     # Local Apps
     'core',
@@ -60,6 +61,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'core.middleware.MaintenanceModeMiddleware',
     'users.middleware.JWTAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -77,6 +79,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'core.context_processors.recent_enrollments',
+                'core.context_processors.password_setup_prompt',
             ],
         },
     },
@@ -135,8 +139,6 @@ DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_BROWSER_XSS_FILTER = True
 X_FRAME_OPTIONS = 'DENY'
-# Required for YouTube embeds (Error 153 if same-origin / no-referrer)
-SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
 CSRF_COOKIE_HTTPONLY = False       # JS needs to read the cookie for AJAX
 SESSION_COOKIE_HTTPONLY = True
 

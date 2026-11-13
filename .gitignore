@@ -38,3 +38,32 @@ Thumbs.db
 
 # Archive / Zip files
 *.zip
+
+# Backup files
+*.bak
+*.bak_*
+*.org
+*.org_*
+tmp/
+
+# Backup and server files
+*.bak*
+*.org*
+*.log
+logs/
+tmp/
+
+# Preserved virtual environment from the project download
+venv.cpanel-backup/
+!edufix_lms/local_settings.py
+
+# Server configuration & sensitive files
+.htaccess
+.well-known/
+
+# Database dumps & local files
+*.sql
+*.sqlite3
+requirements_local.txt
+*.orig
+public/

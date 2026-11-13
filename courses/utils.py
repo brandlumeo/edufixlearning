@@ -7,6 +7,9 @@ from reportlab.lib.colors import HexColor
 from reportlab.lib.utils import ImageReader
 from django.conf import settings
 import uuid
+import base64
+import qrcode
+import requests
 
 logger = logging.getLogger(__name__)
 
@@ -376,3 +379,42 @@ def _draw_edufix_text(p, page_w, page_h, student_name, course_name, issue_date, 
         p.setFillColor(HexColor('#aaaaaa'))
         p.setFont("Helvetica", 7)
         p.drawCentredString(cx, 60, f"Verification ID: EDUFIX-{uid}")
+
+
+def generate_upi_qr_base64(amount, course_title):
+    """Generate a UPI payment QR code (as a base64 PNG data URI) for the given amount."""
+    upi_id = getattr(settings, 'UPI_ID', '')
+    payee_name = getattr(settings, 'UPI_PAYEE_NAME', 'Edufix Learning Academy')
+    if not upi_id:
+        return None
+    note = f"Edufix-{course_title}"[:50]
+    upi_link = (
+        f"upi://pay?pa={upi_id}&pn={payee_name}&am={amount}&cu=INR&tn={note}"
+    )
+    qr = qrcode.QRCode(box_size=8, border=2)
+    qr.add_data(upi_link)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
+    buf = BytesIO()
+    img.save(buf, format="PNG")
+    encoded = base64.b64encode(buf.getvalue()).decode("ascii")
+    return f"data:image/png;base64,{encoded}"
+
+
+def notify_admin_whatsapp(message):
+    """Best-effort WhatsApp notification via CallMeBot. Never raises."""
+    phone = getattr(settings, 'ADMIN_WHATSAPP_NUMBER', '')
+    apikey = getattr(settings, 'CALLMEBOT_APIKEY', '')
+    if not phone or not apikey:
+        logger.info("WhatsApp notification skipped (not configured): %s", message)
+        return False
+    try:
+        requests.get(
+            "https://api.callmebot.com/whatsapp.php",
+            params={"phone": phone, "text": message, "apikey": apikey},
+            timeout=6,
+        )
+        return True
+    except Exception:
+        logger.exception("Failed to send WhatsApp notification")
+        return False

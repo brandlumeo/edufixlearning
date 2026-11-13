@@ -214,7 +214,31 @@
                     </div>
                 </div>
 
-                <!-- Continue Learning -->
+                {% if pending_payments %}
+            <div class="dashboard-card" style="background: rgba(234,179,8,0.08); border: 1px solid rgba(234,179,8,0.35); border-radius: 16px; padding: 1.5rem; margin: 0 0 1.5rem 0;">
+                <div style="display:flex; align-items:flex-start; gap:14px; flex-wrap:wrap;">
+                    <div style="width:40px;height:40px;border-radius:10px;background:rgba(234,179,8,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <i class="fa-solid fa-hourglass-half" style="color:#eab308;"></i>
+                    </div>
+                    <div style="flex:1;min-width:220px;">
+                        <h3 style="margin:0 0 6px 0; font-size:1rem; font-weight:800;">Payment under review</h3>
+                        {% for p in pending_payments %}
+                        <p style="margin:0 0 4px 0; font-size:0.85rem; color:var(--text-muted);">Your payment for <strong style="color:var(--text-main);">{{ p.course.title }}</strong> is awaiting admin approval. You'll be enrolled automatically once it's confirmed.</p>
+                        {% endfor %}
+                    </div>
+                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                        <a href="tel:+917034893345" style="display:flex; align-items:center; gap:6px; padding:10px 16px; border-radius:10px; background:var(--primary-blue, #3b82f6); color:#fff; text-decoration:none; font-size:0.85rem; font-weight:700; white-space:nowrap;">
+                            <i class="fa-solid fa-phone"></i> Call Us
+                        </a>
+                        <a href="https://wa.me/917034893345?text=Hi%2C%20I%20submitted%20a%20payment%20and%20wanted%20to%20check%20on%20the%20status." target="_blank" rel="noopener noreferrer" style="display:flex; align-items:center; gap:6px; padding:10px 16px; border-radius:10px; background:#22c55e; color:#fff; text-decoration:none; font-size:0.85rem; font-weight:700; white-space:nowrap;">
+                            <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Continue Learning -->
                 {% if enrollments.0 %}
                 <div class="dashboard-card" style="background: var(--dash-bg); border: none; padding: 2.5rem; display: flex; justify-content: space-between; align-items: center;">
                     <div>
@@ -267,6 +291,15 @@
                 </div>
                 {% endif %}
             </div>
+        <div class="dashboard-card" style="padding: 1.5rem; background: var(--dash-bg); margin-top: 1.5rem;">
+            <h4 style="margin-top: 0;">Need Help?</h4>
+            <p class="text-gray" style="font-size: 0.85rem; margin-bottom: 1rem;">Chat with your personal trainer on WhatsApp for 1-on-1 support.</p>
+            {% if trainer_whatsapp_url %}
+            <a href="{{ trainer_whatsapp_url }}" target="_blank" rel="noopener" style="display:flex; align-items:center; justify-content:center; gap:8px; padding:10px 16px; border-radius:8px; background:#25D366; color:#fff; text-decoration:none; font-size:0.85rem; font-weight:700;">
+                <i class="fa-brands fa-whatsapp"></i> Chat with Personal Trainer
+            </a>
+            {% endif %}
+        </div>
         </div>
     </div>
 

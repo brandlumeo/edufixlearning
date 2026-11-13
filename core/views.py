@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from django.conf import settings
 from courses.models import Course
+from .models import Review
 
 import json
 from django.http import JsonResponse
@@ -15,8 +16,10 @@ except ImportError:
 
 def index(request):
     featured_courses = Course.objects.filter(status='published')
+    reviews = Review.objects.filter(is_active=True)
     context = {
         'featured_courses': featured_courses,
+        'reviews': reviews,
     }
     return render(request, 'core/index.html', context)
 
@@ -29,11 +32,11 @@ def contact(request):
         email = request.POST.get('email')
         message = request.POST.get('message')
         
-        # Send email to academyedufix@gmail.com
+        # Send email to info@edufixlearning.com
         subject = f"New Contact Inquiry from {name}"
         message_body = f"Name: {name}\nEmail: {email}\nMessage:\n{message}"
         from_email = settings.DEFAULT_FROM_EMAIL if hasattr(settings, 'DEFAULT_FROM_EMAIL') else 'noreply@edufixacademy.com'
-        recipient_list = ['academyedufix@gmail.com']
+        recipient_list = ['info@edufixlearning.com']
         
         try:
             send_mail(subject, message_body, from_email, recipient_list)
@@ -103,7 +106,7 @@ def chatbot_response(request):
             elif 'graphic design' in msg or 'design' in msg:
                 response = "We offer creative design courses covering Photoshop, Illustrator, and more. Great for anyone looking to build a design career!"
             elif 'enroll' in msg or 'admission' in msg or 'join' in msg:
-                response = "You can enroll by visiting our Courses page and clicking Enroll, or contact our team directly at academyedufix@gmail.com for assistance."
+                response = "You can enroll by visiting our Courses page and clicking Enroll, or contact our team directly at info@edufixlearning.com for assistance."
             elif 'fee' in msg or 'price' in msg or 'cost' in msg:
                 response = "Course fees vary by program. Please check the individual course page for the latest pricing, or contact our support team for any special offers."
             elif 'certificate' in msg:
@@ -111,11 +114,11 @@ def chatbot_response(request):
             elif 'schedule' in msg or 'timing' in msg or 'batch' in msg:
                 response = "Batch schedules vary by course. Please contact our team or check your dashboard for upcoming batch timings."
             elif 'support' in msg or 'help' in msg or 'contact' in msg or 'team' in msg:
-                response = "For direct support, please reach out to our team at academyedufix@gmail.com or use the Contact page. We're here to help!"
+                response = "For direct support, please reach out to our team at info@edufixlearning.com or use the Contact page. We're here to help!"
             elif 'mission' in msg or 'vision' in msg or 'about' in msg:
                 response = "Edufix Academy's mission is to provide industry-grade creative education. We empower learners with practical skills for real-world careers in creative fields."
             else:
-                response = "That's a great question! I may not have the specific answer right now. For detailed help, please contact our support team at academyedufix@gmail.com — they'll be happy to assist you directly."
+                response = "That's a great question! I may not have the specific answer right now. For detailed help, please contact our support team at info@edufixlearning.com — they'll be happy to assist you directly."
 
             return JsonResponse({'response': response})
 
@@ -123,3 +126,15 @@ def chatbot_response(request):
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
+
+
+def privacy_policy(request):
+    return render(request, 'core/privacy_policy.html')
+
+
+def terms_of_service(request):
+    return render(request, 'core/terms_of_service.html')
+
+
+def refund_policy(request):
+    return render(request, 'core/refund_policy.html')

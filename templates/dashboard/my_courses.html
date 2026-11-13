@@ -107,9 +107,9 @@
                             <i class="fa-solid fa-play"></i> {% if item.completed_lessons > 0 or item.last_watched %}Resume{% else %}Start{% endif %}
                         </a>
                     {% else %}
-                        <button type="button" disabled class="btn-primary-dash" style="opacity: 0.6; cursor: not-allowed; text-align: center; padding: 12px; border-radius: 12px; border: none; font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px;" title="Admin must upload lessons under this course first">
-                            <i class="fa-solid fa-play"></i> Start
-                        </button>
+                        <a href="{% url 'courses:course_detail' item.course.slug %}" class="btn-primary-dash" style="text-align: center; padding: 12px; border-radius: 12px; font-size: 0.85rem; font-weight: 700; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px;" title="No video lessons uploaded yet">
+                            <i class="fa-solid fa-circle-info"></i> View Course
+                        </a>
                     {% endif %}
                     <a href="{% url 'courses:course_detail' item.course.slug %}" style="text-align: center; padding: 12px; background: var(--dash-bg); border: 1px solid var(--border-light); border-radius: 12px; text-decoration: none; font-size: 0.85rem; font-weight: 700; color: var(--text-main); transition: var(--transition); display: flex; align-items: center; justify-content: center;" onmouseover="this.style.background='var(--border-light)'" onmouseout="this.style.background='var(--dash-bg)'">
                         Dashboard
@@ -150,6 +150,15 @@
                     </div>
                 </div>
 
+                {% if item.payment_status == 'pending' %}
+                <div style="background: rgba(234,179,8,0.08); border: 1px solid rgba(234,179,8,0.3); border-radius: 12px; padding: 12px; margin-top: auto;">
+                    <p style="margin:0 0 8px 0; font-size:0.75rem; font-weight:700; color:#eab308; display:flex; align-items:center; gap:6px;"><i class="fa-solid fa-hourglass-half"></i> Payment under review</p>
+                    <div style="display:flex; gap:8px;">
+                        <a href="tel:+917034893345" style="flex:1; display:flex; align-items:center; justify-content:center; gap:6px; padding:8px; border-radius:10px; background:var(--primary-blue, #3b82f6); color:#fff; text-decoration:none; font-size:0.75rem; font-weight:700;"><i class="fa-solid fa-phone"></i> Call</a>
+                        <a href="https://wa.me/917034893345?text=Hi%2C%20I%20submitted%20a%20payment%20for%20{{ item.course.title|urlencode }}%20and%20wanted%20to%20check%20on%20the%20status." target="_blank" rel="noopener noreferrer" style="flex:1; display:flex; align-items:center; justify-content:center; gap:6px; padding:8px; border-radius:10px; background:#22c55e; color:#fff; text-decoration:none; font-size:0.75rem; font-weight:700;"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+                    </div>
+                </div>
+                {% else %}
                 <div style="gap: 12px; margin-top: auto;" class="grid-2-col">
                     <button disabled class="btn-primary-dash" style="background: rgba(255,255,255,0.05); color: var(--text-muted); cursor: not-allowed; text-align: center; padding: 12px; border-radius: 12px; border: 1px dashed var(--border-light); font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px;">
                         <i class="fa-solid fa-lock"></i> Locked
@@ -158,6 +167,7 @@
                         Details
                     </a>
                 </div>
+                {% endif %}
                 {% endif %}
             </div>
         </div>

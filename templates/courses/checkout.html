@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Checkout - {{ course.title }} - Edufix Learning Academy{% endblock %}
+
+{% block content %}
+<div style="max-width: 640px; margin: 2.5rem auto; padding: 0 1rem;">
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="glass" style="padding: 1rem 1.2rem; border-radius: 14px; margin-bottom: 1.2rem; border: 1px solid rgba(255,215,0,0.3);">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="glass" style="padding: 2rem; border-radius: 24px; border: 1px solid rgba(255,215,0,0.25);">
+        <h2 style="margin-bottom: 0.3rem;">{{ course.title }}</h2>
+        <p class="text-gray" style="margin-bottom: 1.5rem;">Enrollment fee: <strong style="color:#fbbf24; font-size:1.3rem;">{{ course.effective_price|floatformat:0 }}</strong></p>
+
+        {% if pending_submission %}
+            <div style="text-align:center; padding: 1.5rem 0;">
+                <i class="fa-solid fa-hourglass-half" style="font-size: 2.5rem; color:#fbbf24;"></i>
+                <h3 style="margin-top: 1rem;">Payment under review</h3>
+                <p class="text-gray" style="margin-top: 0.5rem;">
+                    We received your payment submission (UTR: {{ pending_submission.utr_reference }}) on
+                    {{ pending_submission.submitted_at|date:"M d, Y" }}. Our team will verify it and enroll you shortly.
+                    You'll be able to log in and start the course as soon as it's approved.
+                </p>
+                <a href="{% url 'courses:course_detail' course.slug %}" class="btn btn-outline" style="margin-top: 1.5rem;">Back to Course</a>
+            </div>
+        {% else %}
+
+            {% if razorpay_key_id %}
+            <div class="glass" style="padding: 1.5rem; border-radius: 16px; margin-bottom: 1.5rem; text-align: center; border: 1px solid rgba(59,130,246,0.35);">
+                <p style="font-weight: 600; margin-bottom: 1rem;">Pay online instantly (Card / UPI / Netbanking)</p>
+                <button type="button" id="razorpay-pay-btn" class="btn btn-primary" style="width: 100%; padding: 1rem; font-size: 1.05rem;">Pay {{ course.effective_price|floatformat:0 }} Now</button>
+                <p id="razorpay-error" style="color: #ef4444; font-size: 0.85rem; margin-top: 0.6rem; display: none;"></p>
+            </div>
+            {% else %}
+            <div class="glass" style="padding: 1rem; border-radius: 14px; margin-bottom: 1.5rem;">
+                <p class="text-gray">Online payment isn't available right now. Please contact us on WhatsApp to complete your enrollment.</p>
+            </div>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+(function() {
+    if (typeof fbq !== 'undefined') {
+        fbq('track', 'InitiateCheckout', {
+            value: {{ course.effective_price|default:0 }},
+            currency: 'INR',
+            content_name: '{{ course.title|escapejs }}'
+        });
+    }
+
+    var payBtn = document.getElementById('razorpay-pay-btn');
+    if (!payBtn) { return; }
+    var defaultLabel = payBtn.textContent;
+
+    payBtn.addEventListener('click', function() {
+        var errorEl = document.getElementById('razorpay-error');
+        errorEl.style.display = 'none';
+        payBtn.disabled = true;
+        payBtn.textContent = 'Starting payment...';
+
+        fetch("{% url 'courses:razorpay_create_order' course.slug %}", {
+            method: 'POST',
+            headers: {'X-CSRFToken': '{{ csrf_token }}'}
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (data.error) {
+                errorEl.textContent = data.error;
+                errorEl.style.display = 'block';
+                payBtn.disabled = false;
+                payBtn.textContent = defaultLabel;
+                return;
+            }
+            var options = {
+                key: data.key,
+                amount: data.amount,
+                currency: data.currency,
+                name: data.name,
+                description: data.description,
+                order_id: data.order_id,
+                prefill: { name: data.prefill_name, email: data.prefill_email },
+                theme: { color: '#3b82f6' },
+                handler: function(response) {
+                    var form = new FormData();
+                    form.append('razorpay_order_id', response.razorpay_order_id);
+                    form.append('razorpay_payment_id', response.razorpay_payment_id);
+                    form.append('razorpay_signature', response.razorpay_signature);
+                    fetch("{% url 'courses:razorpay_verify_payment' course.slug %}", {
+                        method: 'POST',
+                        headers: {'X-CSRFToken': '{{ csrf_token }}'},
+                        body: form
+                    })
+                    .then(function(r) { return r.json(); })
+                    .then(function(result) {
+                        if (result.success) {
+                            if (typeof fbq !== 'undefined') {
+                                fbq('track', 'Purchase', { value: result.amount, currency: 'INR' });
+                            }
+                            window.location.href = result.redirect_url;
+                        } else {
+                            errorEl.textContent = result.error || 'Payment verification failed.';
+                            errorEl.style.display = 'block';
+                            payBtn.disabled = false;
+                            payBtn.textContent = defaultLabel;
+                        }
+                    })
+                    .catch(function() {
+                        errorEl.textContent = 'We could not confirm your payment automatically. If money was deducted, please wait a minute and refresh - if access still does not appear, contact support with your payment details.';
+                        errorEl.style.display = 'block';
+                        payBtn.disabled = false;
+                        payBtn.textContent = defaultLabel;
+                    });
+                },
+                modal: {
+                    ondismiss: function() {
+                        payBtn.disabled = false;
+                        payBtn.textContent = defaultLabel;
+                    }
+                }
+            };
+            var rzp = new Razorpay(options);
+            rzp.open();
+            payBtn.disabled = false;
+            payBtn.textContent = defaultLabel;
+        })
+        .catch(function() {
+            errorEl.textContent = 'Something went wrong. Please try again.';
+            errorEl.style.display = 'block';
+            payBtn.disabled = false;
+            payBtn.textContent = defaultLabel;
+        });
+    });
+})();
+</script>
+{% endblock %}

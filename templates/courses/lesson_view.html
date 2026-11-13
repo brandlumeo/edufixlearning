@@ -258,7 +258,21 @@
             </div>
         </div>
 
-        <!-- Curriculum Sidebar -->
+                    {% if course.trainer_whatsapp %}
+            <div style="padding: 1.5rem; border-bottom: 1px solid var(--glass-border);">
+                <h4 style="margin: 0 0 0.75rem 0;">Your <span class="text-yellow">Personal Trainer</span></h4>
+                <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 10px;">
+                    {% if course.trainer_name %}
+                    <p style="margin: 0 0 0.75rem 0; font-weight: 600; color: #ffffff;">{{ course.trainer_name }}</p>
+                    {% endif %}
+                    <a href="https://wa.me/{{ course.trainer_whatsapp|cut:' '|cut:'+' }}?text=Hi%2C%20I%20need%20help%20with%20{{ course.title|urlencode }}" target="_blank" rel="noopener" style="display: flex; align-items: center; justify-content: center; gap: 8px; background: #25D366; color: #ffffff; padding: 0.7rem 1rem; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 0.9rem;">
+                        <i class="fa-brands fa-whatsapp"></i> Chat on WhatsApp
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+
+<!-- Curriculum Sidebar -->
         <div style="background: var(--surface-black); border-left: 1px solid var(--glass-border); display: flex; flex-direction: column;">
             <div style="padding: 2rem; border-bottom: 1px solid var(--glass-border);">
                 <h4 style="margin: 0;">Course <span class="text-yellow">Curriculum</span></h4>

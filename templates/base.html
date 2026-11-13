@@ -3,26 +3,46 @@
 <html lang="en">
 
 <head>
+    <!-- Meta Pixel Code -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '779730998293046'{% if user.is_authenticated %}, {
+      em: '{{ user.email|escapejs }}'{% if user.phone_number %},
+      ph: '{{ user.phone_number|escapejs }}'{% endif %}
+    }{% endif %});
+    fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=779730998293046&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- End Meta Pixel Code -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-        content="Edufix Learning Academy - Master creative skills with industry-leading courses in Video Editing, Photoshop, and Graphic Design. Join our community of creative professionals.">
+        content="{% block meta_description %}Edufix Learning Academy - Master creative skills with industry-leading courses in Video Editing, Photoshop, and Graphic Design. Join our community of creative professionals.{% endblock %}">
     <meta name="keywords"
-        content="Video Editing Course, Photoshop Training, Graphic Design, Creative LMS, Edufix Academy, Learn Premiere Pro, Learn After Effects">
+        content="{% block meta_keywords %}Video Editing Course, Photoshop Training, Graphic Design, Creative LMS, Edufix Academy, Learn Premiere Pro, Learn After Effects{% endblock %}">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://edufixacademy.com/">
-    <meta property="og:title" content="Edufix Learning Academy - Professional Creative LMS">
+    <meta property="og:title" content="{% block og_title %}Edufix Learning Academy - Professional Creative LMS{% endblock %}">
     <meta property="og:description"
-        content="Elevate your creative skills with industry-leading courses in video editing and design.">
+        content="{% block og_description %}Elevate your creative skills with industry-leading courses in video editing and design.{% endblock %}">
     <meta property="og:image" content="{% static 'images/og-preview.jpg' %}">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:title" content="Edufix Learning Academy - Professional Creative LMS">
+    <meta property="twitter:title" content="{% block twitter_title %}Edufix Learning Academy - Professional Creative LMS{% endblock %}">
     <meta property="twitter:description"
-        content="Elevate your creative skills with industry-leading courses in video editing and design.">
+        content="{% block twitter_description %}Elevate your creative skills with industry-leading courses in video editing and design.{% endblock %}">
 
     <title>{% block title %}Edufix Learning Academy - Professional Creative LMS{% endblock %}</title>
     <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
@@ -135,23 +155,32 @@
             <div>
                 <h4 style="color: white; margin-bottom: 2rem;">Legal</h4>
                 <ul style="list-style: none; display: flex; flex-direction: column; gap: 1rem;">
-                    <li><a href="#" class="text-gray">Privacy Policy</a></li>
-                    <li><a href="#" class="text-gray">Terms of Service</a></li>
+                    <li><a href="{% url 'core:privacy_policy' %}" class="text-gray">Privacy Policy</a></li>
+                    <li><a href="{% url 'core:terms_of_service' %}" class="text-gray">Terms of Service</a></li>
+                    <li><a href="{% url 'core:refund_policy' %}" class="text-gray">Refund Policy</a></li>
                 </ul>
             </div>
             <div>
                 <h4 style="color: white; margin-bottom: 2rem;">Connect</h4>
                 <div style="display: flex; gap: 1.5rem; font-size: 1.5rem;">
-                    <a href="#" class="text-gray"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="#" class="text-gray"><i class="fa-brands fa-youtube"></i></a>
-                    <a href="#" class="text-gray"><i class="fa-brands fa-facebook"></i></a>
-                    <a href="#" class="text-gray"><i class="fa-brands fa-linkedin"></i></a>
+                    <a href="https://www.instagram.com/edufixlearning" target="_blank" rel="noopener" class="text-gray"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="https://youtube.com/@razdesign6165" target="_blank" rel="noopener" class="text-gray"><i class="fa-brands fa-youtube"></i></a>
+                    <a href="https://www.facebook.com/share/1QBBGcwjPw/" target="_blank" rel="noopener" class="text-gray"><i class="fa-brands fa-facebook"></i></a>
+                    <a href="https://www.linkedin.com/company/edufixacademyofficial/" target="_blank" rel="noopener" class="text-gray"><i class="fa-brands fa-linkedin"></i></a>
                 </div>
             </div>
         </div>
         <div class="container"
             style="border-top: 1px solid var(--glass-border); margin-top: 50px; padding-top: 30px; text-align: center; color: var(--text-gray);">
             &copy; 2026 Edufix Learning Academy. All rights reserved.
+            <div style="text-align: center; color: var(--text-gray); font-size: 0.9rem; margin-bottom: 10px; line-height: 1.6;">
+                <strong style="color: white;">EDUFIX LEARNING INSTITUTION LLP</strong> &middot; Calicut, Kerala, India<br>
+                <a href="mailto:info@edufixlearning.com" class="text-gray">info@edufixlearning.com</a> &middot;
+                <a href="https://wa.me/917034893345" target="_blank" rel="noopener" class="text-gray">+91 7034893345 (Call / WhatsApp)</a>
+            </div>
+            <div style="margin-top: 18px; display: flex; justify-content: center;">
+                <img src="{% static 'images/iso_9001_seal_final.png' %}" alt="ISO 9001:2015 Certified Company - Edufix Learning Institution LLP" style="height: 68px; width: auto;" loading="lazy">
+            </div>
         </div>
     </footer>
 
@@ -197,7 +226,59 @@
         }
     </script>
 
+
+    {% if recent_enrollment_popups %}
+    <div id="enrollment-popup" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999; max-width: 320px; background: #fff; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); padding: 14px 40px 14px 18px; display: none; align-items: center; gap: 12px; font-family: inherit;">
+        <button type="button" onclick="document.getElementById('enrollment-popup').style.display='none'; sessionStorage.setItem('enrollment_popup_closed','1');" style="position: absolute; top: 6px; right: 10px; background: none; border: none; font-size: 18px; line-height: 1; cursor: pointer; color: #999;" aria-label="Close">&times;</button>
+        <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--accent-pink, #ff5c8a); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <i class="fa-solid fa-graduation-cap" style="color: #fff; font-size: 16px;"></i>
+        </div>
+        <div style="font-size: 0.9rem; color: #222; line-height: 1.4;">
+            <strong id="enrollment-popup-name"></strong> enrolled in <strong id="enrollment-popup-course"></strong>
+            <div style="font-size: 0.78rem; color: #888; margin-top: 2px;" id="enrollment-popup-time"></div>
+        </div>
+    </div>
+    {{ recent_enrollment_popups|json_script:"enrollment-popup-data" }}
+    <script>
+    (function () {
+        if (sessionStorage.getItem('enrollment_popup_closed')) return;
+        var dataEl = document.getElementById('enrollment-popup-data');
+        if (!dataEl) return;
+        var popups;
+        try { popups = JSON.parse(dataEl.textContent); } catch (e) { return; }
+        if (!popups || !popups.length) return;
+
+        var box = document.getElementById('enrollment-popup');
+        var nameEl = document.getElementById('enrollment-popup-name');
+        var courseEl = document.getElementById('enrollment-popup-course');
+        var timeEl = document.getElementById('enrollment-popup-time');
+        var idx = 0;
+
+        function showPopup() {
+            if (sessionStorage.getItem('enrollment_popup_closed')) return;
+            var item = popups[idx % popups.length];
+            nameEl.textContent = item.name;
+            courseEl.textContent = item.course;
+            timeEl.textContent = item.time_ago;
+            box.style.display = 'flex';
+            idx++;
+            setTimeout(hidePopup, 4000);
+        }
+        function hidePopup() {
+            box.style.display = 'none';
+        }
+
+        setTimeout(showPopup, 4000);
+        setInterval(function () {
+            hidePopup();
+            setTimeout(showPopup, 600);
+        }, 15000);
+    })();
+    </script>
+    {% endif %}
+
     {% include 'partials/chatbot.html' %}
+{% include 'partials/password_setup_modal.html' %}
 </body>
 
 </html>

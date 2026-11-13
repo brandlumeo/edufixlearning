@@ -1,0 +1,15 @@
+# DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION BEGIN
+PassengerAppRoot "/home/afthab/edufixlearning.com"
+PassengerBaseURI "/"
+PassengerPython "/home/afthab/virtualenv/edufixlearning.com/3.12/bin/python"
+# DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION END
+<IfModule mod_headers.c>
+    Header set Cross-Origin-Opener-Policy "same-origin-allow-popups"
+</IfModule>
+# DO NOT REMOVE OR MODIFY. CLOUDLINUX ENV VARS CONFIGURATION BEGIN
+<IfModule Litespeed>
+SetEnv RAZORPAY_KEY_ID your_razorpay_key_id_here
+SetEnv RAZORPAY_KEY_SECRET your_razorpay_key_secret_here
+SetEnv RAZORPAY_WEBHOOK_SECRET your_razorpay_webhook_secret_here
+</IfModule>
+# DO NOT REMOVE OR MODIFY. CLOUDLINUX ENV VARS CONFIGURATION END

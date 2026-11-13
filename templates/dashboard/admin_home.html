@@ -187,6 +187,20 @@
                     <div class="stat-trend" style="color: var(--warning);">₹{{ pending_fees|floatformat:0 }} Pending
                     </div>
                 </div>
+        <div class="stat-card animate" style="animation-delay: 0.15s;">
+            <div class="stat-icon" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;"><i
+                class="fa-solid fa-user-plus"></i></div>
+            <span class="stat-label">New Students Today</span>
+            <div class="stat-value">{{ students_today|default:0 }}</div>
+            <div class="stat-trend">Enrolled today</div>
+        </div>
+        <div class="stat-card animate" style="animation-delay: 0.18s;">
+            <div class="stat-icon" style="background: rgba(236, 72, 153, 0.1); color: #ec4899;"><i
+                class="fa-solid fa-sack-dollar"></i></div>
+            <span class="stat-label">Revenue Today</span>
+            <div class="stat-value">{{ revenue_today|floatformat:0 }}</div>
+            <div class="stat-trend">Razorpay + approved payments</div>
+        </div>
                 <div class="stat-card animate" style="animation-delay: 0.2s;">
                     <div class="stat-icon" style="background: rgba(245, 158, 11, 0.1); color: var(--warning);"><i
                             class="fa-solid fa-clock"></i></div>
@@ -547,7 +561,101 @@
             </div>
 
             <!-- Detailed Fee Tracking Table -->
-            <div class="data-table-container animate" id="payments" style="animation-delay: 0.5s;">
+            <div class="glass" style="padding: 1.5rem; border-radius: 20px; margin-bottom: 1.5rem; border: 1px solid rgba(255,215,0,0.25);">
+    <h3 style="margin-bottom: 1rem; display:flex; align-items:center; gap:8px;">
+        <i class="fa-solid fa-clock" style="color: #fbbf24;"></i>
+        Pending Payment Requests
+        {% if pending_payments %}<span class="badge badge-danger" style="font-size:0.7rem;">{{ pending_payments|length }}</span>{% endif %}
+    </h3>
+    {% if pending_payments %}
+    <div style="overflow-x:auto;">
+    <table class="data-table" style="width:100%;">
+        <thead>
+            <tr>
+                <th>Student</th>
+                <th>Course</th>
+                <th>Amount</th>
+                <th>UTR / Reference</th>
+                <th>Proof</th>
+                <th>Submitted</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sub in pending_payments %}
+            <tr>
+                <td>{{ sub.student.get_full_name|default:sub.student.username }}<br><span style="font-size:0.75rem; color:var(--text-gray);">{{ sub.student.email }}</span></td>
+                <td>{{ sub.course.title|truncatechars:28 }}</td>
+                <td style="font-weight:700;">{{ sub.amount|floatformat:0 }}</td>
+                <td>{{ sub.utr_reference }}</td>
+                <td>{% if sub.proof_image %}<a href="{{ sub.proof_image.url }}" target="_blank" rel="noopener">View</a>{% else %}<span style="color:var(--text-gray); font-size:0.8rem;">No proof</span>{% endif %}</td>
+                <td style="font-size:0.8rem;">{{ sub.submitted_at|date:"M d, Y H:i" }}</td>
+                <td>
+                    <div style="display:flex; gap:6px;">
+                    <form method="post" action="{% url 'dashboard:payment_approve' sub.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success" style="padding:0.4rem 0.8rem; font-size:0.8rem;">Approve</button>
+                    </form>
+                    <form method="post" action="{% url 'dashboard:payment_reject' sub.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline" style="padding:0.4rem 0.8rem; font-size:0.8rem;">Reject</button>
+                    </form>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    {% else %}
+    <p class="text-gray" style="font-size:0.9rem;">No pending payment requests right now.</p>
+    {% endif %}
+</div>
+
+<div style="margin-top: 1.5rem; padding: 1.25rem; border: 1px solid rgba(148,163,184,0.25); border-radius: 12px;">
+    <h3 style="margin-top:0;">Record a Manual Payment (WhatsApp)</h3>
+    <p class="text-gray" style="font-size:0.85rem; margin-bottom:1rem;">For payments negotiated and received over WhatsApp. This enrolls the student immediately and counts toward today's stats.</p>
+    <form method="post" action="{% url 'dashboard:manual_payment_record' %}" style="display:flex; flex-wrap:wrap; gap:10px; align-items:flex-end;">
+        {% csrf_token %}
+        <div><label style="display:block; font-size:0.8rem;">Student username/email</label><input type="text" name="student_identifier" required style="padding:0.5rem; border-radius:6px; border:1px solid #cbd5e1;"></div>
+        <div><label style="display:block; font-size:0.8rem;">Course</label><select name="course_id" required style="padding:0.5rem; border-radius:6px; border:1px solid #cbd5e1;"><option value="">Select course</option>{% for c in courses %}<option value="{{ c.id }}">{{ c.title }}</option>{% endfor %}</select></div>
+        <div><label style="display:block; font-size:0.8rem;">Amount (Rs.)</label><input type="number" name="amount" step="0.01" min="0" required style="padding:0.5rem; border-radius:6px; border:1px solid #cbd5e1; width:110px;"></div>
+        <div><label style="display:block; font-size:0.8rem;">Note / UTR</label><input type="text" name="note" style="padding:0.5rem; border-radius:6px; border:1px solid #cbd5e1;"></div>
+        <button type="submit" class="btn btn-success" style="padding:0.55rem 1.1rem;">Record &amp; Enroll</button>
+    </form>
+</div>
+
+<div style="margin-top: 1.5rem;">
+    <h3>Recent Razorpay Payments</h3>
+    {% if recent_razorpay_payments %}
+    <table style="width:100%; border-collapse:collapse;">
+        <thead>
+            <tr style="text-align:left; font-size:0.8rem;">
+                <th style="padding:0.5rem;">Student</th>
+                <th style="padding:0.5rem;">Course</th>
+                <th style="padding:0.5rem;">Amount</th>
+                <th style="padding:0.5rem;">Payment ID</th>
+                <th style="padding:0.5rem;">Paid At</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pay in recent_razorpay_payments %}
+            <tr style="border-top:1px solid rgba(148,163,184,0.2); font-size:0.85rem;">
+                <td style="padding:0.5rem;">{{ pay.student }}</td>
+                <td style="padding:0.5rem;">{{ pay.course.title }}</td>
+                <td style="padding:0.5rem;">Rs.{{ pay.amount|floatformat:0 }}</td>
+                <td style="padding:0.5rem; font-size:0.75rem;">{{ pay.razorpay_payment_id }}</td>
+                <td style="padding:0.5rem;">{{ pay.paid_at|date:'d M Y, H:i' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="text-gray" style="font-size:0.9rem;">No Razorpay payments yet.</p>
+    {% endif %}
+</div>
+
+<div class="data-table-container animate" id="payments" style="animation-delay: 0.5s;">
                 <div class="table-header">
                     <h3>Fees & Revenue Detailed Tracking</h3>
                     <div style="display: flex; gap: 10px; align-items: center;">
@@ -672,7 +780,7 @@
                             </td>
                             <td>
                                 <div style="display: flex; gap: 5px;">
-                                    <button onclick="openCourseModal(this)" data-id="{{ course.id }}" data-title="{{ course.title|escapejs }}" data-instructor="{{ course.instructor.id }}" data-price="{{ course.price|floatformat:2 }}" data-duration="{{ course.duration }}" data-status="{{ course.status }}" class="badge badge-primary" style="border:none; cursor:pointer;" title="Edit Course"><i class="fa-solid fa-pen"></i></button>
+                                    <button onclick="openCourseModal(this)" data-id="{{ course.id }}" data-title="{{ course.title|escapejs }}" data-instructor="{{ course.instructor.id }}" data-price="{{ course.price|floatformat:2 }}" data-duration="{{ course.duration }}" data-status="{{ course.status }}" data-trainer-name="{{ course.trainer_name|default:''|escapejs }}" data-trainer-whatsapp="{{ course.trainer_whatsapp|default:'' }}" class="badge badge-primary" style="border:none; cursor:pointer;" title="Edit Course"><i class="fa-solid fa-pen"></i></button>
                                     <button onclick="openLessonModal(null, '{{ course.id }}')"
                                         class="badge badge-warning" style="border:none; cursor:pointer;"
                                         title="Add Video"><i class="fa-solid fa-video"></i></button>
@@ -1793,6 +1901,31 @@
                         </div>
                     </div>
 
+                    <!-- Site Control -->
+                    <div class="settings-card" style="margin-bottom: 24px;">
+                        <h4 style="margin-bottom: 12px;">
+                            <i class="fa-solid fa-power-off"></i> Site Maintenance Mode
+                            {% if maintenance_mode %}
+                            <span style="background:#e74c3c;color:#fff;padding:2px 10px;border-radius:12px;font-size:12px;margin-left:8px;">ON</span>
+                            {% else %}
+                            <span style="background:#2ecc71;color:#fff;padding:2px 10px;border-radius:12px;font-size:12px;margin-left:8px;">OFF</span>
+                            {% endif %}
+                        </h4>
+                        <p style="color:#666;margin-bottom:12px;">
+                            When maintenance mode is ON, visitors see a maintenance page while you make updates. Staff and admins can still browse the site normally.
+                        </p>
+                        <form method="post" action="{% url 'dashboard:toggle_maintenance' %}" onsubmit="return confirm('{% if maintenance_mode %}Turn OFF maintenance mode and make the site live again?{% else %}Turn ON maintenance mode? Visitors will see a maintenance page until you turn it off.{% endif %}');">
+                            {% csrf_token %}
+                            <textarea name="maintenance_message" rows="2" style="width:100%;max-width:500px;margin-bottom:10px;padding:8px;border:1px solid #ddd;border-radius:6px;">{{ maintenance_message }}</textarea>
+                            <br>
+                            {% if maintenance_mode %}
+                            <button type="submit" class="btn" style="background:#2ecc71;color:#fff;padding:8px 20px;border:none;border-radius:6px;cursor:pointer;">Turn OFF Maintenance Mode</button>
+                            {% else %}
+                            <button type="submit" class="btn" style="background:#e74c3c;color:#fff;padding:8px 20px;border:none;border-radius:6px;cursor:pointer;">Turn ON Maintenance Mode</button>
+                            {% endif %}
+                        </form>
+                    </div>
+
                     <!-- Content Management -->
                     <div>
                         <h4
@@ -1908,6 +2041,44 @@
                         class="badge badge-primary" style="text-decoration:none; border:none; cursor:pointer;"><i
                             class="fa-solid fa-arrow-up-right-from-square"></i> Manage in Admin</a>
                 </div>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <h4 style="margin-bottom: 1rem; color: var(--primary); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;">
+                        <i class="fa-solid fa-star"></i> Pending Course Reviews
+                        {% if pending_reviews %}<span class="badge badge-danger" style="font-size:0.7rem;">{{ pending_reviews|length }}</span>{% endif %}
+                    </h4>
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        {% for r in pending_reviews %}
+                        <div style="background: var(--card-bg, #fff); border: 1px solid var(--border-light); padding: 14px; border-radius: 14px;">
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px;">
+                                <span style="font-weight:700; font-size:0.88rem;">{{ r.course.title }}</span>
+                                <span style="font-size:0.8rem; color:#f59e0b; font-weight:700;">{{ r.rating }}/5 &#9733;</span>
+                            </div>
+                            <div style="font-size:0.82rem; color:var(--text-main); margin-bottom:8px;">{{ r.text }}</div>
+                            <div style="font-size:0.72rem; color:var(--text-muted); margin-bottom:10px;">
+                                <i class="fa-solid fa-user"></i> {{ r.student.full_name|default:r.student.username }}
+                                &nbsp;&middot;&nbsp;{{ r.created_at|timesince }} ago
+                            </div>
+                            <div style="display:flex; gap:8px;">
+                                <form method="post" action="{% url 'dashboard:review_approve' r.id %}" style="flex:1;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-success" style="width:100%; padding:0.4rem 0.8rem; font-size:0.8rem;">Approve</button>
+                                </form>
+                                <form method="post" action="{% url 'dashboard:review_reject' r.id %}" style="flex:1;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-outline" style="width:100%; padding:0.4rem 0.8rem; font-size:0.8rem;">Reject</button>
+                                </form>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div style="text-align:center; padding:1.5rem; color:var(--text-muted); background:var(--card-bg,#fff); border:1px solid var(--border-light); border-radius:14px;">
+                            <i class="fa-solid fa-star" style="font-size:1.5rem; opacity:0.3; display:block; margin-bottom:0.4rem;"></i>
+                            No pending reviews.
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
                 <div style="gap: 2rem;" class="grid-2-col">
 
                     <!-- Recent Questions -->
@@ -2636,6 +2807,8 @@
                 document.getElementById('course_price').value = d.price;
                 document.getElementById('course_duration').value = d.duration;
                 document.getElementById('course_status').value = d.status;
+                document.getElementById('course_trainer_name').value = d.trainerName || '';
+                document.getElementById('course_trainer_whatsapp').value = d.trainerWhatsapp || '';
             } else {
                 document.getElementById('courseModalTitle').innerHTML = '<i class="fa-solid fa-plus" style="color:var(--primary);"></i> Create Course';
                 document.getElementById('course_pk').value = '';
@@ -2900,85 +3073,6 @@
         };
 </script>
 
-<!-- Create Course Modal -->
-<div id="createCourseModal" class="modal-overlay"
-    style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
-    <div
-        style="background: var(--bg-dash); width: 100%; max-width: 600px; border-radius: 16px; padding: 2rem; border: 1px solid var(--border-light); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); max-height: 90vh; overflow-y: auto;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-            <h3 style="margin: 0; display: flex; align-items: center; gap: 10px;"><i
-                    class="fa-solid fa-book-open text-primary"></i> Create New Course</h3>
-            <button onclick="toggleCreateCourseModal()"
-                style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.2rem;"><i
-                    class="fa-solid fa-xmark"></i></button>
-        </div>
-
-        <form action="{% url 'dashboard:create_course' %}" method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div style="margin-bottom: 1rem;">
-                <label
-                    style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-muted);">Course
-                    Title</label>
-                <input type="text" name="title" required placeholder="e.g. Advanced Figma Masterclass"
-                    style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-light); background: rgba(0,0,0,0.2); color: var(--text-main); font-family: inherit; box-sizing: border-box;">
-            </div>
-
-            <div style="gap: 1rem; margin-bottom: 1rem;" class="grid-2-col">
-                <div>
-                    <label
-                        style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-muted);">Category</label>
-                    <select name="category_id" required
-                        style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-light); background: rgba(0,0,0,0.2); color: var(--text-main); font-family: inherit;">
-                        <option value="">-- Select Category --</option>
-                        {% for cat in all_categories %}
-                        <option value="{{ cat.id }}">{{ cat.title }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div>
-                    <label
-                        style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-muted);">Course
-                        Price (₹)</label>
-                    <input type="number" name="price" value="0" required
-                        style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-light); background: rgba(0,0,0,0.2); color: var(--text-main); font-family: inherit; box-sizing: border-box;">
-                </div>
-            </div>
-
-            <div style="gap: 1rem; margin-bottom: 1rem;" class="grid-2-col">
-                <div>
-                    <label
-                        style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-muted);">Duration
-                        (Hours)</label>
-                    <input type="number" step="0.1" name="duration" required placeholder="e.g. 10.5"
-                        style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-light); background: rgba(0,0,0,0.2); color: var(--text-main); font-family: inherit; box-sizing: border-box;">
-                </div>
-                <div>
-                    <label
-                        style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-muted);">Thumbnail
-                        Image</label>
-                    <input type="file" name="thumbnail" accept="image/*"
-                        style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-light); background: rgba(0,0,0,0.2); color: var(--text-main); font-family: inherit; box-sizing: border-box;">
-                </div>
-            </div>
-
-            <div style="margin-bottom: 1.5rem;">
-                <label
-                    style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-muted);">Description</label>
-                <textarea name="description" required rows="4" placeholder="Course overview and syllabus..."
-                    style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-light); background: rgba(0,0,0,0.2); color: var(--text-main); font-family: inherit; box-sizing: border-box;"></textarea>
-            </div>
-
-            <div style="display: flex; justify-content: flex-end; gap: 10px;">
-                <button type="button" onclick="toggleCreateCourseModal()"
-                    style="padding: 10px 20px; border-radius: 8px; border: 1px solid var(--border-light); background: transparent; color: var(--text-main); cursor: pointer; font-weight: 600;">Cancel</button>
-                <button type="submit"
-                    style="padding: 10px 20px; border-radius: 8px; border: none; background: var(--success); color: white; cursor: pointer; font-weight: 600;">Create
-                    Course</button>
-            </div>
-        </form>
-    </div>
-</div>
-
 <!-- Create Assignment Modal -->
 <div id="createAssignmentModal" class="modal-overlay"
     style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
@@ -3233,6 +3327,14 @@
                 <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">Thumbnail (optional)</label>
                 <input type="file" name="thumbnail" id="course_thumbnail" accept="image/*" style="width: 100%; padding: 8px 10px; border-radius: 9px; border: 1px solid var(--border-light); background: rgba(0,0,0,0.2); color: var(--text-main); font-family: inherit; font-size: 0.8rem; box-sizing: border-box; outline: none;">
             </div>
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">Personal Trainer Name (optional)</label>
+                    <input type="text" name="trainer_name" id="course_trainer_name" placeholder="e.g. Arjun Menon" style="width: 100%; padding: 11px 13px; border-radius: 9px; border: 1px solid var(--border-light); background: rgba(0,0,0,0.2); color: var(--text-main); font-family: inherit; font-size: 0.9rem; box-sizing: border-box; outline: none;">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">Trainer WhatsApp Number (optional)</label>
+                    <input type="text" name="trainer_whatsapp" id="course_trainer_whatsapp" placeholder="e.g. +919876543210" style="width: 100%; padding: 11px 13px; border-radius: 9px; border: 1px solid var(--border-light); background: rgba(0,0,0,0.2); color: var(--text-main); font-family: inherit; font-size: 0.9rem; box-sizing: border-box; outline: none;">
+                </div>
 
             <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 1.5rem;">
                 <button type="button" onclick="closeCourseModal()" style="padding: 10px 22px; border-radius: 9px; border: 1px solid var(--border-light); background: transparent; color: var(--text-main); cursor: pointer; font-weight: 600; font-size: 0.9rem;">Cancel</button>

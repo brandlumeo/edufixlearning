@@ -11,6 +11,35 @@
     </div>
 </section>
 
+{% if recent_enrollment_popups %}
+<div class="container" style="margin-bottom: 2.5rem;">
+    <div id="course-list-ticker" class="glass" style="padding: 0.9rem 1.5rem; border-radius: 14px; display: flex; align-items: center; gap: 12px; border: 1px solid rgba(255,215,0,0.25);">
+        <i class="fa-solid fa-circle-check" style="color: var(--accent-yellow); font-size: 1.1rem; flex-shrink: 0;"></i>
+        <span id="course-list-ticker-text" style="font-size: 0.95rem;"></span>
+    </div>
+</div>
+{{ recent_enrollment_popups|json_script:"course-list-ticker-data" }}
+<script>
+(function () {
+    var dataEl = document.getElementById('course-list-ticker-data');
+    var textEl = document.getElementById('course-list-ticker-text');
+    if (!dataEl || !textEl) return;
+    var items;
+    try { items = JSON.parse(dataEl.textContent); } catch (e) { return; }
+    if (!items || !items.length) return;
+    var idx = 0;
+
+    function render() {
+        var item = items[idx % items.length];
+        textEl.textContent = item.name + ' enrolled in ' + item.course + ' - ' + item.time_ago;
+        idx++;
+    }
+    render();
+    setInterval(render, 10000);
+})();
+</script>
+{% endif %}
+
 <section class="container" style="padding-bottom: 100px;">
     <!-- Filter Bar -->
     <div class="glass" style="padding: 1.5rem; margin-bottom: 3rem; display: flex; justify-content: space-between; align-items: center; border-radius: 16px;">
@@ -21,13 +50,13 @@
             {% endfor %}
         </div>
         <div style="display: flex; align-items: center; gap: 1rem;">
-            <span class="text-gray">Showing {{ courses|length }} courses</span>
+            <span class="text-gray">Showing {{ live_courses|length }} courses</span>
         </div>
     </div>
 
     <!-- Course Grid -->
     <div style="gap: 2.5rem;" class="grid-3-col">
-        {% for course in courses %}
+        {% for course in live_courses %}
         <div class="glass animate-up" style="overflow: hidden; border-radius: 20px; transition: transform 0.3s ease; position: relative;">
             <!-- Lock overlay for paid-but-not-enrolled courses -->
             {% if user.is_authenticated and course.id not in enrolled_course_ids %}
@@ -60,13 +89,28 @@
                 </p>
                 <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--glass-border); padding-top: 1.2rem;">
                     <div>
+                        {% if course.price == 0 %}
+                        <span style="display: block; font-size: 0.75rem; color: var(--text-gray); text-transform: uppercase;">Status</span>
+                        <span style="font-size: 1.2rem; font-weight: 700; color: var(--text-gray);">Coming Soon</span>
+                        {% elif course.slug == 'master-metalist' %}
+                <span style="display: block; font-size: 0.75rem; color: var(--text-gray); text-transform: uppercase;">Enrollment Fee</span>
+                <div style="display: flex; align-items: baseline; gap: 6px;">
+                <span style="font-size: 0.85rem; color: var(--text-gray); text-decoration: line-through;">₹3,999</span>
+                <span style="font-size: 1.2rem; font-weight: 700; color: #fbbf24;">₹1,999</span>
+                </div>
+                {% else %}
                         <span style="display: block; font-size: 0.75rem; color: var(--text-gray); text-transform: uppercase;">Enrollment Fee</span>
                         <span style="font-size: 1.2rem; font-weight: 700;">₹{{ course.price }}</span>
+                        {% endif %}
                     </div>
                     {% if course.id in enrolled_course_ids %}
                     <a href="{% url 'courses:course_detail' course.slug %}" class="btn btn-success" style="padding: 0.6rem 1.2rem; display: flex; gap: 8px; align-items: center;">
                         <i class="fa-solid fa-unlock"></i> Purchased
                     </a>
+                    {% elif course.price == 0 %}
+                    <button class="btn" style="padding: 0.6rem 1.2rem; display: flex; gap: 8px; align-items: center; background: rgba(255,255,255,0.06); color: var(--text-gray); border: 1px solid rgba(255,255,255,0.15); cursor: not-allowed;" disabled>
+                        <i class="fa-regular fa-clock"></i> Coming Soon
+                    </button>
                     {% else %}
                     <a href="{% url 'courses:course_detail' course.slug %}" class="btn btn-primary" style="padding: 0.6rem 1.2rem; display: flex; gap: 8px; align-items: center;">
                         <i class="fa-solid fa-lock"></i> View Course
@@ -83,6 +127,36 @@
         </div>
         {% endfor %}
     </div>
+
+        {% if coming_soon_courses %}
+        <div style="margin-top: 4rem;">
+            <h3 style="font-size: 1.3rem; margin-bottom: 0.5rem; color: var(--text-gray);">
+                <i class="fa-regular fa-clock"></i> Coming Soon
+            </h3>
+            <p class="text-gray" style="font-size: 0.9rem; margin-bottom: 1.5rem;">These masterclasses are in development and not yet open for enrollment.</p>
+            <div style="gap: 1.5rem;" class="grid-3-col">
+                {% for course in coming_soon_courses %}
+                <div class="glass" style="overflow: hidden; border-radius: 20px; opacity: 0.6; position: relative;">
+                    <div style="height: 140px; background: #000; position: relative;">
+                        {% if course.thumbnail %}
+                        <img src="{{ course.thumbnail.url }}" alt="{{ course.title }}" style="width: 100%; height: 100%; object-fit: cover; filter: grayscale(60%);">
+                        {% else %}
+                        <div style="width: 100%; height: 100%; background: linear-gradient(135deg, var(--bg-deep), #330066); display: flex; align-items: center; justify-content: center;">
+                            <i class="fa-solid {{ course.category.icon|default:'fa-clapperboard' }}" style="font-size: 2.2rem; color: var(--text-gray); opacity: 0.4;"></i>
+                        </div>
+                        {% endif %}
+                        <span style="position: absolute; top: 0.8rem; left: 0.8rem; background: rgba(0,0,0,0.75); color: var(--text-gray); padding: 0.25rem 0.7rem; border-radius: 8px; font-weight: 700; font-size: 0.7rem; text-transform: uppercase;">
+                            <i class="fa-regular fa-clock"></i> Coming Soon
+                        </span>
+                    </div>
+                    <div style="padding: 1.1rem;">
+                        <h4 style="margin: 0; font-size: 1.05rem; color: var(--text-gray);">{{ course.title }}</h4>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
 </section>
 
 <style>

@@ -8,9 +8,12 @@ from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
+from core.models import SiteConfiguration
 from django.utils import timezone
 from datetime import timedelta
 from django.db.models import Count, Sum, Q
+from django.core.mail import send_mail
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -21,13 +24,14 @@ from courses.models import (
     Enrollment, LessonProgress, Course, Lesson, Module, 
     Announcement, Certificate, Assignment, Submission, 
     Event, Discussion, Question, Notification, Resource, Category,
-    extract_youtube_id,
+    extract_youtube_id, PaymentSubmission, RazorpayPayment, CourseReview,
 )
 from users.models import UserActivity
 from management.models import Batch, Attendance, FeeRecord, PlacementOutcome, AssetInventory, Lead, SupportTicket
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
+from decimal import Decimal, InvalidOperation
 
 
 def _ensure_default_module(course):
@@ -48,6 +52,12 @@ def get_student_dashboard_data(user):
     enrolled_course_ids = set([e.course.id for e in enrollments])
     enrollment_by_course_id = {e.course_id: e for e in enrollments}
     all_published_courses = Course.objects.filter(status='published')
+
+    payment_submissions = PaymentSubmission.objects.filter(student=user).order_by('-submitted_at')
+    latest_payment_by_course_id = {}
+    for ps in payment_submissions:
+        if ps.course_id not in latest_payment_by_course_id:
+            latest_payment_by_course_id[ps.course_id] = ps
     
     course_data = []
     all_dashboard_courses = []
@@ -111,6 +121,7 @@ def get_student_dashboard_data(user):
             total_hours_watched += (completed_lessons * 15) / 60
 
         enr = enrollment_by_course_id.get(course.id) if is_enrolled else None
+        latest_payment = latest_payment_by_course_id.get(course.id)
         course_item = {
             'id': course.id,
             'course': course,
@@ -123,6 +134,8 @@ def get_student_dashboard_data(user):
             'resume_lesson': resume_lesson,
             'last_watched': last_watched,
             'enrolled_at': enr.enrolled_at if enr else None,
+            'payment_status': latest_payment.status if (latest_payment and not is_enrolled) else None,
+            'payment_submitted_at': latest_payment.submitted_at if (latest_payment and not is_enrolled) else None,
         }
 
         all_dashboard_courses.append(course_item)
@@ -202,6 +215,7 @@ def get_student_dashboard_data(user):
 
     return {
         'enrollments': course_data,
+        'pending_payments': [c for c in all_dashboard_courses if c.get('payment_status') == 'pending'],
         'all_dashboard_courses': all_dashboard_courses,
         'total_enrolled': enrollments.count(),
         'total_lessons_completed': total_lessons_completed,
@@ -241,6 +255,10 @@ def dashboard_home(request):
         return redirect('dashboard:admin_dashboard')
     try:
         context = get_student_dashboard_data(request.user)
+        context['trainer_whatsapp_url'] = (
+            'https://wa.me/' + str(getattr(settings, 'TRAINER_WHATSAPP_NUMBER', '')).lstrip('+')
+            if getattr(settings, 'TRAINER_WHATSAPP_NUMBER', '') else ''
+        )
         return render(request, 'dashboard/home.html', context)
     except Exception:
         logger.exception("Error loading student dashboard for user %s", request.user.pk)
@@ -357,15 +375,21 @@ def certificates_view(request):
 
         # Get all certificates the admin has assigned to this student
         raw_certs = Certificate.objects.filter(student=user, is_approved=True).select_related('course')
+        my_reviews = {
+            r.course_id: r for r in CourseReview.objects.filter(student=user)
+        }
         certificate_items = []
         for cert in raw_certs:
             progress = progress_by_course.get(cert.course.id, 0)
+            review = my_reviews.get(cert.course.id)
             certificate_items.append({
                 'course': cert.course,
                 'progress': progress,
                 'cert': cert,
                 'is_unlocked': cert.is_approved or progress == 100,
                 'has_file': bool(cert.certificate_file or getattr(cert.course, 'certificate_template', None) or getattr(cert.course, 'certificate_template_model', None)),
+                'review': review,
+                'needs_review': review is None,
             })
 
         context = {
@@ -525,6 +549,28 @@ def admin_dashboard(request):
         'all_categories': Category.objects.all(),
         'all_lessons': Lesson.objects.select_related('module__course').order_by('module__course__title', 'order_index'),
     }
+    context['pending_payments'] = PaymentSubmission.objects.filter(
+        status=PaymentSubmission.STATUS_PENDING
+    ).select_related('student', 'course').order_by('-submitted_at')
+    context['pending_reviews'] = CourseReview.objects.filter(
+        status=CourseReview.STATUS_PENDING
+    ).select_related('student', 'course').order_by('-created_at')
+    _today = timezone.now().date()
+    context['students_today'] = Enrollment.objects.filter(enrolled_at__date=_today).count()
+    _razorpay_today = RazorpayPayment.objects.filter(
+        status=RazorpayPayment.STATUS_PAID, paid_at__date=_today
+    ).aggregate(total=Sum('amount'))['total'] or 0
+    _manual_today = PaymentSubmission.objects.filter(
+        status=PaymentSubmission.STATUS_APPROVED, reviewed_at__date=_today
+    ).aggregate(total=Sum('amount'))['total'] or 0
+    context['revenue_today'] = _razorpay_today + _manual_today
+    context['recent_razorpay_payments'] = RazorpayPayment.objects.filter(
+        status=RazorpayPayment.STATUS_PAID
+    ).select_related('student', 'course').order_by('-paid_at')[:25]
+
+    _site_config = SiteConfiguration.get()
+    context['maintenance_mode'] = _site_config.maintenance_mode
+    context['maintenance_message'] = _site_config.maintenance_message
     return render(request, 'dashboard/admin_home.html', context)
 
 @staff_member_required
@@ -1254,6 +1300,8 @@ def admin_course_edit_view(request):
     duration = request.POST.get('duration')
     status = request.POST.get('status')
     thumbnail = request.FILES.get('thumbnail')
+    trainer_name = request.POST.get('trainer_name', '').strip()
+    trainer_whatsapp = request.POST.get('trainer_whatsapp', '').strip()
 
     try:
         instructor = get_object_or_404(User, pk=instructor_id)
@@ -1265,6 +1313,8 @@ def admin_course_edit_view(request):
             course.price = price
             course.duration = duration
             course.status = status
+            course.trainer_name = trainer_name
+            course.trainer_whatsapp = trainer_whatsapp
             if thumbnail:
                 course.thumbnail = thumbnail
             course.save()
@@ -1275,7 +1325,9 @@ def admin_course_edit_view(request):
                 instructor=instructor,
                 price=price,
                 duration=duration,
-                status=status
+                status=status,
+                trainer_name=trainer_name,
+                trainer_whatsapp=trainer_whatsapp,
             )
             if thumbnail:
                 course.thumbnail = thumbnail
@@ -1348,3 +1400,180 @@ def admin_ticket_edit_view(request):
         messages.error(request, "An error occurred while saving the support ticket.")
 
     return redirect(f"{reverse('dashboard:admin_dashboard')}?tab=support")
+
+
+@staff_member_required
+@require_POST
+def payment_approve_view(request, submission_id):
+    submission = get_object_or_404(PaymentSubmission, pk=submission_id)
+    redirect_url = f"{reverse('dashboard:admin_dashboard')}?tab=payments"
+    if submission.status != PaymentSubmission.STATUS_PENDING:
+        messages.info(request, "This submission has already been reviewed.")
+        return redirect(redirect_url)
+
+    Enrollment.objects.get_or_create(
+        student=submission.student, course=submission.course,
+        defaults={'payment_id': submission.utr_reference},
+    )
+    submission.status = PaymentSubmission.STATUS_APPROVED
+    submission.reviewed_by = request.user
+    submission.reviewed_at = timezone.now()
+    submission.save()
+
+    try:
+        send_mail(
+            subject=f"Payment Approved - You're enrolled in {submission.course}!",
+            message=(
+                f"Hi {submission.student.get_full_name() or submission.student.username},\n\n"
+                f"Great news! Your payment for \"{submission.course}\" has been verified and approved.\n"
+                f"You now have full access to the course. Log in to your dashboard to get started:\n"
+                f"https://edufixlearning.com/dashboard/\n\n"
+                f"If you have any questions, reach out to us at info@edufixlearning.com.\n\n"
+                f"Welcome aboard!\nEdufix Learning Academy"
+            ),
+            from_email=getattr(settings, 'NOTIFICATIONS_FROM_EMAIL', settings.DEFAULT_FROM_EMAIL),
+            recipient_list=[submission.student.email],
+            fail_silently=True,
+        )
+    except Exception:
+        logger.exception("Failed to send payment-approval email")
+
+    messages.success(request, f"Payment approved. {submission.student} is now enrolled in {submission.course}.")
+    return redirect(redirect_url)
+
+
+@staff_member_required
+@require_POST
+def payment_reject_view(request, submission_id):
+    submission = get_object_or_404(PaymentSubmission, pk=submission_id)
+    redirect_url = f"{reverse('dashboard:admin_dashboard')}?tab=payments"
+    if submission.status != PaymentSubmission.STATUS_PENDING:
+        messages.info(request, "This submission has already been reviewed.")
+        return redirect(redirect_url)
+
+    submission.status = PaymentSubmission.STATUS_REJECTED
+    submission.admin_note = request.POST.get('admin_note', '')[:255]
+    submission.reviewed_by = request.user
+    submission.reviewed_at = timezone.now()
+    submission.save()
+    messages.success(request, f"Payment submission from {submission.student} was rejected.")
+    return redirect(redirect_url)
+
+
+@staff_member_required
+@require_POST
+def manual_payment_record(request):
+    """Admin records a payment negotiated & received over WhatsApp.
+
+    Creates an already-approved PaymentSubmission (no proof image needed)
+    and enrolls the student immediately, so it shows up in Payments &
+    Revenue and in the New Students Today / Revenue Today stats.
+    """
+    redirect_url = f"{reverse('dashboard:admin_dashboard')}?tab=payments"
+
+    identifier = request.POST.get('student_identifier', '').strip()
+    course_id = request.POST.get('course_id', '')
+    amount_raw = request.POST.get('amount', '').strip()
+    note = request.POST.get('note', '').strip()
+
+    if not identifier or not course_id or not amount_raw:
+        messages.error(request, "Please fill in student, course, and amount.")
+        return redirect(redirect_url)
+
+    student = User.objects.filter(
+        Q(username__iexact=identifier) | Q(email__iexact=identifier)
+    ).first()
+    if not student:
+        messages.error(request, f"No student found with username/email '{identifier}'.")
+        return redirect(redirect_url)
+
+    course = get_object_or_404(Course, pk=course_id)
+
+    try:
+        amount_val = Decimal(amount_raw)
+    except InvalidOperation:
+        messages.error(request, "Invalid amount.")
+        return redirect(redirect_url)
+
+    submission = PaymentSubmission.objects.create(
+        student=student,
+        course=course,
+        amount=amount_val,
+        utr_reference=note or 'WhatsApp - manual entry',
+        status=PaymentSubmission.STATUS_APPROVED,
+        admin_note=f"Recorded manually by {request.user} (WhatsApp payment).",
+        reviewed_by=request.user,
+        reviewed_at=timezone.now(),
+    )
+    Enrollment.objects.get_or_create(
+        student=student, course=course,
+        defaults={'payment_id': f'manual-{submission.id}'},
+    )
+    messages.success(
+        request,
+        f"Recorded Rs.{amount_val} payment and enrolled {student} in {course.title}."
+    )
+    return redirect(redirect_url)
+
+
+@staff_member_required
+@require_POST
+def review_approve_view(request, review_id):
+    review = get_object_or_404(CourseReview, pk=review_id)
+    redirect_url = f"{reverse('dashboard:admin_dashboard')}?tab=reviews"
+    if review.status != CourseReview.STATUS_PENDING:
+        messages.info(request, "This review has already been moderated.")
+        return redirect(redirect_url)
+
+    review.status = CourseReview.STATUS_APPROVED
+    review.reviewed_at = timezone.now()
+    review.save()
+
+    # Publish the approved review to the homepage "Student Success Stories" carousel too.
+    try:
+        from core.models import Review as HomepageReview
+        student_name = getattr(review.student, 'full_name', '') or review.student.username
+        HomepageReview.objects.create(
+            student_name=student_name,
+            role=f"{review.course.title} Student",
+            review_text=review.text,
+            rating=review.rating,
+            is_active=True,
+    )
+    except Exception:
+        pass
+    messages.success(request, f"Review from {review.student} for \"{review.course}\" approved.")
+    return redirect(redirect_url)
+
+
+@staff_member_required
+@require_POST
+def review_reject_view(request, review_id):
+    review = get_object_or_404(CourseReview, pk=review_id)
+    redirect_url = f"{reverse('dashboard:admin_dashboard')}?tab=reviews"
+    if review.status != CourseReview.STATUS_PENDING:
+        messages.info(request, "This review has already been moderated.")
+        return redirect(redirect_url)
+
+    review.status = CourseReview.STATUS_REJECTED
+    review.reviewed_at = timezone.now()
+    review.save()
+    messages.success(request, f"Review from {review.student} for \"{review.course}\" rejected.")
+    return redirect(redirect_url)
+
+
+@staff_member_required
+@require_POST
+def toggle_maintenance_view(request):
+    """Flips the site-wide maintenance mode on/off from the Admin Settings tab."""
+    config = SiteConfiguration.get()
+    config.maintenance_mode = not config.maintenance_mode
+    new_message = request.POST.get('maintenance_message', '').strip()
+    if new_message:
+        config.maintenance_message = new_message
+    config.save()
+    if config.maintenance_mode:
+        messages.success(request, "Maintenance mode is now ON. Visitors will see the maintenance page; staff can still log in.")
+    else:
+        messages.success(request, "Maintenance mode is now OFF. The site is live again.")
+    return redirect(f"{reverse('dashboard:admin_dashboard')}?tab=settings")

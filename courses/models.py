@@ -47,7 +47,15 @@ class Course(models.Model):
     certificate_template = models.ImageField(upload_to='certificate_templates/', blank=True, null=True, help_text="Upload certificate template image (JPG/PNG) for this course")
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     discounted_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    offer_expires_at = models.DateTimeField(
+        null=True, blank=True,
+        help_text="Real deadline for the current limited-time offer on this course. "
+                   "When set (and in the future), a countdown bar shows on the course page. "
+                   "Leave blank to hide the countdown -- never set a fake/past date just to create urgency."
+    )
     duration = models.FloatField(help_text="Duration in hours")
+    trainer_name = models.CharField(max_length=100, blank=True, help_text="Personal trainer/mentor name shown to enrolled students")
+    trainer_whatsapp = models.CharField(max_length=20, blank=True, help_text="WhatsApp number with country code, e.g. +919876543210")
     
     instructor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='courses')
@@ -66,6 +74,14 @@ class Course(models.Model):
 
     def __str__(self):
         return self.title
+
+    @property
+    def effective_price(self):
+        """Actual price to charge/display: the discounted price when one is genuinely set, otherwise the regular price."""
+        if self.discounted_price and self.discounted_price > 0:
+            return self.discounted_price
+        return self.price
+
 
 class Module(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='modules')
@@ -255,3 +271,114 @@ class Event(models.Model):
     
     def __str__(self):
         return self.title
+
+
+class PaymentSubmission(models.Model):
+    STATUS_PENDING = 'pending'
+    STATUS_APPROVED = 'approved'
+    STATUS_REJECTED = 'rejected'
+    STATUS_CHOICES = [
+        (STATUS_PENDING, 'Pending Review'),
+        (STATUS_APPROVED, 'Approved'),
+        (STATUS_REJECTED, 'Rejected'),
+    ]
+
+    student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='payment_submissions')
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='payment_submissions')
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    utr_reference = models.CharField(max_length=100, help_text="UPI transaction ID / UTR reference number")
+    proof_image = models.ImageField(upload_to='payment_proofs/%Y/%m/', blank=True, null=True)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=STATUS_PENDING)
+    admin_note = models.CharField(max_length=255, blank=True)
+    submitted_at = models.DateTimeField(auto_now_add=True)
+    reviewed_at = models.DateTimeField(null=True, blank=True)
+    reviewed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, blank=True,
+        on_delete=models.SET_NULL, related_name='reviewed_payment_submissions'
+    )
+
+    class Meta:
+        ordering = ['-submitted_at']
+
+    def __str__(self):
+        return f"{self.student} - {self.course} ({self.status})"
+
+
+class RazorpayPayment(models.Model):
+    STATUS_CREATED = 'created'
+    STATUS_PAID = 'paid'
+    STATUS_FAILED = 'failed'
+    STATUS_CHOICES = [
+        (STATUS_CREATED, 'Created'),
+        (STATUS_PAID, 'Paid'),
+        (STATUS_FAILED, 'Failed'),
+    ]
+
+    student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='razorpay_payments')
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='razorpay_payments')
+    razorpay_order_id = models.CharField(max_length=100)
+    razorpay_payment_id = models.CharField(max_length=100, blank=True)
+    razorpay_signature = models.CharField(max_length=255, blank=True)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=STATUS_CREATED)
+    created_at = models.DateTimeField(auto_now_add=True)
+    paid_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.student} - {self.course} - {self.status}"
+
+
+class CourseReview(models.Model):
+    """A student's review of a course, submitted after finishing all lessons.
+    Held for admin moderation before it can be shown on the public site.
+    """
+    STATUS_PENDING = 'pending'
+    STATUS_APPROVED = 'approved'
+    STATUS_REJECTED = 'rejected'
+    STATUS_CHOICES = [
+        (STATUS_PENDING, 'Pending'),
+        (STATUS_APPROVED, 'Approved'),
+        (STATUS_REJECTED, 'Rejected'),
+    ]
+    RATING_CHOICES = [(i, str(i)) for i in range(1, 6)]
+
+    student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='course_reviews')
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='reviews')
+    rating = models.PositiveSmallIntegerField(choices=RATING_CHOICES, default=5)
+    text = models.TextField(max_length=2000)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=STATUS_PENDING)
+    created_at = models.DateTimeField(auto_now_add=True)
+    reviewed_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        unique_together = ('student', 'course')
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.student} - {self.course} ({self.rating}, {self.status})"
+
+
+class EmailLog(models.Model):
+    """Tracks marketing/lifecycle emails sent to students so the
+    promo drip, completion-feedback, and inactivity-reminder cron
+    jobs never send duplicates."""
+    EMAIL_TYPES = [
+        ('promo', 'Promotional Offer'),
+        ('completion_feedback', 'Course Completion Feedback'),
+        ('inactivity_reminder', 'Inactivity Reminder'),
+    ]
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='email_logs')
+    email_type = models.CharField(max_length=30, choices=EMAIL_TYPES)
+    course = models.ForeignKey(Course, on_delete=models.SET_NULL, null=True, blank=True, related_name='email_logs')
+    sent_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        indexes = [models.Index(fields=['user', 'email_type', 'sent_at'])]
+        ordering = ['-sent_at']
+
+    def __str__(self):
+        return f"{self.user} - {self.email_type} - {self.sent_at:%Y-%m-%d}"

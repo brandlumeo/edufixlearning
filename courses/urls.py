@@ -11,4 +11,9 @@ urlpatterns = [
     path('certificate/verify/<str:cert_uid>/', views.verify_certificate, name='verify_certificate'),
     path('<slug:slug>/', views.CourseDetailView.as_view(), name='course_detail'),
     path('<slug:course_slug>/lesson/<int:lesson_id>/', views.lesson_view, name='lesson_view'),
+    path('<slug:slug>/checkout/', views.checkout_view, name='checkout'),
+    path('<slug:slug>/razorpay/order/', views.razorpay_create_order, name='razorpay_create_order'),
+    path('<slug:slug>/razorpay/verify/', views.razorpay_verify_payment, name='razorpay_verify_payment'),
+        path('razorpay/webhook/', views.razorpay_webhook, name='razorpay_webhook'),
+    path('<slug:slug>/review/submit/', views.submit_course_review, name='submit_review'),
 ]

@@ -30,8 +30,29 @@
             {% endif %}
 
             <form method="post" class="animate-up" style="animation-delay: 0.2s;">
+                    <input type="hidden" name="next" value="{{ next|default:'' }}">
                 {% csrf_token %}
                 
+                <div id="g_id_onload"
+                     data-client_id="26647894721-q39p4e8c356t76gh4kf2d6iual7hv73o.apps.googleusercontent.com"
+                     data-context="signin"
+                     data-callback="handleGoogleSignIn"
+                     data-auto_prompt="false">
+                </div>
+                <div class="g_id_signin"
+                     data-type="standard"
+                     data-shape="rectangular"
+                     data-theme="outline"
+                     data-text="signin_with"
+                     data-size="large"
+                     data-logo_alignment="left"
+                     style="display: flex; justify-content: center; margin-bottom: 1rem;">
+                </div>
+                <div style="display: flex; align-items: center; gap: 1rem; margin: 1.5rem 0; color: rgba(255,255,255,0.5);">
+                    <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.15);"></div>
+                    <span style="font-size: 0.85rem;">or continue with email</span>
+                    <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.15);"></div>
+                </div>
                 <div style="margin-bottom: 1.5rem;">
                     <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Email Address</label>
                     <input type="email" name="username" value="{{ request.POST.username|default:'' }}" class="form-control glass" placeholder="name@example.com" required style="width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid var(--glass-border); color: white; background: rgba(255,255,255,0.05);">
@@ -76,9 +97,38 @@
             </script>
 
             <div style="text-align: center; margin-top: 2rem;" class="animate-up" style="animation-delay: 0.3s;">
-                <p class="text-gray">Don't have an account? <a href="{% url 'register' %}" class="text-yellow" style="font-weight: 600;">Sign Up</a></p>
+                <p class="text-gray">Don't have an account? <a href="{% url 'register' %}{% if next %}?next={{ next|urlencode }}{% endif %}" class="text-yellow" style="font-weight: 600;">Sign Up</a></p>
             </div>
         </div>
     </div>
 </section>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script>
+    function handleGoogleSignIn(response) {
+        var form = document.createElement('form');
+        form.method = 'POST';
+        form.action = "{% url 'google_signin' %}";
+
+        var credInput = document.createElement('input');
+        credInput.type = 'hidden';
+        credInput.name = 'credential';
+        credInput.value = response.credential;
+        form.appendChild(credInput);
+
+        var nextInput = document.createElement('input');
+        nextInput.type = 'hidden';
+        nextInput.name = 'next';
+        nextInput.value = "{{ next|default:'' }}";
+        form.appendChild(nextInput);
+
+        var csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = 'csrfmiddlewaretoken';
+        csrfInput.value = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        form.appendChild(csrfInput);
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+    </script>
 {% endblock %}

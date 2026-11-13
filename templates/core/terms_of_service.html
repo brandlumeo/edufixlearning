@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Terms of Service - Edufix Learning Academy{% endblock %}
+{% block content %}
+<section style="padding: 140px 0 60px; background: var(--surface-black);">
+    <div class="container" style="max-width: 900px;">
+        <div class="animate-up" style="text-align:center; margin-bottom: 40px;">
+            <span style="background:rgba(248,209,39,0.12); color:#f8d127; padding:6px 18px; border-radius:20px; font-weight:800; font-size:0.75rem; text-transform:uppercase; letter-spacing:1px; display:inline-block;">Legal</span>
+            <h1 style="color:#fff; font-size:2.4rem; font-weight:900; margin:18px 0 10px;">Terms of Service</h1>
+            <p class="text-gray">Effective Date: August 16, 2026</p>
+        </div>
+
+        <div class="glass animate-up" style="padding: 40px; border-radius: 24px; line-height: 1.8;">
+            <p class="text-gray">These Terms of Service ("Terms") govern your access to and use of edufixlearning.com (the "Site") and the courses, content, and services (the "Services") provided by EDUFIX LEARNING INSTITUTION LLP ("Edufix Learning Academy", "Edufix", "we", "us", or "our"), located at Calicut, Kerala 673522, India. By creating an account, enrolling in a course, or otherwise using the Site, you agree to be bound by these Terms. If you do not agree, please do not use the Site.</p>
+
+            <h2 style="color:#fff; margin-top:36px;">1. Eligibility</h2>
+            <p class="text-gray">You must be at least 18 years old to create an account and make a purchase. Users under 18 may use the Site only with the involvement and consent of a parent or legal guardian.</p>
+
+            <h2 style="color:#fff; margin-top:36px;">2. Account Registration</h2>
+            <p class="text-gray">You agree to provide accurate and complete information when creating an account and to keep your login credentials confidential. You are responsible for all activity that occurs under your account.</p>
+
+            <h2 style="color:#fff; margin-top:36px;">3. Course Enrollment and Access</h2>
+            <p class="text-gray">Upon successful payment, you will be granted access to the purchased course content for the duration specified on the course page. Course access is for personal, non-commercial, individual use only and may not be shared, resold, or transferred to any other person.</p>
+
+            <h2 style="color:#fff; margin-top:36px;">4. Fees and Payment</h2>
+            <p class="text-gray">Course fees are displayed on the relevant course page and may change at any time; the price applicable at the time of your purchase will apply to your enrollment. All payments are processed through secure third-party payment gateways. You agree to provide accurate billing information.</p>
+
+            <h2 style="color:#fff; margin-top:36px;">5. Refunds and Cancellations</h2>
+            <p class="text-gray">Refunds and cancellations are governed by our separate <a href="{% url 'core:refund_policy' %}" class="text-yellow">Refund &amp; Cancellation Policy</a>, which forms part of these Terms.</p>
+
+            <h2 style="color:#fff; margin-top:36px;">6. Intellectual Property</h2>
+            <p class="text-gray">All course videos, materials, text, graphics, logos, and other content on the Site are the property of Edufix Learning Academy or its licensors and are protected by applicable intellectual property laws. You may not copy, reproduce, distribute, publicly display, or create derivative works from any course content without our prior written consent.</p>
+
+            <h2 style="color:#fff; margin-top:36px;">7. Mentor and WhatsApp Support</h2>
+            <p class="text-gray">Certain courses include personal mentor support via WhatsApp. This support is provided on a reasonable-effort basis during our standard support hours and is intended to help with course-related doubts; it does not guarantee specific outcomes, employment, or income results.</p>
+
+            <h2 style="color:#fff; margin-top:36px;">8. User Conduct</h2>
+            <p class="text-gray">You agree not to: (a) share your account or course access with others; (b) download, record, or redistribute course videos or materials outside the platform; (c) use the Site for any unlawful purpose; or (d) attempt to disrupt or gain unauthorized access to the Site or its systems.</p>
+
+            <h2 style="color:#fff; margin-top:36px;">9. Disclaimer of Warranties</h2>
+            <p class="text-gray">The Site and Services are provided on an "as is" and "as available" basis. While we strive to ensure course content is accurate and useful, we do not guarantee specific results, certifications, or employment outcomes from completing a course.</p>
+
+            <h2 style="color:#fff; margin-top:36px;">10. Limitation of Liability</h2>
+            <p class="text-gray">To the maximum extent permitted by law, Edufix Learning Academy shall not be liable for any indirect, incidental, or consequential damages arising from your use of the Site or Services. Our total liability for any claim shall not exceed the amount you paid for the relevant course.</p>
+
+            <h2 style="color:#fff; margin-top:36px;">11. Termination</h2>
+            <p class="text-gray">We may suspend or terminate your account if you violate these Terms, including unauthorized sharing or redistribution of course content, without prejudice to any other remedies available to us.</p>
+
+            <h2 style="color:#fff; margin-top:36px;">12. Governing Law</h2>
+            <p class="text-gray">These Terms are governed by the laws of India, and any disputes arising under them shall be subject to the exclusive jurisdiction of the courts located in Kerala, India.</p>
+
+            <h2 style="color:#fff; margin-top:36px;">13. Changes to These Terms</h2>
+            <p class="text-gray">We may revise these Terms from time to time. Continued use of the Site after changes are posted constitutes your acceptance of the revised Terms.</p>
+
+            <h2 style="color:#fff; margin-top:36px;">14. Contact Us</h2>
+            <p class="text-gray">
+                EDUFIX LEARNING INSTITUTION LLP<br>
+                Calicut, Kerala 673522, India<br>
+                Email: <a href="mailto:info@edufixlearning.com" class="text-yellow">info@edufixlearning.com</a><br>
+                Phone / WhatsApp: <a href="tel:+917034893345" class="text-yellow">+91 7034893345</a>
+            </p>
+        </div>
+    </div>
+</section>
+{% endblock %}

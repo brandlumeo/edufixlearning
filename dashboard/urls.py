@@ -10,6 +10,7 @@ urlpatterns = [
     path('ai-tutor/', views.ai_tutor, name='ai_tutor'),
     path('assignments/', views.assignments_view, name='assignments'),
     path('admin-analytics/', views.admin_dashboard, name='admin_dashboard'),
+    path('admin-analytics/toggle-maintenance/', views.toggle_maintenance_view, name='toggle_maintenance'),
     path('admin-analytics/lesson/edit/', views.admin_lesson_edit_view, name='admin_lesson_edit'),
     path('admin-analytics/create-course/', views.create_course_view, name='create_course'),
     path('admin-analytics/create-assignment/', views.create_assignment_view, name='create_assignment'),
@@ -35,4 +36,10 @@ urlpatterns = [
     path('admin-analytics/certificates/<str:cert_uid>/delete/', views.certificate_delete_view, name='certificate_delete'),
     path('admin-analytics/stream-status/<str:video_id>/', views.stream_status_view, name='stream_status'),
     path('certificates/', views.certificates_view, name='certificates'),
+    path('admin-analytics/payments/<int:submission_id>/approve/', views.payment_approve_view, name='payment_approve'),
+    path('admin-analytics/payments/<int:submission_id>/reject/', views.payment_reject_view, name='payment_reject'),
+    path('admin-analytics/reviews/<int:review_id>/approve/', views.review_approve_view, name='review_approve'),
+    path('admin-analytics/reviews/<int:review_id>/reject/', views.review_reject_view, name='review_reject'),
+    path('admin-analytics/payments/manual-record/', views.manual_payment_record, name='manual_payment_record'),
 ]
+

@@ -21,7 +21,7 @@ class CourseAdmin(admin.ModelAdmin):
             'fields': ('title', 'slug', 'instructor', 'category', 'description', 'thumbnail', 'certificate_template')
         }),
         ('Pricing', {
-            'fields': ('price', 'discounted_price')
+            'fields': ('price', 'discounted_price', 'offer_expires_at')
         }),
         ('Details', {
             'fields': ('status', 'duration')

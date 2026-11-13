@@ -5,7 +5,10 @@ from . import views
 urlpatterns = [
     path('register/', views.register_view, name='register'),
     path('login/', views.login_view, name='login'),
+    path('google-signin/', views.google_signin_view, name='google_signin'),
     path('logout/', views.logout_view, name='account_logout'),
+    path('set-password/', views.set_password_view, name='set_password'),
+    path('set-password/dismiss/', views.dismiss_password_prompt_view, name='dismiss_password_prompt'),
     path('verify/<uidb64>/<token>/', views.verify_email, name='verify_email'),
     
     # Password Reset

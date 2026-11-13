@@ -1,0 +1,29 @@
+name: Deploy to Namecheap cPanel
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.CPANEL_SSH_HOST }}
+          username: ${{ secrets.CPANEL_SSH_USER }}
+          key: ${{ secrets.CPANEL_SSH_PRIVATE_KEY }}
+          port: ${{ secrets.CPANEL_SSH_PORT || 21098 }}
+          script: |
+            cd /home/afthab/edufixlearning.com
+            git pull origin main
+            /home/afthab/virtualenv/edufixlearning.com/3.12/bin/pip install -r requirements.txt
+            /home/afthab/virtualenv/edufixlearning.com/3.12/bin/python manage.py migrate --noinput
+            /home/afthab/virtualenv/edufixlearning.com/3.12/bin/python manage.py collectstatic --noinput
+            touch tmp/restart.txt

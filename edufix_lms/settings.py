@@ -12,29 +12,43 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 import os
 import datetime
 from pathlib import Path
-from dotenv import load_dotenv
+from dotenv import dotenv_values, load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Load environment variables from .env file
-load_dotenv(BASE_DIR / '.env')
+# Local settings read a dedicated file and ignore inherited integration credentials.
+if os.environ.get('DJANGO_SETTINGS_MODULE') == 'edufix_lms.local_settings':
+    get_env = dotenv_values(BASE_DIR / 'tmp' / '.env.local', interpolate=False).get
+else:
+    load_dotenv(BASE_DIR / '.env')
+    get_env = os.getenv
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = get_env('SECRET_KEY')
 if not SECRET_KEY:
     raise ValueError("SECRET_KEY environment variable is not set. Add it to your .env file.")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'False') == 'True'
+DEBUG = get_env('DEBUG', 'False') == 'True'
 
-_raw_hosts = os.getenv('ALLOWED_HOSTS', '')
+_raw_hosts = get_env('ALLOWED_HOSTS', '')
 ALLOWED_HOSTS = [h.strip() for h in _raw_hosts.split(',') if h.strip()]
 
+
+# Payment (manual bank/UPI QR) settings
+UPI_ID = get_env('UPI_ID', '')
+UPI_PAYEE_NAME = get_env('UPI_PAYEE_NAME', 'Edufix Learning Academy')
+ADMIN_WHATSAPP_NUMBER = get_env('ADMIN_WHATSAPP_NUMBER', '')
+RAZORPAY_KEY_ID = get_env('RAZORPAY_KEY_ID', '')
+RAZORPAY_KEY_SECRET = get_env('RAZORPAY_KEY_SECRET', '')
+RAZORPAY_WEBHOOK_SECRET = get_env('RAZORPAY_WEBHOOK_SECRET', '')
+TRAINER_WHATSAPP_NUMBER = get_env('TRAINER_WHATSAPP_NUMBER', ADMIN_WHATSAPP_NUMBER)
+CALLMEBOT_APIKEY = get_env('CALLMEBOT_APIKEY', '')
 
 # Application definition
 
@@ -45,6 +59,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sitemaps',
     
     # Local Apps
     'core',
@@ -61,6 +76,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'core.middleware.MaintenanceModeMiddleware',
     'users.middleware.JWTAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -78,6 +94,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'core.context_processors.recent_enrollments',
+                'core.context_processors.password_setup_prompt',
             ],
         },
     },
@@ -130,18 +148,20 @@ JWT_AUTH = {
 PASSWORD_RESET_TIMEOUT = 1800 
 
 # Email Configuration
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
-DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
+EMAIL_HOST_USER = get_env('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = get_env('EMAIL_HOST_PASSWORD', '')
+DEFAULT_FROM_EMAIL = get_env('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
+NOTIFICATIONS_FROM_EMAIL = get_env('NOTIFICATIONS_FROM_EMAIL', 'notifications@edufixlearning.com')
 
 # Use SMTP if credentials are configured in .env, otherwise fall back to console in DEBUG mode
 if DEBUG and not (EMAIL_HOST_USER and EMAIL_HOST_PASSWORD):
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 else:
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    EMAIL_HOST = 'smtp.gmail.com'
-    EMAIL_PORT = 587
-    EMAIL_USE_TLS = True
+    EMAIL_HOST = get_env('EMAIL_HOST', 'smtp.gmail.com')
+    EMAIL_PORT = int(get_env('EMAIL_PORT', '587'))
+    EMAIL_USE_SSL = get_env('EMAIL_USE_SSL', 'False') == 'True'
+    EMAIL_USE_TLS = not EMAIL_USE_SSL
 
 # ── Security headers ──────────────────────────────────────────────────────────
 SECURE_CONTENT_TYPE_NOSNIFF = True   # Prevent MIME-type sniffing
@@ -166,11 +186,11 @@ LOGOUT_REDIRECT_URL = 'login'
 LOGIN_URL = 'login'
 
 # OpenAI API Key
-OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', '')
+OPENAI_API_KEY = get_env('OPENAI_API_KEY', '')
 
 # Cloudflare
-CLOUDFLARE_ACCOUNT_ID = os.getenv('CLOUDFLARE_ACCOUNT_ID', '')
-CLOUDFLARE_API_TOKEN = os.getenv('CLOUDFLARE_API_TOKEN', '')
+CLOUDFLARE_ACCOUNT_ID = get_env('CLOUDFLARE_ACCOUNT_ID', '')
+CLOUDFLARE_API_TOKEN = get_env('CLOUDFLARE_API_TOKEN', '')
 
 # Allow large video uploads for Cloudflare Stream (500 MB)
 DATA_UPLOAD_MAX_MEMORY_SIZE = 500 * 1024 * 1024   # 500 MB
@@ -210,3 +230,4 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+GOOGLE_OAUTH_CLIENT_ID = '26647894721-q39p4e8c356t76gh4kf2d6iual7hv73o.apps.googleusercontent.com'
