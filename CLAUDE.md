@@ -23,3 +23,4 @@
 - **Encoding**: Always save `requirements.txt` in UTF-8 without BOM (never UTF-16).
 - **Secrets**: Never hardcode API keys, Razorpay secrets, or email credentials. Use `get_env(...)`.
 - **Zero-Downtime Reload**: In production, reload Passenger by touching `tmp/restart.txt`.
+
