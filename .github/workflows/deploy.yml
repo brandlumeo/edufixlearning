@@ -10,20 +10,40 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Deploy via SSH
+      - name: Deploy via SSH to Namecheap
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.CPANEL_SSH_HOST }}
           username: ${{ secrets.CPANEL_SSH_USER }}
           key: ${{ secrets.CPANEL_SSH_PRIVATE_KEY }}
           port: ${{ secrets.CPANEL_SSH_PORT || 21098 }}
+          script_stop: true
           script: |
+            echo "Starting deployment on server..."
             cd /home/afthab/edufixlearning.com
-            git pull origin main
+
+            # Fetch the latest updates from GitHub
+            git fetch origin main
+
+            # Ensure we are cleanly on the main branch matching origin/main
+            # (Note: .gitignore protects db.sqlite3, .env, media/, and .htaccess from being touched)
+            git checkout -B main origin/main
+            git reset --hard origin/main
+
+            # Install/update python dependencies inside cPanel virtual environment
             /home/afthab/virtualenv/edufixlearning.com/3.12/bin/pip install -r requirements.txt
+
+            # Run database migrations safely (nondestructive, never deletes data)
             /home/afthab/virtualenv/edufixlearning.com/3.12/bin/python manage.py migrate --noinput
+
+            # Collect static files
             /home/afthab/virtualenv/edufixlearning.com/3.12/bin/python manage.py collectstatic --noinput
+
+            # Signal Phusion Passenger to reload python app with zero downtime
+            mkdir -p tmp
             touch tmp/restart.txt
+
+            echo "=== Deployment completed successfully! ==="

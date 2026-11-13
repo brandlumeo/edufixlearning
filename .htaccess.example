@@ -13,3 +13,4 @@ SetEnv RAZORPAY_KEY_SECRET your_razorpay_key_secret_here
 SetEnv RAZORPAY_WEBHOOK_SECRET your_razorpay_webhook_secret_here
 </IfModule>
 # DO NOT REMOVE OR MODIFY. CLOUDLINUX ENV VARS CONFIGURATION END
+

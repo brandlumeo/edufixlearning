@@ -18,3 +18,4 @@ deployment:
     - /home/afthab/virtualenv/edufixlearning.com/3.12/bin/python $DEPLOYPATH/manage.py migrate --noinput
     - /home/afthab/virtualenv/edufixlearning.com/3.12/bin/python $DEPLOYPATH/manage.py collectstatic --noinput
     - /bin/touch $DEPLOYPATH/tmp/restart.txt
+
