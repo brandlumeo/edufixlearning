@@ -21,6 +21,7 @@
 
 ## 4. Code & Git Hygiene
 - **Encoding**: Always save `requirements.txt` in UTF-8 without BOM (never UTF-16).
+- **Hosting Limitations**: Namecheap shared hosting blocks `gcc` execution. Never add packages requiring C compilation without prebuilt manylinux wheels; do not re-add `mysqlclient` (app runs on `db.sqlite3`).
 - **Secrets**: Never hardcode API keys, Razorpay secrets, or email credentials. Use `get_env(...)`.
 - **Zero-Downtime Reload**: In production, reload Passenger by touching `tmp/restart.txt`.
 
