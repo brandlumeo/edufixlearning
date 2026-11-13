@@ -28,16 +28,16 @@ jobs:
             echo "Starting deployment on server..."
             cd /home/afthab/edufixlearning.com
 
-            # Fetch latest main branch securely using workflow token (no manual credentials needed on cPanel)
+            # Fetch latest main branch securely using workflow token
             git fetch https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/brandlumeo/edufixlearning.git main
 
-            # Update working tree cleanly to match the latest commit
+            # Synchronize server files with origin/main cleanly
             # (Note: .gitignore protects db.sqlite3, .env, media/, and .htaccess from being touched)
             git checkout -B main FETCH_HEAD
             git reset --hard FETCH_HEAD
 
             # Install/update python dependencies inside cPanel virtual environment
-            /home/afthab/virtualenv/edufixlearning.com/3.12/bin/pip install -r requirements.txt
+            /home/afthab/virtualenv/edufixlearning.com/3.12/bin/python -m pip install -r requirements.txt
 
             # Run database migrations safely (nondestructive, never deletes data)
             /home/afthab/virtualenv/edufixlearning.com/3.12/bin/python manage.py migrate --noinput
