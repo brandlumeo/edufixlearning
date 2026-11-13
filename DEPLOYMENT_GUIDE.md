@@ -165,3 +165,4 @@ To back up the live SQLite database at any time:
 ```bash
 cp /home/afthab/edufixlearning.com/db.sqlite3 /home/afthab/edufixlearning.com/db.sqlite3.backup_$(date +%Y%m%d_%H%M%S)
 ```
+
