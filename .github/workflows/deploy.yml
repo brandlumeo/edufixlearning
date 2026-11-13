@@ -6,6 +6,9 @@ on:
       - main
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -26,13 +29,13 @@ jobs:
             echo "Starting deployment on server..."
             cd /home/afthab/edufixlearning.com
 
-            # Fetch the latest updates from GitHub
-            git fetch origin main
+            # Fetch latest main branch securely using workflow token (no manual credentials needed on cPanel)
+            git fetch https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/brandlumeo/edufixlearning.git main
 
-            # Ensure we are cleanly on the main branch matching origin/main
+            # Update working tree cleanly to match the latest commit
             # (Note: .gitignore protects db.sqlite3, .env, media/, and .htaccess from being touched)
-            git checkout -B main origin/main
-            git reset --hard origin/main
+            git checkout -B main FETCH_HEAD
+            git reset --hard FETCH_HEAD
 
             # Install/update python dependencies inside cPanel virtual environment
             /home/afthab/virtualenv/edufixlearning.com/3.12/bin/pip install -r requirements.txt
