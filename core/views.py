@@ -26,14 +26,14 @@ def index(request):
     if mastery_course:
         try:
             eff_price = int(float(mastery_course.effective_price))
+            orig_val = int(float(mastery_course.original_price_display))
             mastery_price = f"{eff_price:,}"
-            orig_val = 2999
-            if eff_price < orig_val:
-                mastery_discount_pct = round(((orig_val - eff_price) / orig_val) * 100)
-            else:
-                mastery_discount_pct = 0
+            mastery_orig_price = f"{orig_val:,}"
+            mastery_discount_pct = mastery_course.discount_percentage
         except (ValueError, TypeError):
             mastery_price = "1,499"
+            mastery_orig_price = "2,999"
+            mastery_discount_pct = 50
 
     context = {
         'featured_courses': featured_courses,

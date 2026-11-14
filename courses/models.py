@@ -82,6 +82,29 @@ class Course(models.Model):
             return self.discounted_price
         return self.price
 
+    @property
+    def original_price_display(self):
+        """Original or pre-discount price (for strikethrough comparison)."""
+        if self.discounted_price and self.price and self.price > self.discounted_price:
+            return int(float(self.price))
+        if self.slug == 'master-metalist':
+            return 3999
+        if self.slug in ('10-days-ai-integrated-mobile-video-editing', 'edufix-creative-mastery-class'):
+            return 2999
+        return int(float(self.effective_price))
+
+    @property
+    def discount_percentage(self):
+        """Calculates discount percentage against original price."""
+        try:
+            orig = float(self.original_price_display)
+            curr = float(self.effective_price)
+            if orig > curr > 0:
+                return round(((orig - curr) / orig) * 100)
+        except (ValueError, TypeError, ZeroDivisionError):
+            pass
+        return 0
+
 
 class Module(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='modules')
