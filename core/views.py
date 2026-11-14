@@ -17,9 +17,31 @@ except ImportError:
 def index(request):
     featured_courses = Course.objects.filter(status='published')
     reviews = Review.objects.filter(is_active=True)
+    mastery_course = Course.objects.filter(slug='edufix-creative-mastery-class').first()
+
+    mastery_price = "1,499"
+    mastery_orig_price = "2,999"
+    mastery_discount_pct = 50
+
+    if mastery_course:
+        try:
+            eff_price = int(float(mastery_course.effective_price))
+            mastery_price = f"{eff_price:,}"
+            orig_val = 2999
+            if eff_price < orig_val:
+                mastery_discount_pct = round(((orig_val - eff_price) / orig_val) * 100)
+            else:
+                mastery_discount_pct = 0
+        except (ValueError, TypeError):
+            mastery_price = "1,499"
+
     context = {
         'featured_courses': featured_courses,
         'reviews': reviews,
+        'mastery_course': mastery_course,
+        'mastery_price': mastery_price,
+        'mastery_orig_price': mastery_orig_price,
+        'mastery_discount_pct': mastery_discount_pct,
     }
     return render(request, 'core/index.html', context)
 

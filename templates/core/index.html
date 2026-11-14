@@ -37,13 +37,13 @@
                                 Offer</span>
                             <h2
                                 style="font-size: 3rem; font-weight: 900; color: #fff; margin: 0 0 6px; line-height: 1;">
-                                83% <span style="color: #fbbf24;">OFF</span></h2>
+                                {{ mastery_discount_pct|default:"50" }}% <span style="color: #fbbf24;">OFF</span></h2>
                             <h4 style="color: #e2e8f0; font-size: 1.15rem; font-weight: 600; margin: 0 0 16px;">Edufix Creative Mastery Class</h4>
                                 <p style="color: #94a3b8; font-size: 0.95rem; line-height: 1.7; margin: 0 0 24px;">3-in-1 course: Master Mobile Video Editing, Mobile Poster Designing &amp; the Master AI Class — 23 HD classes you can learn from your phone, with a personal mentor on WhatsApp for 1-on-1 support.</p>
                             <div style="display: flex; align-items: baseline; gap: 12px; margin-bottom: 28px;">
                                 <span
-                                    style="color: #94a3b8; font-size: 1rem; text-decoration: line-through;">₹2,999</span>
-                                <span style="color: #fbbf24; font-size: 2rem; font-weight: 900;">₹499</span>
+                                    style="color: #94a3b8; font-size: 1rem; text-decoration: line-through;">₹{{ mastery_orig_price|default:"2,999" }}</span>
+                                <span style="color: #fbbf24; font-size: 2rem; font-weight: 900;">₹{{ mastery_price|default:"1,499" }}</span>
                             </div>
                             <div class="efx-countdown efx-slide"><div class="efx-cd-label"><i class="fa-solid fa-bolt"></i> 2-Day Flash Sale ends in</div><div class="efx-cd-boxes"><div><b data-u="d">02</b><span>Days</span></div><div><b data-u="h">00</b><span>Hrs</span></div><div><b data-u="m">00</b><span>Mins</span></div><div><b data-u="s">00</b><span>Secs</span></div></div></div>
                             <a href="/courses/edufix-creative-mastery-class/"
@@ -845,8 +845,8 @@
     <p style="color:rgba(255,255,255,0.75); font-size:0.95rem; margin:0 0 20px;">Edufix Creative Mastery Class — Video Editing, Poster Design &amp; AI</p>
 
     <div style="display:flex; align-items:baseline; justify-content:center; gap:10px; margin-bottom:8px;">
-      <span style="color:rgba(255,255,255,0.5); text-decoration:line-through; font-size:1.1rem;">₹2,999</span>
-      <span style="color:#f8d127; font-size:2.6rem; font-weight:900;">₹1,499</span>
+      <span style="color:rgba(255,255,255,0.5); text-decoration:line-through; font-size:1.1rem;">₹{{ mastery_orig_price|default:"2,999" }}</span>
+      <span style="color:#f8d127; font-size:2.6rem; font-weight:900;">₹{{ mastery_price|default:"1,499" }}</span>
     </div>
     <div class="efx-countdown efx-popup"><div class="efx-cd-label"><i class="fa-solid fa-bolt"></i> 2-Day Flash Sale ends in</div><div class="efx-cd-boxes"><div><b data-u="d">02</b><span>Days</span></div><div><b data-u="h">00</b><span>Hrs</span></div><div><b data-u="m">00</b><span>Mins</span></div><div><b data-u="s">00</b><span>Secs</span></div></div></div>
 
