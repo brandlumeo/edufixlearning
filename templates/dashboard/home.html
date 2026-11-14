@@ -217,17 +217,17 @@
                 <div class="info-item"><span class="info-label">Enrollment Date</span><span class="info-value">{{ enrollments.0.enrolled_at|date:"M d, Y"|default:"N/A" }}</span></div>
                 <div class="info-item"><span class="info-label">Contact</span><span class="info-value">{{ user.phone_number|default:user.email }}</span></div>
             </div>
-            {% if active_batch and active_batch.online_meeting_url and active_batch.mode != 'offline' %}
+            {% for live_batch in live_class_batches %}
             <div class="join-class-box">
                 <div>
-                    <span class="info-label">Online Class</span>
+                    <span class="info-label">Online Class · {{ live_batch.name }}</span>
                     <span class="info-value">Your instructor has shared the class link</span>
                 </div>
-                <a href="{{ active_batch.online_meeting_url }}" target="_blank" rel="noopener noreferrer" class="join-class-btn">
+                <a href="{% url 'dashboard:join_class' live_batch.id %}" target="_blank" rel="noopener noreferrer" class="join-class-btn">
                     <i class="fa-solid fa-video"></i> Join Online Class
                 </a>
             </div>
-            {% endif %}
+            {% endfor %}
         </div>
     </div>
 

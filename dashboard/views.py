@@ -156,6 +156,13 @@ def get_student_dashboard_data(user):
     
     # Batch & Instructor Info
     active_batch = user.assigned_batches.filter(is_active=True).select_related('instructor', 'course').first()
+    # Batches this student belongs to that currently have an online class link
+    live_class_batches = list(
+        user.assigned_batches.filter(is_active=True)
+        .exclude(online_meeting_url='')
+        .exclude(mode='offline')
+        .select_related('course')
+    )
     
     # Notifications & Resources
     notifications = Notification.objects.filter(student=user).order_by('-created_at')[:10]
@@ -242,6 +249,7 @@ def get_student_dashboard_data(user):
             'records': fee_records
         },
         'active_batch': active_batch,
+        'live_class_batches': live_class_batches,
         'resources': resources,
         'notifications': notifications,
         'estimated_completion': estimated_completion,
@@ -1617,3 +1625,19 @@ def instructor_class_links_view(request):
     return render(request, 'dashboard/instructor_class_links.html', {
         'batches': batches.order_by('-start_date'),
     })
+
+
+@login_required
+def join_class_view(request, batch_id):
+    """Redirect to a batch's online class link, but only for that batch's students, its instructor, or staff."""
+    user = request.user
+    batch = Batch.objects.filter(id=batch_id, is_active=True).exclude(mode='offline').first()
+    allowed = batch is not None and (
+        user.is_staff
+        or batch.instructor_id == user.id
+        or batch.students.filter(id=user.id).exists()
+    )
+    if not allowed or not batch.online_meeting_url:
+        messages.error(request, "This class link isn't available for your account.")
+        return redirect('dashboard:home')
+    return redirect(batch.online_meeting_url)
