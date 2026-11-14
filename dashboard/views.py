@@ -1577,3 +1577,43 @@ def toggle_maintenance_view(request):
     else:
         messages.success(request, "Maintenance mode is now OFF. The site is live again.")
     return redirect(f"{reverse('dashboard:admin_dashboard')}?tab=settings")
+
+
+def _can_manage_class_links(user):
+    return user.is_authenticated and (user.is_staff or getattr(user, 'is_instructor', False))
+
+
+@login_required
+def instructor_class_links_view(request):
+    """Let staff (any batch) and instructors (only their own batches) set the online class link."""
+    user = request.user
+    if not _can_manage_class_links(user):
+        messages.error(request, "Only instructors can manage class links.")
+        return redirect('dashboard:home')
+
+    batches = Batch.objects.select_related('course').filter(is_active=True)
+    if not user.is_staff:
+        batches = batches.filter(instructor=user)
+
+    if request.method == 'POST':
+        batch = get_object_or_404(batches, id=request.POST.get('batch_id'))
+        url = request.POST.get('online_meeting_url', '').strip()
+        if url:
+            from django.core.validators import URLValidator
+            from django.core.exceptions import ValidationError
+            try:
+                URLValidator(schemes=['http', 'https'])(url)
+            except ValidationError:
+                messages.error(request, "Please enter a valid link starting with https://")
+                return redirect('dashboard:instructor_class_links')
+        batch.online_meeting_url = url
+        batch.save(update_fields=['online_meeting_url'])
+        if url:
+            messages.success(request, f"Class link updated for '{batch.name}'. Students can see it now.")
+        else:
+            messages.success(request, f"Class link removed for '{batch.name}'.")
+        return redirect('dashboard:instructor_class_links')
+
+    return render(request, 'dashboard/instructor_class_links.html', {
+        'batches': batches.order_by('-start_date'),
+    })

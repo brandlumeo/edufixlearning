@@ -9,6 +9,7 @@ urlpatterns = [
     path('settings/', views.settings_view, name='settings'),
     path('ai-tutor/', views.ai_tutor, name='ai_tutor'),
     path('assignments/', views.assignments_view, name='assignments'),
+    path('class-links/', views.instructor_class_links_view, name='instructor_class_links'),
     path('admin-analytics/', views.admin_dashboard, name='admin_dashboard'),
     path('admin-analytics/toggle-maintenance/', views.toggle_maintenance_view, name='toggle_maintenance'),
     path('admin-analytics/lesson/edit/', views.admin_lesson_edit_view, name='admin_lesson_edit'),

@@ -1,0 +1,87 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Class Links - Edufix Academy{% endblock %}
+
+{% block extra_css %}
+<style>
+    .cl-wrap { display: flex; flex-direction: column; gap: 1.25rem; }
+    .cl-head h1 { margin: 0; font-size: 1.6rem; font-weight: 900; }
+    .cl-head p { margin: 6px 0 0; color: var(--text-muted); font-size: 0.9rem; }
+    .cl-msg { padding: 0.8rem 1rem; border-radius: 12px; font-weight: 700; font-size: 0.85rem; }
+    .cl-msg.success { background: rgba(16,185,129,0.12); color: #10b981; border: 1px solid rgba(16,185,129,0.35); }
+    .cl-msg.error { background: rgba(239,68,68,0.12); color: #ef4444; border: 1px solid rgba(239,68,68,0.35); }
+    .cl-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-light);
+        border-radius: 20px;
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .cl-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap; }
+    .cl-top h3 { margin: 0; font-size: 1.1rem; font-weight: 900; }
+    .cl-meta { color: var(--text-muted); font-size: 0.8rem; font-weight: 600; margin-top: 4px; }
+    .cl-badge { font-size: 0.65rem; font-weight: 900; text-transform: uppercase; padding: 4px 10px; border-radius: 50px; }
+    .cl-badge.live { background: rgba(16,185,129,0.15); color: #10b981; }
+    .cl-badge.none { background: rgba(148,163,184,0.15); color: var(--text-muted); }
+    .cl-form { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+    .cl-form input[type=url] {
+        flex: 1 1 260px;
+        min-width: 0;
+        padding: 0.7rem 1rem;
+        border-radius: 12px;
+        border: 1px solid var(--border-light);
+        background: transparent;
+        color: var(--text-main);
+        font-size: 0.9rem;
+    }
+    .cl-btn { border: 0; cursor: pointer; padding: 0.7rem 1.2rem; border-radius: 12px; font-weight: 800; font-size: 0.85rem; }
+    .cl-btn.save { background: #10b981; color: #fff; }
+    .cl-btn.clear { background: transparent; color: #ef4444; border: 1px solid rgba(239,68,68,0.4); }
+    .cl-empty { color: var(--text-muted); text-align: center; padding: 2rem; }
+</style>
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="cl-wrap">
+    <div class="cl-head">
+        <h1><i class="fa-solid fa-video"></i> Online Class Links</h1>
+        <p>Paste the Zoom / Google Meet / Teams link before class. Students in the batch see a "Join Online Class" button as soon as you save it.</p>
+    </div>
+
+    {% for message in messages %}
+        <div class="cl-msg {% if message.tags == 'error' %}error{% else %}success{% endif %}">{{ message }}</div>
+    {% endfor %}
+
+    {% for batch in batches %}
+    <div class="cl-card">
+        <div class="cl-top">
+            <div>
+                <h3>{{ batch.name }}{% if batch.batch_code %} · {{ batch.batch_code }}{% endif %}</h3>
+                <div class="cl-meta">{{ batch.course.title }} · {{ batch.get_mode_display }}{% if batch.schedule %} · {{ batch.schedule }}{% endif %}</div>
+            </div>
+            {% if batch.online_meeting_url %}
+                <span class="cl-badge live">Link visible to students</span>
+            {% else %}
+                <span class="cl-badge none">No link yet</span>
+            {% endif %}
+        </div>
+        <form method="post" class="cl-form">
+            {% csrf_token %}
+            <input type="hidden" name="batch_id" value="{{ batch.id }}">
+            <input type="url" name="online_meeting_url" value="{{ batch.online_meeting_url }}" placeholder="https://meet.google.com/..." >
+            <button type="submit" class="cl-btn save"><i class="fa-solid fa-floppy-disk"></i> Save Link</button>
+            {% if batch.online_meeting_url %}
+            <button type="submit" class="cl-btn clear" onclick="if (!confirm('Remove this class link?')) return false; this.form.online_meeting_url.value='';">Remove</button>
+            {% endif %}
+        </form>
+        {% if batch.mode == 'offline' %}
+        <div class="cl-meta"><i class="fa-solid fa-circle-info"></i> This batch is set to Offline, so students won't see the link. Ask an admin to change the mode to Online or Hybrid.</div>
+        {% endif %}
+    </div>
+    {% empty %}
+    <div class="cl-card cl-empty">You don't have any active batches assigned yet.</div>
+    {% endfor %}
+</div>
+{% endblock %}

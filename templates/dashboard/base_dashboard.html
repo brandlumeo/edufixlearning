@@ -388,6 +388,9 @@
             
             <div class="sidebar-label">Learning Tools</div>
             <div class="menu-item"><a href="{% url 'dashboard:assignments' %}" class="menu-link {% if request.resolver_match.url_name == 'assignments' %}active{% endif %}"><i class="fa-solid fa-file-pen"></i> Assignments</a></div>
+            {% if user.is_instructor or user.is_staff %}
+            <div class="menu-item"><a href="{% url 'dashboard:instructor_class_links' %}" class="menu-link {% if request.resolver_match.url_name == 'instructor_class_links' %}active{% endif %}"><i class="fa-solid fa-video"></i> Class Links</a></div>
+            {% endif %}
             <div class="menu-item"><a href="{% url 'dashboard:certificates' %}" class="menu-link {% if request.resolver_match.url_name == 'certificates' %}active{% endif %}"><i class="fa-solid fa-certificate"></i> Certificates</a></div>
         </div>
         <div class="sidebar-footer">
